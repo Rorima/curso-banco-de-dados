@@ -91,3 +91,127 @@ Esse modelo descreve como os dados serão armazenados no banco de dados e també
 
 ![Imagem Modelo Lógico](https://www.researchgate.net/profile/Joan-Casas-Roma/publication/325335453/figure/fig30/AS:629753367232549@1527156311932/The-database-logical-schema.png)
 
+Um modelo lógico também pode ser definido da seguinte maneira:
+
+```
+TipoDeProduto (CodtipoProd, DescrTipoProd)
+
+Produto(CodProd, DescrProd, PrecoProd, CodTipoProd)
+         CodTipoProd referencia TipoDeProduto
+```
+
+### Modelo Físico
+
+Também é chamado de Modelo de Implementação, e descreve por meio de alguma linguagem (comumente SQL) como será feita a armazenagem do banco. Neste nível, se escolhe qual Sistema Gerenciador de Banco de Dados (SGBD) será utilizado, levando em consideração o modelo lógico adotado.
+
+Exemplo de detalhamento de colunas (campos) de uma tabela na **preparação** para o modelo físico:
+
+|Nome do Campo| Tipo de Dado | Tamanho do Campo |
+|---|---|---|
+|Código do Paciente| Numérico | 5 dígitos |
+|Nome do Paciente| Alfanumérico | 50 caracteres |
+|Endereço| Alfanumérico | 50 caracteres |
+|Bairro| Alfanumérico | 40 caracteres |
+|Cidade| Alfanumérico | 40 caracteres |
+|Estado| Alfanumérico | 2 caracteres |
+|CEP| Alfanumérico | 9 caracteres |
+|Data de Nascimento| Data | 10 caracteres |
+
+Uma outra forma é utilizando a própria lniguagem SQL para criação de tabelas com suas colunas, tipos de dados e relacionamentos.
+
+## Outros conceitos essenciais
+
+### Entidade
+
+É um objeto ou evento do mundo real sobre o qual desejamos manter registros em um banco de dados. Como um aluno, carro, produto, vendedor, venda, etc. Entidade e Tabela em um banco de dados é a mesma coisa.
+
+### Atributo
+
+Propriedade ou característica que descreve uma entidade. São as colunas (campos) das tabelas que irão armazenar os dados.
+
+### Atributo Chave
+
+Também conhecido como **chave primária**, ***primary key*** ou ***pk***, é um campo que pode possuir valor único (sem repetição) em todo o conjunto de dados da entidade. Este atributo é usado para identificar unicamente um registro da tabela.
+
+### Relacionamentos
+
+Geralmente as entidades nunca estão sozinhas; normalmente estão associadas com outras entidades. Reconhecer e registrar os relacionamentos entre entidades fornece uma descrição muito mais rica do modelo. Um relacionamento pode acontecer entre uma, duas ou várias entidades.
+
+### Chave Estrangeira
+
+Também conhecida como ***foreign key*** ou ***fk***, é um atributo presente em uma entidade que indica um relacionamento e representa a chave primária de uma outra entidade.
+
+### Grau de Relacionamento
+
+Indica a quantidade de entidades ligadas a um relacionamento. Os principais graus de relacionamento são: Unário, Binário e Ternário, mas dependendo da complexidade do projeto, podemos ter relacionamentos com graus maiores que os citados.
+
+* Relacionamento Unário: Chamado também de grau 1 - Uma entidade se relaciona com ela mesma. Um exemplo disso é um funcionário que gerencia outro funcionário, ou uma pessoa que se casa com outra pessoa. Não é um relacionamento comum.
+* Relacionamento Binário: Chamado também de grau 2 - Uma entidade se relaciona com outra entidade. É o tipo mais comum de relacionamento. Um exemplo disso é um vendedor que vende um produto e um aluno que cursa uma disciplina.
+* Relacionamento Ternário: Chamado também de grau 3 - Três entidades estão relacionadas por um mesmo relacionamento. Um exemplo disso é um cliente que fez um pedido que foi atendido por um vendedor e foi utilizado um tipo de pagamento para o atendimento citado.
+
+### Cardinalidade Máxima
+
+Define a quantidade máxima de ocorrências de uma entidade que poderá estar associada a outra, por exemplo: Um vendedor pode vender apenas um tipo de produto, e um produto pode ser vendido por vários vendedores.
+
+#### Relacionamento Binário Um-para-Um (1:1)
+
+Indica que uma ocorrência da entidade A pode se relacionar exclusivamente com uma ocorrência da entidade B e vice-versa. Exemplo: Um vendedor ocupa um único escritório e um escritório pode ser ocupado por um único vendedor. 
+
+Quando mostrado em um diagrama, a numeração é colocada em cada uma das pontas (bem próximo às entidades) para indicar a cardinalidade do relacionamento entre as entidades.
+
+Em inglês, esse relacionamento é chamado de One-to-One.
+
+#### Relacionamento Binário Um-para-Muitos (1:n)
+
+Indica que uma ocorrência de entidade A pode se relacionar com várias ocorrências da entidade B, porém o inverso não é permitido. Exemplo: Um vendedor atende muitos clientes, porém cada cliente é atendido por apenas um vendedor específico.
+
+Em inglês, esse relacionamento é chamado de One-to-Many.
+
+#### Relacionamento Binário Muitos-para-Muitos (n:m)
+
+Indica que uma ocorrência da entidade A pode se relacionar com várias ocorrências da entidade B e vice-versa. Exemplo: Um vendedor atende muitos clientes, e um cliente pode ser atendido por diversos vendedores.
+
+Em inglês, esse relacionamento é chamado de Many-to-Many.
+
+Na prática, o relacionamento n:m é dividido em duas relaçãos 1:n e uma nova entidade é criada para representar o relacionamento.
+
+### Cardinalidade Mínima
+
+Define a quantidade mínima de ocorrências de uma entidade que precisa estar associada a outra entidade (em caráter obrigatório). São consideradas como cardinalidades mínimas: 0 e 1. São representadas por: 0..1, 1..1, 0..n, 1..n, 0..\*, 1..\*, etc. O asterisco também significa muitos, como o n.
+
+Exemplo: Um vendedor ocupa um único escritório, porém é obrigatório que ele tenha um escritório. Lê-se: no mínimo Um, no máximo Um (1..1);
+
+Um escritório pode ser ocupado por um único vendedor, porém pode ser que a sala esteja vazia, ainda sem vendedor. Lê-se: no mínimo Zero, no máximo Um (0..1).
+
+### Formas de Representação
+
+Podemos encontrar uma variedade grande de representações gráficas para o Modelo Entidade Relacionamento. Os mais comuns são o **Clássico** e o **Pé de Galinha**. 
+
+#### Clássico:
+
+<img src="https://d2slcw3kip6qmk.cloudfront.net/marketing/pages/chart/erd-symbols/Entity.PNG" style="zoom:70%;" /><img src="https://d2slcw3kip6qmk.cloudfront.net/marketing/pages/chart/erd-symbols/RelationshipShape.PNG" style="zoom:70%;" /><img src="https://d2slcw3kip6qmk.cloudfront.net/marketing/pages/chart/erd-symbols/Attribute.PNG" style="zoom:70%;" />
+
+Aqui a cardinalidade é representada por números (1..1, 1..n, etc.).
+
+#### Pé de Galinha:
+
+<img src="https://d2slcw3kip6qmk.cloudfront.net/marketing/pages/chart/erd-symbols/ERD-Notation.PNG" style="zoom:70%;" />
+
+### Ferramenta indicada para modelagem
+
+MySQL Workbench é uma ferramenta excelente para fazer diagramas. Construímos o diagrama, e podemos utilizá-lo com qualquer banco de dados relacional.
+
+## Normalização de Dados
+
+Chamamos de normalização de dados o processo formal e passo a passo que examina o documento descritivo gerado pelos analistas de sistemas durante a análise de requisitos em busca de definir as entidades, atributos, relacionamentos, chaves primárias e chaves estrangeiras do banco de dados a ser modelado. Este processo é realizado utilizando regras bem estabelecidas como Formas **Normais definidas** por Edgar Frank Codd em seu artigo.
+
+Um dos objetivos principais da normalização é evitar, ou pelo menos amenizar anomalias e inconsistências que podem ocorrer durante a inclusão, exclusão, alteração e consulta de registros em um banco de dados.
+
+Um banco de dados normalizado dentro dos padrões reduz o trabalho de manutenção e ajuda a evitar o desperdício do espaço de armazenamento, dentre outros benefícios.
+
+O processo de normalização aplica uma série de regras sobre as tabelas de um banco de dados para verificar se ele foi corretamente projetado. Embora existam cinco formas normais (ou regras de normalização), na prática, usamos apenas um conjunto de três **Formas Normais**, ou seja, um banco de dados é considerado normalizado se nele for aplicadas essas três regras de Formas Normais.
+
+### Primeira Forma Normal (1FN)
+
+Uma entidade estará na primeira forma normal (1FN) se todos os campos forem atômicos (simples) e não multivalorados (com múltiplos valores).
+
