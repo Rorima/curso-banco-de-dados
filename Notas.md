@@ -211,7 +211,43 @@ Um banco de dados normalizado dentro dos padrões reduz o trabalho de manutenç�
 
 O processo de normalização aplica uma série de regras sobre as tabelas de um banco de dados para verificar se ele foi corretamente projetado. Embora existam cinco formas normais (ou regras de normalização), na prática, usamos apenas um conjunto de três **Formas Normais**, ou seja, um banco de dados é considerado normalizado se nele for aplicadas essas três regras de Formas Normais.
 
+Uma tabela que aceita campos vazios é uma tabela problemática. Todos os campos devem ser importantes para estar na tabela e campos importantes não podem ficar vazios.
+
+O processo de normalização é sequencial. Isso significa que você só pode aplicar as regras da segunda forma normal se as tabelas já se encontrarem na primeira forma normal.
+
 ### Primeira Forma Normal (1FN)
 
-Uma entidade estará na primeira forma normal (1FN) se todos os campos forem atômicos (simples) e não multivalorados (com múltiplos valores).
+Veja a seguinte tabela:
 
+**Tabela Cliente**
+
+| Código_cliente | Nome  | Telefone             | Endereco                       |
+| -------------- | ----- | -------------------- | ------------------------------ |
+| C001           | José  | 9999-9990            | Rua um, 1, São Paulo 12345-678 |
+| C002           | Maria | 9999-9991, 9999-9992 | Rua um, 2, São Paulo 12345-678 |
+| C003           | João  | 9999-9993            | Rua um, 3, São Paulo 12345-678 |
+
+Uma entidade estará na primeira forma normal (1FN) se todos os campos forem atômicos (simples) e não multivalorados (com múltiplos valores). Isso significa que um campo da tabela deve ter somente um valor, por exemplo: Suponhamos que temos uma coluna chamada `Endereço`. Nesta coluna existem vários endereços juntamente com o CEP. Tal coluna vai contra a 1FN, pois comporta CEP e endereço, ao invés de comportar somente um desses dados. Para resolver esse problema, deve-se criar outra coluna para comportar o CEP. Ainda é possível ir além e dividir o endereço em mais colunas, como Rua e Bairro.
+
+Veja a tabela modificada:
+
+**Tabela Cliente**
+
+| Código_cliente | Nome  | Telefone             | Rua       | Cidade    | CEP       |
+| -------------- | ----- | -------------------- | --------- | --------- | --------- |
+| C001           | José  | 9999-9990            | Rua um, 1 | São Paulo | 12345-678 |
+| C002           | Maria | 9999-9991, 9999-9992 | Rua um, 2 | São Paulo | 12345-678 |
+| C003           | João  | 9999-9993            | Rua um, 3 | São Paulo | 12345-678 |
+
+E se um cliente tiver dois telefones, e outros três, e outros um somente? Deve-se criar uma coluna para cada telefone? Se fizéssemos isso, teríamos algumas entradas vazias, já que alguns clientes possuem somente um telefone. Neste caso, a solução é criar uma nova tabela. Cria-se uma tabela chamada `Telefones_cliente` e adiciona-se o código do cliente, que é a Primary Key da tabela `Cliente`. Assim, pode-se adicionar quantos telefones forem necessários.
+
+**Tabela Telefones Cliente**
+
+| Codigo_cliente | Telefone  |
+| -------------- | --------- |
+| C001           | 9999-9990 |
+| C002           | 9999-9991 |
+| C002           | 9999-9992 |
+| C003           | 9999-9993 |
+
+Assim a 1FN foi aplicada à tabela.
