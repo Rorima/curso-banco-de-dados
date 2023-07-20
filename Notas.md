@@ -251,3 +251,70 @@ E se um cliente tiver dois telefones, e outros três, e outros um somente? Deve-
 | C003           | 9999-9993 |
 
 Assim a 1FN foi aplicada à tabela.
+
+---
+
+A primeira forma normal tenta resolver um dos maiores problemas de bancos de dados, que é a repetição (redundância de dados) e a desorganização deles. Imagine um campo `telefone` que permita a entrada de mais de um valor (dois números de telefone) por exemplo. Como faríamos a busca em um dos valores apenas? Sendo assim, é necessário aplicar a 1FN para resolver esse problema.
+
+Nem toda tabela precisa obrigatoriamente ser normalizada com a 1FN. A normalização é um processo corretivo que deve ser aplicado em casos específicos onde o problema for identificado. Tudo irá depender de como a análise dos dados foi feita. Um analista experiente aplica a normalização de dados por padrão, pois ele olha para uma tabela e já "sente" que tem algo errado ali, e aplica a a correção.
+
+### Segunda Forma Normal (2FN)
+
+Uma entidade estará na 2FN se ela já se encontrar na 1FN e todos os atributos não-chave forem totalmente dependentes da chave primária.
+
+Exemplo: **Tabela Pedidos**
+
+| N_pedido | Codigo_produto | Produto              | Quant | Valor_unit | Subtotal |
+| -------- | -------------- | -------------------- | ----- | ---------- | -------- |
+| 1005     | 1-934          | Impressora Laser     | 5     | 1.500,00   | 7.500,00 |
+| 1006     | 1-935          | Impressora Desjet    | 3     | 350,00     | 1.050,00 |
+| 1007     | 1-936          | Impressora Matricial | 1     | 190,00     | 190,00   |
+| 1008     | 1-937          | Impressora Mobile    | 6     | 980,00     | 5.880,00 |
+
+Há um problema nessa tabela. O nome do produto não é dependente da chave primária, e sim do código do produto. O nome do produto está diretamente ligado ao código do produto. Sendo assim, a coluna `Produto` deveria estar em uma tabela separada, utilizando o `Codigo_produto` como **PK**.
+
+Exemplo da tabela **Produtos**:
+
+| Codigo_produto | Produto              |
+| -------------- | -------------------- |
+| 1-934          | Impressora Laser     |
+| 1-935          | Impressora Desjet    |
+| 1-936          | Impressora Matricial |
+| 1-937          | Impressora Mobile    |
+
+E esta seria a tabela **Pedidos**:
+
+| N_pedido | Codigo_produto | Quant | Valor_unit | Subtotal |
+| -------- | -------------- | ----- | ---------- | -------- |
+| 1005     | 1-934          | 5     | 1.500,00   | 7.500,00 |
+| 1006     | 1-935          | 3     | 350,00     | 1.050,00 |
+| 1007     | 1-936          | 1     | 190,00     | 190,00   |
+| 1008     | 1-937          | 6     | 980,00     | 5.880,00 |
+
+E assim a coluna `Codigo_produto` será uma chave estrangeira na tabela **Pedidos**, pois ela é uma chave primária de outra tabela (**Produtos**).
+
+Conforme vimos, tanto com a 1FN quanto com a 2FN, quando aplicamos a normalização de dados, é comum gerar novas tabelas a fim de satisfazer as formas normais que estão sendo aplicadas. É importante deixar claro que a normalização de dados, apesar de ser simples, causa grande dificuldade nos iniciantes da área.
+
+### Terceira Forma Normal (3FN)
+
+Cada uma das formas normais tende a ir refinando a modelagem e deixando a estrutura de dados mais íntegra e exclusiva, evitando repetições desnecessárias e possíveis sobrecargas no gerenciador de banco de dados. Uma tabela estará na 3FN se ela estiver na 2FN e se nenhuma coluna não-chave depender de outra coluna não-chave. Ou seja, na 3FN temos que eliminar os campos que podem ser obtidos pela equação de outros campos da mesma tabela.
+
+Exemplo da tabela **Pedidos**:
+
+| N_pedido | Codigo_produto | Quant | Valor_unit | Subtotal |
+| -------- | -------------- | ----- | ---------- | -------- |
+| 1005     | 1-934          | 5     | 1.500,00   | 7.500,00 |
+| 1006     | 1-935          | 3     | 350,00     | 1.050,00 |
+| 1007     | 1-936          | 1     | 190,00     | 190,00   |
+| 1008     | 1-937          | 6     | 980,00     | 5.880,00 |
+
+Veja que se multiplicarmos a quantidade do produto pelo seu preço unitário, teremos o subtotal. Portanto, o campo `Subtotal` é desnecessário e deve ser removido.
+
+Aqui está a tabela **Pedidos** editada:
+
+| N_pedido | Codigo_produto | Quant | Valor_unit | Subtotal |
+| -------- | -------------- | ----- | ---------- | -------- |
+| 1005     | 1-934          | 5     | 1.500,00   | 7.500,00 |
+| 1006     | 1-935          | 3     | 350,00     | 1.050,00 |
+| 1007     | 1-936          | 1     | 190,00     | 190,00   |
+| 1008     | 1-937          | 6     | 980,00     | 5.880,00 |
