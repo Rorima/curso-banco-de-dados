@@ -1,6 +1,6 @@
 # Anotações Rápidas
 
-Estas são anotações rápidas que eu fiz enquanto estudava o curso de Bancos de Dados SQL e NoSQL do Básico ao Avançado. O objetivo destas anotações é que ela seja uma referência para mim mesmo.
+Estas são anotações rápidas que eu fiz enquanto estudava o curso de Bancos de Dados SQL e NoSQL do Básico ao Avançado. O objetivo destas anotações é que elas sejam uma referência para eu poder consultar no futuro, além de ser uma documentação do meu aprendizado e uma prova de que verdadeiramente estudei banco de dados.
 
 ## Dado e informação
 
@@ -312,9 +312,24 @@ Veja que se multiplicarmos a quantidade do produto pelo seu preço unitário, te
 
 Aqui está a tabela **Pedidos** editada:
 
-| N_pedido | Codigo_produto | Quant | Valor_unit | Subtotal |
-| -------- | -------------- | ----- | ---------- | -------- |
-| 1005     | 1-934          | 5     | 1.500,00   | 7.500,00 |
-| 1006     | 1-935          | 3     | 350,00     | 1.050,00 |
-| 1007     | 1-936          | 1     | 190,00     | 190,00   |
-| 1008     | 1-937          | 6     | 980,00     | 5.880,00 |
+| N_pedido | Codigo_produto | Quant | Valor_unit |
+| -------- | -------------- | ----- | ---------- |
+| 1005     | 1-934          | 5     | 1.500,00   |
+| 1006     | 1-935          | 3     | 350,00     |
+| 1007     | 1-936          | 1     | 190,00     |
+| 1008     | 1-937          | 6     | 980,00     |
+
+### Outras Formas Normais
+
+Um modelo de dados é considerado normalizado se as três Formas Normais forem aplicadas a ele. Dependendo da complexidade do projeto, apesar de raro, é possível que seja necessário aplicar a 4FN ou a 5FN. Vamos aprender sobre elas, mas não se prenda a elas.
+
+#### Quarta Forma Normal (4FN)
+
+Uma entidade estará na 4FN se na tabela não conter múltiplas entradas multivaloradas (valores repetidos em diferentes colunas). A presença de uma ou mais linhas em uma tabela implica na presença de uma ou mais outras linhas na mesma tabela.
+
+#### Quinta Forma Normal (5FN)
+
+Uma entidade estará na 5FN quando um atributo está em outra tabela sem a necessidade de estar na tabela pesquisada, e pode ser removido sem a perda de nenhuma informação.
+
+## MER - Modelo Entidade Relacionamento
+
