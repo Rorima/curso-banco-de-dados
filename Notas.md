@@ -333,3 +333,15 @@ Uma entidade estará na 5FN quando um atributo está em outra tabela sem a neces
 
 ## MER - Modelo Entidade Relacionamento
 
+Há um padrão que deve ser utilizado para nomear tabelas:
+
+* O nome sempre deve ser escrito com letras minúsculas;
+* Pode-se escrever o nome da tabela tanto no singular quanto no plural;
+* Se o nome da tabela for composto, deve-se separar os nomes com um underline;
+* Não se pode usar acentuação, espaço e caracteres especiais;
+
+Ao criar uma tabela, é indicado que a primeira coluna seja um identificador. Geralmente o nome é `id`. Além disso, ele é um valor do tipo inteiro, e também é uma **PK**.
+
+Todos os campos da tabela devem ser marcados com `NN`, que significa *NOT NULL*. Isso significa que não serão aceitos campos nulos.
+
+Também é aconselhável marcar a opção `AI`, que significa *AUTO INCREMENT*, ou "incremento automático".
