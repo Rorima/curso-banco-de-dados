@@ -345,3 +345,6 @@ Ao criar uma tabela, é indicado que a primeira coluna seja um identificador. Ge
 Todos os campos da tabela devem ser marcados com `NN`, que significa *NOT NULL*. Isso significa que não serão aceitos campos nulos.
 
 Também é aconselhável marcar a opção `AI`, que significa *AUTO INCREMENT*, ou "incremento automático".
+
+Lembre-se de nunca colocar como Chave Primária um dado colocado por um usuário. Então se você tiver uma tabela de pessoas, não utilize o CPF como chave primária, pois a pessoa pode entrar o dado errado ou de maneira errada.
+
