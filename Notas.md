@@ -348,3 +348,22 @@ Também é aconselhável marcar a opção `AI`, que significa *AUTO INCREMENT*, 
 
 Lembre-se de nunca colocar como Chave Primária um dado colocado por um usuário. Então se você tiver uma tabela de pessoas, não utilize o CPF como chave primária, pois a pessoa pode entrar o dado errado ou de maneira errada.
 
+## Exercício Modelagem de Dados
+
+Um grupo de analistas de sistemas recebeu a tarefa de ir até uma empresa que precisava criar um sistema para armazenar dados, e com isso, gerar relatórios mensais. Ao final das entrevistas, os analistas geraram um documento onde está descrito a essência do que a empresa faz e precisa.
+
+Você recebeu esse documento e tem a missão de criar um Modelo de Entidade de Relacionamentos para que o sistema possa ser criado. Lembre-se, seu trabalho é a base para um sistema robusto.
+
+### Documento
+
+Uma empresa fabricante de picolés deseja armazenar informações acerca de seus negócios. 
+
+Os picolés fabricados são divididos em: normal (com água) e ao leite. As informações comuns armazenadas dos picolés são: sabor, ingredientes, preço e tipo da embalagem.
+
+Especificamente, picolés normais possuem um conjunto de aditivos nutritivos (vitaminas ou sais minerais), cada um com nome e fórmula química; e picolés ao leite contêm um conjunto de conservantes, cada um com nome e descrição.
+
+Os dois tipos de picolés são vendidos em lotes exclusivos (ou normais, ou ao leite) para os revendedores, e cada venda gera uma nota fiscal que pode conter um ou vários lotes. As notas fiscais possuem data, valor, número de série e descrição.
+
+Todo revendedor possui uma pessoa de contato para eventuais resoluções de problemas, além disso, armazena-se do revendedor o CNPJ e a razão social.
+
+Deseja-se obter relatórios sobre as vendas mensais dos picolés de cada tipo e quais revendedores compraram mais picolés nos últimos meses.
