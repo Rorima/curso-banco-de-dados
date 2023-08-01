@@ -367,3 +367,51 @@ Os dois tipos de picolés são vendidos em lotes exclusivos (ou normais, ou ao l
 Todo revendedor possui uma pessoa de contato para eventuais resoluções de problemas, além disso, armazena-se do revendedor o CNPJ e a razão social.
 
 Deseja-se obter relatórios sobre as vendas mensais dos picolés de cada tipo e quais revendedores compraram mais picolés nos últimos meses.
+
+### Resolvendo o exercício
+
+O que precisamos fazer:
+
+1. Encontrar as entidades;
+2. Definir os atributos;
+3. Definir os relacionamentos;
+
+Vamos então quebrar o texto em partes e resolver parte por parte:
+
+>Uma empresa fabricante de picolés deseja armazenar informações acerca de seus negócios. 
+
+Isso é apenas o contexto. Não é necessário fazer nada aqui.
+
+>Os picolés fabricados são divididos em: normal (com água) e ao leite. As informações comuns armazenadas dos picolés são: sabor, ingredientes, preço e tipo da embalagem.
+
+Entidades e atributos:
+* Picolés (id, id sabor, preço, id tipo da embalagem);
+* Sabor (id, nome);
+* Tipos de Picolé (id, nome);
+* Tipo de embalagem (id, nome);
+* Ingredientes (id, nome);
+* Ingredientes do Picolé (id, id ingrediente, id picolé);
+
+>Especificamente, picolés normais possuem um conjunto de aditivos nutritivos (vitaminas ou sais minerais), cada um com nome e fórmula química; e picolés ao leite contêm um conjunto de conservantes, cada um com nome e descrição.
+
+Entidades:
+* Aditivos nutritivos (id, nome, fórmula química);
+* Conservantes (id, nome, descrição);
+* Adititivos nutritivos do Picolé (id, id aditivo nutritivo, id picolé);
+* Conservantes do Picolé (id, id conservante, id picolé);
+
+>Os dois tipos de picolés são vendidos em lotes exclusivos (ou normais, ou ao leite) para os revendedores, e cada venda gera uma nota fiscal que pode conter um ou vários lotes. As notas fiscais possuem data, valor, número de série e descrição.
+
+Entidades:
+* Lotes (id, id tipo de picole, quantidade);
+* Notas fiscais (id, data, valor, número de série, descrição, id revendedor);
+* Lotes da Nota fiscal (id, id lote, id nota fiscal)
+
+>Todo revendedor possui uma pessoa de contato para eventuais resoluções de problemas, além disso, armazena-se do revendedor o CNPJ e a razão social.
+
+Entidades:
+* Revendedores (id, contato, cnpj, razão social)
+
+>Deseja-se obter relatórios sobre as vendas mensais dos picolés de cada tipo e quais revendedores compraram mais picolés nos últimos meses.
+
+Isso também é para contexto. Não é necessário fazer nada aqui.
