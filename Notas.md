@@ -415,3 +415,22 @@ Entidades:
 >Deseja-se obter relatórios sobre as vendas mensais dos picolés de cada tipo e quais revendedores compraram mais picolés nos últimos meses.
 
 Isso também é para contexto. Não é necessário fazer nada aqui.
+
+## A Linguagem SQL
+
+SQL, do inglês *Structured Query Language*, ou Linguagem de Consulta Estruturada traduzindo para o português, é a linguagem de bancos de dados relacionais. A linguagem SQL foi inspirada na Álgebra Relacional.
+
+A linguagem SQL se divide em cinco subgrupos:
+
+* DQL - *Data Query Language* (Linguagem de Consulta de Dados);
+* DML - *Data Manipulation Language* (Linguagem de Manipulação de Dados);
+* DDL - *Data Definition Language* (Linguagem de Definição de Dados);
+* DCL - *Data Control Language* (Linguagem de Controle de Dados);
+* DTL - *Data Transaction Language* (Linguagem de Transação Dados).
+
+Cada subgrupo SQL possui comandos próprios de execução, e ao executar estes comandos, sempre temos como resultado duas coisas:
+
+1. O resultado da execução do comando;
+2. Uma mensagem de execução que pode ser de sucesso ou de erro.
+
+Apesar de não obrigatório, costumamos escrever os comandos SQL em letra maiúscula, o que ajuda a entender melhor nosso código, já que o que for referente aos comandos SQL estarão destacados em maiúsculo, e o que for referente aos nossos dados, tabelas e etc., estarão em minúsculo.
