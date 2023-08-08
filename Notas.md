@@ -434,3 +434,111 @@ Cada subgrupo SQL possui comandos próprios de execução, e ao executar estes c
 2. Uma mensagem de execução que pode ser de sucesso ou de erro.
 
 Apesar de não obrigatório, costumamos escrever os comandos SQL em letra maiúscula, o que ajuda a entender melhor nosso código, já que o que for referente aos comandos SQL estarão destacados em maiúsculo, e o que for referente aos nossos dados, tabelas e etc., estarão em minúsculo.
+
+Todos os comandos SQL são finalizados com ";" (ponto e vírgula).
+
+### DQL - Data Query Language
+
+No subgrupo DQL temos apenas um comando SQL: SELECT. Este comando é utilizado para realizar consultas no banco de dados. 
+
+Embora tenha apenas um comando, a DQL é a parte da SQL mais utilizada. O comando SELECT permite ao usuário especificar uma consulta (query) como uma descrição do resultado esperado. Este comando é composto de várias cláusulas e opções, possibilitando elaborar consultas das mais simples às mais complexas.
+
+#### Exemplo de utilização do SELECT
+
+Exemplo:
+
+`SELECT * FROM tipos_produto;`
+
+No exemplo acima, estamos selecionando todos os dados da tabela tipos_produto. O asterisco indica que queremos os dados de todos os campos da tabela.
+
+Exemplo:
+
+`SELECT codigo, descricao FROM tipo_produto;`
+
+No exemplo acima, estamos especificando os campos dos quais queremos os dados.
+
+#### Apelidos
+
+Podemos aplicar "apelidos" no nome de tabelas e campos quando estamos utilizando o comando SELECT. Fazemos isso através da palavra reservada `AS`. Veja o seguinte exemplo:
+
+`SELECT codigo AS cod, descricao AS desc FROM produtos;`
+
+Assim, o nome das colunas aparecerão como especificado no apelido.
+
+Também podemos dar um apelido pra tabela, e fazemos isso após o FROM.
+
+`SELECT p.codigo AS cod, p.descricao AS desc FROM produtos AS p`
+
+### DML - Data Manipulation Language
+
+No subgrupo DML, temos três comandos SQL: INSERT, UPDATE e DELETE. Este subgrupo da linguagem SQL é utilizado para realizar inclusões, alterações e exclusões de dados presentes em registros do banco de dados.
+
+* INSERT: Usado para inserir um registro em uma tabela existente;
+* UPDATE: Usado para alterar valores de dados em um ou mais registros de uma tabela;
+* DELETE: Usado para remover registros de uma tabela.
+
+#### Exemplo de utilização do INSERT
+
+Exemplo:
+
+`INSERT INTO tipos_produto (descricao) VALUES ('Notebook');`
+
+No exemplo acima, estamos inserindo o valor Notebook na tabela tipos_produto. A tabela possui um campo código, que é a chave primária e se auto-incrementa, então o código será inserido automaticamente.
+
+Podemos adicionar um item com vários atributos de uma só vez:
+
+`INSERT INTO produtos (descricao, preco, codigo_tipo_produto) VALUES ('Smartphone', 1200, 3);`
+
+No exemplo acima, estamos inserindo os valores na tabela produtos. O campo código é a chave primária que se auto-incrementa, então o codigo será inserido automaticamente.
+
+#### Exemplo de utilização do UPDATE
+
+Exemplo:
+
+`UPDATE tipos_produto SET descricao = 'Laptop' WHERE codigo = 3;`
+
+No exemplo acima, estamos atualizando um registro. Note que estamos utilizando o filtro com a cláusula WHERE, especificando qual registro queremos atualizar.
+
+Também podemos atualizar mais de um valor usando somente um UPDATE:
+
+`UPDATE produtos SET descricao = 'Notebook', preco = 2.800 WHERE codigo = 20;`
+
+É necessário tomar bastante cuidado com o comando UPDATE! Quando não é oferecida uma cláusula WHERE, que é o que filtra quais dados serão alterados, ele altera os dados da tabela inteira.
+
+#### Exemplo de utilização do DELETE
+
+Exemplo:
+
+`DELETE FROM tipos_produto WHERE codigo = 3;`
+
+No exemplo acima, estamos excluindo da tabela o registro que tenha o código igual a 3.
+
+Assim como no comando UPDATE, é necessário tomar cuidado com o comando DELETE, pois quando não é oferecida uma cláusula WHERE, ele deleta todos osdados da tabela.
+
+### DDL - Data Definition Language
+
+No subgrupo DDL, temos três comandos SQL: CREATE, ALTER e DROP. Este subgrupo é utilizado para criar, alterar e excluir bancos de dados, tabelas e elementos associados, como índice e visão.
+
+CREATE: Usado para criar um banco de dados, tabela e outros objetos em um banco de dados;
+ALTER: Usado para alterar a estrutura de tabelas ou outro objeto em um banco de dados;
+DROP: Usado para apagar bancos de dados, tabelas e outros objetos;
+
+#### Exemplo de utilização do CREATE
+
+Exemplo:
+
+`CREATE DATABASE financeiro;`
+
+No exemplo acima ,estamos criando um banco de dados chamado financeiro.
+
+`CREATE TABLE tipos_produto (codigo INT PRIMARY KEY, descricao VARCHAR(50));`
+
+No exemplo acima, estamos criando uma tabela contendo os campos código, que é chave primária e do tipo inteiro, e descricao, que é do tipo varchar com até 50 caracteres.
+
+#### Exemplo de utilização do ALTER
+
+Exemplo:
+
+`ALTER TABLE tipos_produto ADD peso DECIMAL(8,2);`
+
+No exemplo acima, estamos alterando a estrutura da tabela e acrescentando um novo campo chamado peso, que é do tipo decimal com até outo dígitos antes da vírgula e dois dígitos após a vírgula.
