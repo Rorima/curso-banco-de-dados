@@ -519,9 +519,9 @@ Assim como no comando UPDATE, é necessário tomar cuidado com o comando DELETE,
 
 No subgrupo DDL, temos três comandos SQL: CREATE, ALTER e DROP. Este subgrupo é utilizado para criar, alterar e excluir bancos de dados, tabelas e elementos associados, como índice e visão.
 
-CREATE: Usado para criar um banco de dados, tabela e outros objetos em um banco de dados;
-ALTER: Usado para alterar a estrutura de tabelas ou outro objeto em um banco de dados;
-DROP: Usado para apagar bancos de dados, tabelas e outros objetos;
+* CREATE: Usado para criar um banco de dados, tabela e outros objetos em um banco de dados;
+* ALTER: Usado para alterar a estrutura de tabelas ou outro objeto em um banco de dados;
+* DROP: Usado para apagar bancos de dados, tabelas e outros objetos;
 
 #### Exemplo de utilização do CREATE
 
@@ -541,4 +541,69 @@ Exemplo:
 
 `ALTER TABLE tipos_produto ADD peso DECIMAL(8,2);`
 
-No exemplo acima, estamos alterando a estrutura da tabela e acrescentando um novo campo chamado peso, que é do tipo decimal com até outo dígitos antes da vírgula e dois dígitos após a vírgula.
+No exemplo acima, estamos alterando a estrutura da tabela e acrescentando um novo campo chamado peso, que é do tipo decimal com até oito dígitos antes da vírgula e dois dígitos após a vírgula.
+
+#### Exemplo de utilização do DROP
+
+Exemplo:
+
+`DROP TABLE tipos_produto;`
+
+No exemplo acima, estamos apagando a tabela. Este comando apaga toda a estrutura e os dados, desde que esta tabela não tenha relacionamentos.
+
+Também é possível excluir bancos de dados com este mesmo comando:
+
+`DROP DATABASE financeiro;`
+
+### DCL - Data Control Language
+
+No subgrupo DCL, temos dois comandos SQL: GRANT e REVOKE. Este subgrupo da linguagem SQL é utilizado para controlar os aspectos de autorização de dados e licenças de usuários para controlar quem tem acesso para manipular dados dentro do banco de dados.
+
+* GRANT: Usado para autorizar um usuário a executar ou setar operações no banco de dados;
+* REVOKE: Usado para remover ourestringir a capacidade de um usuário de executar operações;
+
+#### Exemplo de utilização do GRANT
+
+Exemplo:
+
+`GRANT SELECT ON tipos_produto TO geek;`
+
+No exemplo acima, estamos dando permissão de consulta na tabela tipos_produto para o usuário geek.
+
+#### Exemplo de utilização do REVOKE
+
+Exemplo:
+
+`REVOKE CREATE TABLE FROM geek;`
+
+No exemplo acima, estamos retirando a permissão de criação de tabelas no banco de dados do usuário geek.
+
+### DTL - Data Transaction Language
+
+No subgrupo DTL, temos três comandos: BEGIN, COMMIT e ROLLBACK.
+
+* BEGIN (ou START TRANSACTION): Usado para marcar o começo de uma transação que pode ser completada ou não;
+* COMMIT: Finaliza uma transação;
+* ROLLBACK: Faz com que as mudanças nos dados existentes do último COMMIT sejam descartadas.
+
+#### Exemplo de utilização do BEGIN e COMMIT
+
+O exemplo a seguir é mais complexo devido ao próprio uso do comando BEGIN, mas já estudamos todos os comandos que serão usados aqui.
+
+```sql
+CREATE TABLE 'tipos_produtos' (codigo INT PRIMARY KEY, descricao VARCHAR(50));
+BEGIN TRANSACTION; -- Começa atransação
+   INSERT INTO tipos_produtos VALUES ('Notebook');
+   INSERT INTO tipos_produtos VALUES ('Nobreak');
+COMMIT; -- Termina a transação
+```
+
+#### Exemplo de utilização do ROLLBACK
+
+```sql
+CREATE TABLE 'tipos_produtos' (codigo INT PRIMARY KEY, descricao VARCHAR(50));
+BEGIN TRANSACTION; -- Começa atransação
+   INSERT INTO tipos_produtos VALUES ('Notebook');
+   INSERT INTO tipos_produtos VALUES ('Nobreak');
+ROLLBACK; -- Termina a transação
+```
