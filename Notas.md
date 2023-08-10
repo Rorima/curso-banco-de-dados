@@ -592,7 +592,7 @@ O exemplo a seguir é mais complexo devido ao próprio uso do comando BEGIN, mas
 
 ```sql
 CREATE TABLE 'tipos_produtos' (codigo INT PRIMARY KEY, descricao VARCHAR(50));
-BEGIN TRANSACTION; -- Começa atransação
+BEGIN TRANSACTION; -- Começa a transação
    INSERT INTO tipos_produtos VALUES ('Notebook');
    INSERT INTO tipos_produtos VALUES ('Nobreak');
 COMMIT; -- Termina a transação
@@ -602,8 +602,12 @@ COMMIT; -- Termina a transação
 
 ```sql
 CREATE TABLE 'tipos_produtos' (codigo INT PRIMARY KEY, descricao VARCHAR(50));
-BEGIN TRANSACTION; -- Começa atransação
+BEGIN TRANSACTION; -- Começa a transação
    INSERT INTO tipos_produtos VALUES ('Notebook');
    INSERT INTO tipos_produtos VALUES ('Nobreak');
 ROLLBACK; -- Termina a transação
 ```
+
+## A linguagem SQL (parte 2)
+
+Aqui aprenderemos partes mais avançadas da linguagem SQL.
