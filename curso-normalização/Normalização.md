@@ -6,7 +6,7 @@ O que é Normalização de Banco de Dados? Por que devemos fazer? Como devemos f
 
 Um banco de dados não consegue se proteger contra dados ruins, mas é possível que um bom design de banco de dados consiga se proteger contra alguns tipos de dados ruins. Nesses casos, os dados estão mostrando algo que não pode ser logicamente verdade. Um cliente com duas datas de nascimento é logicamente impossível.
 
-Quando há dados contraditórios no banco de dados não singifica necessariamente que os dados são ruins, mas sim que o design do banco de dados é ruim, e que ele não foi normalizado.
+Quando há dados contraditórios no banco de dados, não singifica necessariamente que os dados são ruins, mas sim que o design do banco de dados é ruim, e que ele não foi normalizado.
 
 Quando uma tabela de um banco de dados é normalizada, isso signfica que ela foi estruturada em uma maneira que ela não expressa informações redundantes.
 
