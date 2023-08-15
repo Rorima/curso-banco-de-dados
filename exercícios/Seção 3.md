@@ -45,11 +45,11 @@
 
 **O que é o MER - Modelo de Entidade e Relacionamento?**
 
-> Um modelo de entidade
-
-https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model
+> Um Modelo de Entidade e Relacionamento descreve coisas relacionadas entre si em um domínio específico de conhecimento. Ele é geralmente composto por tipos de entidades que classificam coisas e especificam relacionamentos que podem existir entre as entidades.
 
 **O que é o DER - Diagrama de Entidade e Relacionamento?**
+
+> Um diagrama de Entidade e Relacionamento mostra várias entidades do mesmo tipo e os relacionamentos entre essas entidades.
 
 **Construa o Diagrama Entidade-Relacionamento para o sistema abaixo:**
 
@@ -64,6 +64,7 @@ Para todo paciente internado na clínica são cadastrados alguns dados pessoais:
 Um paciente tem sempre um determinado médico como responsável (com um horário de visita diário predeterminado), porém vários outros médicos podem participar do seu tratamento. 
 
 Pacientes estão sempre internados em quartos individuais, que são identificados por um número e ficam em um andar da clínica. 
+
 
 **Construa o Diagrama Entidade-Relacionamento para o sistema abaixo:**
 
