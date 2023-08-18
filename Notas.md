@@ -560,7 +560,7 @@ Também é possível excluir bancos de dados com este mesmo comando:
 No subgrupo DCL, temos dois comandos SQL: GRANT e REVOKE. Este subgrupo da linguagem SQL é utilizado para controlar os aspectos de autorização de dados e licenças de usuários para controlar quem tem acesso para manipular dados dentro do banco de dados.
 
 * GRANT: Usado para autorizar um usuário a executar ou setar operações no banco de dados;
-* REVOKE: Usado para remover ourestringir a capacidade de um usuário de executar operações;
+* REVOKE: Usado para remover ou restringir a capacidade de um usuário de executar operações;
 
 #### Exemplo de utilização do GRANT
 
