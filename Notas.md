@@ -593,8 +593,8 @@ O exemplo a seguir é mais complexo devido ao próprio uso do comando BEGIN, mas
 ```sql
 CREATE TABLE 'tipos_produtos' (codigo INT PRIMARY KEY, descricao VARCHAR(50));
 BEGIN TRANSACTION; -- Começa a transação
-   INSERT INTO tipos_produtos VALUES ('Notebook');
-   INSERT INTO tipos_produtos VALUES ('Nobreak');
+   INSERT INTO tipos_produto VALUES ('Notebook');
+   INSERT INTO tipos_produto VALUES ('Nobreak');
 COMMIT; -- Termina a transação
 ```
 
@@ -603,11 +603,264 @@ COMMIT; -- Termina a transação
 ```sql
 CREATE TABLE 'tipos_produtos' (codigo INT PRIMARY KEY, descricao VARCHAR(50));
 BEGIN TRANSACTION; -- Começa a transação
-   INSERT INTO tipos_produtos VALUES ('Notebook');
-   INSERT INTO tipos_produtos VALUES ('Nobreak');
+   INSERT INTO tipos_produto VALUES ('Notebook');
+   INSERT INTO tipos_produto VALUES ('Nobreak');
 ROLLBACK; -- Termina a transação
 ```
 
 ## A linguagem SQL (parte 2)
 
 Aqui aprenderemos partes mais avançadas da linguagem SQL.
+
+### Filtrando consultas com o WHERE
+
+Quando se trata de consultas, utilizaremos a DQL.
+
+Quando queremos ver todos os dados de uma tabela, utilizamos o seguinte código SQL:
+
+```sql
+SELECT * FROM tipos_produto;
+```
+
+Podemos utilizar o `WHERE` para filtrar consultas e ter resultados mais precisos:
+
+```sql
+SELECT * FROM tipos_produto WHERE codigo = 1;
+```
+
+No código acima, estamos selecionando todos os dados onde o código do tipo de produto seja igual a um.
+
+### Consultas em múltiplas tabelas
+
+Suponhamos que queiramos mostrar três colunas de uma tabela juntamente com uma coluna de outra tabela. Este seria o código:
+
+```sql
+SELECT 
+   p.codigo AS Código, 
+   p.descricao AS Descrição, 
+   p.preco AS Preço, 
+   tp.descricao AS Tipo 
+FROM 
+   produtos AS p, 
+   tipos_produto AS tp 
+WHERE 
+   p.codigo_tipo_produto = tp.codigo;
+```
+
+Lembre-se que só é possível fazer uma consulta assim se as tabelas tiverem um relacionamento entre si.
+
+### Junção de tabelas
+
+Em um banco de dados podemos ter duas ou mais tabelas relacionadas. É bastante comum ter a necessidade de trazer dados de diferentes tabelas ao fazer consultas. Para criar uma seleção assim, devemos definir certos critérios, e eles são chamados de **junções**.
+
+Uma junção de tabelas cria uma pseudo-tabela derivada de duas ou mais tabelas de acordo com as regras especificadas, que são parecidas com as regras da **Teoria dos Conjuntos**.
+
+As diferentes junções são muitas vezes formas diferentes de se fazer a mesma coisa.
+
+Para fazer as junções, precisaremos de um banco de dados e algumas tabelas. O seguinte código irá criar o banco de dados e as tabelas que precisaremos:
+
+```sql
+-- Criando o banco de dados
+CREATE DATABASE juncao;
+
+-- Indicando qual banco de dados vamos utilizar para criar as tabelas
+USE juncao;
+
+-- Criando a primeira tabela
+CREATE TABLE profissoes(
+   id INT NOT NULL AUTO_INCREMENT,
+   cargo VARCHAR(60) NOT NULL,
+   PRIMARY KEY (id) -- indicando a chave primária
+);
+
+-- Criando a segunda tabela
+CREATE TABLE clientes(
+   id INT NOT NULL AUTO_INCREMENT,
+   nome VARCHAR(60) NOT NULL,
+   data_nascimento DATE NOT NULL,
+   telefone VARCHAR(10) NOT NULL,
+   id_profissao INT NOT NULL,
+   PRIMARY KEY (id),
+   -- Indicando a chave estrangeira e a qual tabela ela pertence
+   FOREIGN KEY (id_profissao) REFERENCES profissoes(id)
+);
+```
+
+Agora iremos inserir alguns dados. O formato da data de nascimento é yyyy-mm-dd, em que 'y' refere-se ao mês ano, 'm' ao mês e 'd' ao dia:
+
+```sql
+INSERT INTO profissoes (cargo) VALUES ('Programador');
+INSERT INTO profissoes (cargo) VALUES ('Analista de Sistemas');
+INSERT INTO profissoes (cargo) VALUES ('Suporte');
+INSERT INTO profissoes (cargo) VALUES ('Gerente');
+
+INSERT INTO clientes (nome, data_nascimento, telefone, id_profissao) 
+VALUES  ('João Pereira', '1981-06-15', '1234-5678', 1);
+
+INSERT INTO clientes (nome, data_nascimento, telefone, id_profissao) 
+VALUES ('Ricardo da Silva', '1973-10-10', '2234-5669', 2);
+
+INSERT INTO clientes (nome, data_nascimento, telefone, id_profissao) 
+VALUES ('Felipe Oliveira', '1987-08-01', '4234-5640', 3);
+
+INSERT INTO clientes (nome, data_nascimento, telefone, id_profissao) 
+VALUES ('Mario Pirez', '1991-02-05', '5234-5621', 1);
+```
+
+#### Junção de produto cartesiano
+
+Uma junção de produto cartesiano é uma junção entre duas tabelas que origina uma terceira tabela constituída por todos os elementos da primeira combinadas com todos os elementos da segunda.
+
+Podemos escrever o seguinte código para selecionar todos os dados da tabela "profissoes" e "clientes":
+
+```sql
+SELECT * FROM profissoes, clientes;
+```
+
+Mas o seguinte código é mais adequado, pois mostra as informações de uma maneira melhor:
+
+```sql
+SELECT 
+   c.id AS ID,
+   c.nome AS Nome,
+   c.data_nascimento AS Data,
+   c.telefone AS Telefone,
+   p.cargo AS Cargo
+FROM 
+   profissoes AS p, 
+   clientes AS c
+WHERE c.id_profissao = p.id;
+```
+
+É possível fazer qualquer tipo de junção utilizando a junção por produto cartesiano, entretanto, em entrevistas de emprego ou exercícios de cursos talvez seja requerido que você utilize o `JOIN` para fazer as junções.
+
+#### Junção interna (inner join)
+
+Uma junção interna é caracterizada por uma consulta que retorna apenas os dados que atendem às condições de junção, isto é, quais linhas de uma tabela se relacionam com as linhas de outras tabelas. Para isso, utilizamos a cláusula `ON`, que é semelhante à cláusula `WHERE`. Sempre que utilizamos o `JOIN`, usamos o `ON` para detalhar a condição.
+
+No código abaixo, teremos o mesmo resultado da consulta do exemplo anterior:
+
+```sql
+SELECT 
+   c.id AS ID,
+   c.nome AS Nome,
+   c.data_nascimento AS Data,
+   c.telefone AS Telefone,
+   p.cargo AS Cargo
+FROM 
+   clientes AS c
+INNER JOIN
+   profissoes AS p
+ON c.id_profissao = p.id;
+```
+
+#### Junção externa (outer join)
+
+Uma junção externa é uma consulta que não requer que os registros de uma tabela possuam registros equivalentes em outra. Quando não há correspondência de um valor, ele é apresentado como NULL.
+
+##### Junção externa a esquerda (left outer join)
+
+O resultado desta consulta sempre contém todos os registros da tabela a esquerda (a primeira tabela mencionada na consulta), mesmo quando não exista registros correspondentes na tabela a direita. Se não houver valores correspondentes na tabela a direita, o valor apresentado será NULL.
+
+```sql
+SELECT * FROM clientes
+LEFT OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id;
+```
+
+##### Junção externa a direita (right outer join)
+
+Esta consulta é inversa à anterior, e retorna sempre todos os registros da tabela a direita (a segunda tabela mencionada na consulta).
+
+```sql
+SELECT * FROM clientes
+RIGHT OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id;
+```
+
+##### Junção externa completa (full outer join)
+
+Esta consulta faz referência aos dois lados. Ela apresenta todos os dados das tabelas a esquerda e a direita. Ela apresentará valores nulos para registros sem correspondência. Esta junção não funciona no MySQL, mas pode ser simulada utilizando um `LEFT JOIN` e um `RIGHT JOIN`.
+
+```sql
+SELECT * FROM clientes
+FULL OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id;
+```
+
+Esta é versão do `FULL OUTER JOIN` para o MySQL:
+
+```sql
+SELECT * FROM clientes
+LEFT OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id
+UNION -- Unindo as duas tabelas
+SELECT * FROM clientes
+RIGHT OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id;
+```
+
+##### Junção cruzada (cross join)
+
+Esta consulta é usada quando queremos juntar duas ou mais tabelas por cruzamento. Ou seja, queremos todos os dados de uma tabela para cada linha de outra tabela, ou vice-versa.
+
+```sql
+SELECT 
+   c.id AS ID,
+   c.nome AS Nome,
+   c.data_nascimento AS Data,
+   c.telefone AS Telefone,
+   p.cargo AS Cargo
+FROM 
+   clientes AS c
+CROSS JOIN
+   profissoes AS p;
+```
+
+Assim temos uma linha com cada profissão para cada cliente.
+
+##### Auto junção (self join)
+
+Esta consulta é uma junção de uma tabela a si mesma. Vamos criar e popular uma tabela para servir como exemplo:
+
+```sql
+CREATE TABLE consumidor(
+   id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   nome VARCHAR(50) NOT NULL,
+   contato VARCHAR(50) NOT NULL,
+   endereco VARCHAR(50) NOT NULL,
+   cidade VARCHAR(100) NOT NULL,
+   cep VARCHAR(20) NOT NULL,
+   pais VARCHAR(50) NOT NULL
+);
+
+INSERT INTO consumidor (nome, contato, endereco, cidade, cep, pais) 
+VALUES (
+   'Alfredo Nunes', 
+   'Maria Nunes', 
+   'Rua da paz, 47', 
+   'São Paulo', 
+   '123.456-78', 
+   'Brasil'
+);
+INSERT INTO consumidor (nome, contato, endereco, cidade, cep, pais) 
+VALUES (
+   'Ana Trujillo', 
+   'Guilherme Souza', 
+   'Rua Dourada, 452', 
+   'Goiânia', 
+   '123.456-79', 
+   'Brasil'
+);
+INSERT INTO consumidor (nome, contato, endereco, cidade, cep, pais) 
+VALUES (
+   'Leandro Veloz', 
+   'Pedro Siqueira', 
+   'Rua vazia, 72', 
+   'São Paulo', 
+   '123.456-70', 
+   'Brasil'
+);
+```
+
+
