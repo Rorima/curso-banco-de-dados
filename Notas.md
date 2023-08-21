@@ -800,7 +800,7 @@ RIGHT OUTER JOIN profissoes
 ON clientes.id_profissao = profissoes.id;
 ```
 
-##### Junção cruzada (cross join)
+#### Junção cruzada (cross join)
 
 Esta consulta é usada quando queremos juntar duas ou mais tabelas por cruzamento. Ou seja, queremos todos os dados de uma tabela para cada linha de outra tabela, ou vice-versa.
 
@@ -819,7 +819,7 @@ CROSS JOIN
 
 Assim temos uma linha com cada profissão para cada cliente.
 
-##### Auto junção (self join)
+#### Auto junção (self join)
 
 Esta consulta é uma junção de uma tabela a si mesma. Vamos criar e popular uma tabela para servir como exemplo:
 
@@ -863,4 +863,192 @@ VALUES (
 );
 ```
 
+Agora a auto junção:
+
+```sql
+SELECT 
+   a.nome AS Consumidor1,
+   b.nome AS Consumidor2,
+   a.cidade
+FROM consumidor AS a
+INNER JOIN consumidor AS b
+ON a.id <> b.id
+AND a.cidade = b.cidade;
+```
+
+No exemplo acima, estamos realizando uma auto junção onde os ids sejam diferentes e a cidade seja igual.
+
+#### Junção baseada em comparador (equi-join)
+
+Uma junção equi-join é um tipo específico de junção baseada em comparador, que usa apenas comparações de igualdade na junção.
+
+```sql
+SELECT *
+FROM clientes
+JOIN profissoes
+ON clientes.id_profissao = profissoes.id;
+```
+
+Nesse exemplo, estamos realizando um equi-join utilizando como compardor os campos de relacionamento.
+
+#### Junção natural (natural join)
+
+Uma junção natural é um caso especial de equi-join. O resultado desta junção é uma tabela que mostra os campos comuns entre tabelas. Os campos comuns são os campos que possuem os mesmos nomes nas duas tabelas.
+
+```sql
+SELECT *
+FROM clientes
+NATURAL JOIN profissoes;
+```
+
+No caso dessas duas tabelas utilizadas, o único campo comum é o id, então ele será usado. Cada linha do id de uma tabela corresponde a lnha do id da outra tabela.
+
+### Funções de Agregação
+
+Ao desenvolver sistemas, é muito comum que uma aplicação necessite de informações resumidas, como por exemplo, obter a menor ou maior venda do dia, o maior salário de um funcionário, o mês que teve mais vendas e etc.
+
+A linguagem SQL contém diversas funções nativas para esse fim, que podem ser usadas para agregar um conjunto de valores em um único resultado através de uma consulta. 
+
+Uma função de agregação processa um conjunto de valores contidos em uma única coluna de uma tabela e retorna um único valor como resultado. Sua sintaxe é semelhante aquela utilizada em funções de programação, contudo, o parâmetro de entrada é sempre a coluna cujos valores desejamos processar. Podemos informar no comando SELECT uma ou mais funções de agregação, de acordo com a necessidade.
+
+Exemplo: 
+
+`nome-da-funcao(coluna)`
+
+Considere o seguinte código:
+
+```sql
+CREATE TABLE categorias(
+  id INT NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(60) NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE produtos(
+  id INT NOT NULL AUTO_INCREMENT,
+  descricao VARCHAR(60) NOT NULL,
+  preco_venda DECIMAL(9,2) NOT NULL,
+  preco_custo DECIMAL(9,2) NOT NULL,
+  id_categoria INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (id_categoria) REFERENCES categorias(id)
+);
+
+INSERT INTO categorias (nome) VALUES ('Material Escolar');
+INSERT INTO categorias (nome) VALUES ('Acessório Informática');
+INSERT INTO categorias (nome) VALUES ('Material Escritório');
+INSERT INTO categorias (nome) VALUES ('Game');
+
+INSERT INTO produtos (
+  descricao,
+  preco_venda,
+  preco_custo,
+  id_categoria)
+VALUES('Caderno','5.45', '2.30', 1);
+INSERT INTO produtos (
+  descricao,
+  preco_venda,
+  preco_custo,
+  id_categoria)
+VALUES('Caneta','1.20', '0.45', 1);
+INSERT INTO produtos (
+  descricao,
+  preco_venda,
+  preco_custo,
+  id_categoria)
+VALUES('Pendrive 32GB','120.54', '32.55', 2);
+INSERT INTO produtos (
+  descricao,
+  preco_venda,
+  preco_custo,
+  id_categoria)
+VALUES('Mouse','17.00', '4.30', 2);
+```
+
+#### Max
+
+Esta função analisa um conjunto de valores e retorna o maior entre eles.
+
+Exemplo:
+
+```sql
+SELECT MAX(preco_venda) FROM produtos;
+```
+
+Outro exemplo:
+
+```sql
+SELECT id_categoria, MAX(preco_venda) 
+FROM produtos
+GROUP BY id_categoria;
+```
+
+No exemplo acima, estamos buscando o maior preço de venda em todas as categorias de produtos que temos. Ao final estamos agrupando pelo id da categoria. Iremos estudar sobre agrupamento e ordenação mais a fente. Quando utilizamos uma função de agregação em uma consulta juntamente com outros campos, devemos sempre utilizar o agrupamento (GROUP BY) por algum elemento da consulta.
+
+Outro exemplo:
+
+```sql
+SELECT id_categoria, MAX(preco_venda) 
+FROM produtos
+GROUP BY id_categoria
+HAVING MAX(preco_venda) > 10;
+```
+
+No exemplo acima, estamos buscando o maior preço de venda em cada uma das categorias de produtos que temos em que o preço de venda seja maior que 3.00. Ao final, estamos agrupando pelo id da categoria. A cláusula HAVING funciona quase como um WHERE, mas é geralmente utilizada em conjunto com funções de agregação, enquanto que o WHERE é utilizado com o SELECT.
+
+#### Min
+
+Esta função analisa um conjunto de valores e retorna o menor entre eles.
+
+Exemplo:
+
+```sql
+SELECT MIN(preco_venda) FROM produtos;
+```
+
+#### Sum
+
+Esta função realisa a soma dos valores em uma única coluna e retorna esse resultado.
+
+Exemplo:
+
+```sql
+SELECT SUM(preco_venda) FROM produtos WHERE id_categoria = 1;
+```
+
+No exemplo acima, somamos todos os preços de venda dos produtos em que a categoria seja igual a 1.
+
+#### Avg
+
+Esta função calcula a média aritmética dos valores em uma única coluna.
+
+Exemplo:
+
+```sql
+SELECT AVG(preco_venda) FROM produtos;
+```
+
+No exemplo acima, estamos calculando a média aritmética dos preços de venda da tabela produtos.
+
+#### Round
+
+Esta função arredonda valores para especificar quantas casas decimais queremos apresentar.
+
+Exemplo:
+
+```sql
+SELECT ROUND(AVG(preco_venda), 2) FROM produtos;
+```
+
+#### Count
+
+Esta função retorna o total de linhas selecionadas. Podemos passar por parâmetro o nome da coluna ou um asterisco. Por padrão, quando informado o nome de uma coluna, valores do tipo NULL serão ignorados, mas quando informado um asterisco, todas as linhas serão contabilizadas.
+
+```sql
+SELECT COUNT(preco_venda) AS Quantidade 
+FROM produtos 
+WHERE id_categoria = 1;
+```
+
+No exemplo acima, estamos contando quantos produtos da categoria 1 temos cadastrados.
 
