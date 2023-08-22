@@ -1565,3 +1565,132 @@ Exemplo:
 ```sql
 SELECT DAY('2019-03-17') AS 'Dia';
 ```
+
+### Subconsultas
+
+De forma geral, grande parte das consultas realizadas em bancos de dados podem ser resolvidas de forma simples, todavia existem casos em que é necessário aumentar a complexidade dessas consultas, até mesmo para facilitar o resultado final e melhorar a leitura delas. Por isso, precisamos das subconsultas ou *subqueries*.
+
+Uma subconsulta é uma instrução *SELECT* dentro de outro *SELECT*, que retorna algumas colunas específicas que são usadas em algumas funções, como `INSERT`, `UPDATE` e `DELETE`, por exemplo.
+
+Uma subconsulta é chamada de consulta interna, enquanto que a consulta que a contém é chamada de consulta externa.
+
+Considere o seguinte código:
+
+```sql
+CREATE DATABASE subconsulta;
+
+USE subconsulta;
+
+CREATE TABLE escritorios(
+   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+   pais VARCHAR(30) NOT NULL
+);
+
+CREATE TABLE funcionarios(
+   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+   nome VARCHAR(20) NOT NULL,
+   sobrenome VARCHAR(20) NOT NULL,
+   id_escritorio INT NOT NULL,
+   FOREIGN KEY (id_escritorio) REFERENCES escritorios(id)
+);
+
+CREATE TABLE pagamentos(
+   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+   id_funcionario INT NOT NULL,
+   salario DECIMAL(9,2) NOT NULL,
+   data DATE NOT NULL,
+   FOREIGN KEY (id_funcionario) REFERENCES funcionarios(id)
+);
+
+INSERT INTO escritorios (pais) VALUES ('Brasil');
+INSERT INTO escritorios (pais) VALUES ('Estados Unidos');
+INSERT INTO escritorios (pais) VALUES ('Alemanha');
+INSERT INTO escritorios (pais) VALUES ('França');
+
+INSERT INTO funcionarios (nome, sobrenome, id_escritorio) 
+VALUES ('Pedro', 'Souza', 1);
+INSERT INTO funcionarios (nome, sobrenome, id_escritorio) 
+VALUES ('Sandra', 'Rubin', 2);
+INSERT INTO funcionarios (nome, sobrenome, id_escritorio) 
+VALUES ('Mikail', 'Schumer', 3);
+INSERT INTO funcionarios (nome, sobrenome, id_escritorio) 
+VALUES ('Olivier', 'Gloçan', 4);
+
+INSERT INTO pagamentos (id_funcionario, salario, data)
+VALUES(1, '5347.55', '2019-03-17');
+INSERT INTO pagamentos (id_funcionario, salario, data)
+VALUES(2, '9458.46', '2019-03-17');
+INSERT INTO pagamentos (id_funcionario, salario, data)
+VALUES(3, '4669.97', '2019-03-17');
+INSERT INTO pagamentos (id_funcionario, salario, data)
+VALUES(4, '2770.32', '2019-03-17');
+```
+
+#### Realizando uma subconsulta
+
+Quando uma consulta é executada, sua subconsulta é executada primeiro, e retorna um conjunto de resultados. Em seguida, esse conjunto de resultados é usado como uma entrada da consulta externa.
+
+```sql
+SELECT nome, sobrenome
+FROM funcionarios
+WHERE id_escritorio IN (
+   SELECT id 
+   FROM escritorios 
+   WHERE pais = 'Brasil'
+);
+```
+
+No exemplo acima, estamos selecionando os campos "nome" e "sobrenome" da tabela de funcionário em que o id do escritório esteja dentro do resultado da subconsulta.
+
+Também é possível obter o mesmo resultado utilizando uma consulta comum. Veja o código abaixo:
+
+```sql
+SELECT nome, sobrenome
+FROM funcionarios, escritorios AS e
+WHERE id_escritorio = e.id AND e.pais= 'Brasil';
+```
+
+Outro exemplo:
+
+```sql
+SELECT 
+   f.nome, 
+   f.sobrenome, 
+   e.pais, 
+   p.salario
+FROM 
+   pagamentos AS p, 
+   funcionarios AS f, 
+   escritorios AS e
+WHERE 
+   f.id_escritorio = e.id
+   AND f.id = p.id_funcionario
+   AND salario = (
+      SELECT MAX(salario) FROM pagamentos
+   );
+```
+
+No exemplo acima, estamos efetuando uma junção de tabela por produto cartesiano, utilizando uma função agregada e uma subconsulta para ver quem tem o maior salário na empresa.
+
+Outro exemplo:
+
+```sql
+SELECT 
+   f.nome,
+   f.sobrenome,
+   e.pais,
+   p.salario
+FROM 
+   pagamentos AS p,
+   funcionarios AS f,
+   escritorios AS e
+WHERE
+   f.id_escritorio = e.id
+   AND f.id = p.id_funcionario
+   AND salario < (
+      SELECT AVG(salario) FROM pagamentos
+   );
+```
+
+O exemplo acima se parece bastante com o exemplo anterior. A diferença é que estamos vendo quem ganha menos que a média.
+
