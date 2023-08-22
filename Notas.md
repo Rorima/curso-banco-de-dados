@@ -1275,3 +1275,293 @@ ORDER BY
 ```
 
 Aqui ordenamos de forma descendente pela quantidade de produtos.
+
+### Funções de data e hora
+
+No comando `SELECT` há diversas funções que foram embutidas para facilitar o manuseio de alguns tipos de dados em determinadas condições. Essas funções são particularmente úteis a programadores de aplicativos, uma vez que conseguirão obter diretamente do banco de dados o tratamento a formatos ou resultados que dependeriam de algum algoritmo, sem ter que escrever código na linguagem fonte do aplicativo para tais recursos. Esses comandos podem ser utilizados em uma base de dados, mas não são dependentes de bases de dados. A seguir iremos conhecer as funções de data e hora.
+
+#### CURDATE
+
+Esta função retorna a data atual no formato yyyy-mm-dd. `CURDATE` significa *current date*, que em português significa "data atual".
+
+Exemplo:
+
+```sql
+SELECT CURDATE() AS 'Data Atual';
+```
+
+#### CURTIME
+
+Esta função funciona como a função anterior. A diferença é que ela mostra a hora atual ao invés de mostrar a data. Ela retorna a hora atual no formato hh:mm:ss.
+
+Exemplo:
+
+```sql
+SELECT CURTIME() AS 'Tempo Atual';
+```
+
+Há uma função que faz a mesma coisa que essa, e o nome dela é `CURRENT_TIME()`
+
+#### DATE_ADD
+
+Esta função adiciona um intervalo à data. O intervalo pode ser uma data seguida de um horário. O intervalo pode ser em dias, dias e horas e minutos, dias e segundos, minutos e segundos e etc.
+
+A sintaxe é: `DATE_ADD(data, intervalo)`
+
+Exemplo:
+
+```sql
+SELECT DATE_ADD(CURDATE(), INTERVAL 3 DAY) AS 'Data de Vencimento';
+```
+
+No exemplo acima, estamos adicionando 3 dias na data atual.
+
+#### DATE_SUB
+
+Esta função funciona como a função anterior. A diferença é que ela subtrai da data ao invés de adicionar.
+
+Exemplo:
+
+```sql
+SELECT DATE_SUB(CURDATE(), INTERVAL 10 MINUTE) AS 'Data de Vencimento';
+```
+
+#### DATEDIFF
+
+Esta função retorna o valor da diferença entre duas datas, podendo ambos ser data ou data e horário. 
+
+Esta é a sintaxe: `DATEDIFF(expressão1, expressão2)`
+
+Exemplo:
+
+```sql
+SELECT DATEDIFF(CURDATE(), DATE_SUB(CURDATE(), INTERVAL 10 DAY)) AS 'Dias em Atraso';
+```
+
+No exemplo acima, estamos calculando o atraso em dias de uma data 10 dias no passado para a data atual.
+
+#### DATE_FORMAT
+
+Esta função retorna a data no formato especificado.
+
+Esta é a sintaxe: `DATE_FORMAT(data, formato)`
+
+Exemplo:
+
+```sql
+SELECT DATE_FORMAT(CURDATE(), '%d/%m/%Y') AS 'Data Formatada';
+```
+
+No exemplo acima estamos formatando a data para dd/mm/yyyy.
+
+#### DAYNAME
+
+Esta função retorna o dia da semana para uma data.
+
+Exemplo:
+
+```sql
+SELECT DAYNAME(CURDATE()) AS 'Dia da Semana';
+```
+
+Para mostrar o dia da semana em português, basta colocar uma instrução antes do `SELECT`:
+
+```sql
+SET lc_time_names = 'pt_BR';
+SELECT DAYNAME(CURDATE()) AS 'Dia da Semana';
+```
+
+#### DAYOFMONTH
+
+Esta função mostra o dia do mês para uma data.
+
+Exemplo:
+
+```sql
+SELECT DAYOFMONTH(CURDATE()) AS 'Dia do Mês';
+```
+
+#### DAYOFWEEK
+
+Esta função mostra o dia da semana para uma data. Domingo é 1, segunda-feira é 2, etc.
+
+Exemplo:
+
+```sql
+SELECT DAYOFWEEK(CURDATE()) AS 'Dia da Semana';
+```
+
+#### DAYOFYEAR
+
+Esta função mostra o dia do ano para uma data. Um ano tem 365 dias.
+
+Exemplo:
+
+```sql
+SELECT DAYOFYEAR(CURDATE()) AS 'Dia do Ano';
+```
+
+#### FROM_DAYS
+
+Esta função mostra a data real referente a um número 'n' em dias.
+
+Sintaxe: `FROM_DAYS(numero_de_dias)`
+
+Exemplo:
+
+```sql
+SELECT FROM_DAYS(780500) AS 'Data Real';
+```
+
+No comando acima, estamos transformando a numeração informada em dias para uma data referente a esta numeração. Essa função funciona somente com o calendário gregoriano. O ano de partida é o ano 0, então estamos calculando 780.500 dias após o ano 0, que dá a data real de 08/12/2136.
+
+#### NOW
+
+Esta função retorna a data e hora atuais.
+
+Exemplo:
+
+```sql
+SELECT NOW() AS 'Data/Hora Atual';
+```
+
+Neste próximo exemplo iremos usar a formatação brasileira:
+
+```sql
+SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %h:%m:%s') AS 'Data/Hora Atual';
+```
+
+Existe outra função que faz o mesmo que a função `NOW()`, e ela é a `CURRENT_TIMESTAMP()`.
+
+#### TIME
+
+Esta função extrai somente a hora de um tempo.
+
+Exemplo:
+
+```sql
+SELECT TIME(CURRENT_TIMESTAMP()) AS 'Hora';
+```
+
+#### SEC_TO_TIME
+
+Esta função retorna um valor convertido em horas, minutos e segundos.
+
+A sintaxe é: `SEC_TO_TIME(segundos)`
+
+Exemplo:
+
+```sql
+SELECT SEC_TO_TIME(2000) AS 'Tempo Total';
+```
+
+No exemplo acima, estamos convertendo 2000 segundos para um tempo em horas, minutos e segundos.
+
+#### TIME_TO_SEC
+
+Esta função é o oposto da função anterior.
+
+Exemplo:
+
+```sql
+SELECT TIME_TO_SEC(NOW()) AS 'Tempo Total';
+```
+
+#### HOUR, MINUTE, SECOND
+
+Estas funções extraem a hora, o minuto e o segundo de um tempo, respectivamente.
+
+Exemplo:
+
+```sql
+SELECT 
+   HOUR(NOW()) AS Hora,
+   MINUTE(NOW()) AS Minuto,
+   SECOND(Now()) AS Segundo;
+```
+
+#### PERIOD_DIFF
+
+Retorna o número de meses entre dois períodos, que devem estar no formato yymm ou yyyymm.
+
+Sintaxe: `PERIOD_DIFF(periodo1, periodo2)`
+
+Exemplo:
+
+```sql
+SELECT PERIOD_DIFF(202312, 202308) AS 'Meses Restantes';
+```
+
+No comando acima, estamos calculando a diferença em meses entre 12/2023 e 08/2023.
+
+#### TIME_DIFF
+
+Esta função funciona como a função anterior, mas ela calcula a diferença entre horas.
+
+Exemplo:
+
+```sql
+SELECT TIME_DIFF('12:35:34', '12:30:46') AS 'Diferença';
+```
+
+#### QUARTER
+
+Esta função mostra o trimestre do ano para uma data.
+
+Exemplo:
+
+```sql
+SELECT QUARTER('2019-03-17') AS 'Trimestre do Ano';
+```
+
+#### WEEK
+
+Esta função mostra a semana do ano para uma data.
+
+Exemplo:
+
+```sql
+SELECT WEEK('2019-03-17') AS 'Semana do Ano';
+```
+
+#### WEEKDAY
+
+Esta função mostra o dia da semana que inicia com segunda-feira para uma data.
+
+Exemplo:
+
+```sql
+SELECT WEEKDAY('2019-03-17') AS 'Dia da Semana';
+```
+
+No comando acima, temos o número do dia da semana para a data informada.
+
+#### YEAR
+
+Esta função mostra o ano de uma data.
+
+Exemplo:
+
+```sql
+SELECT YEAR('2019-03-17') AS 'Ano';
+```
+
+#### MONTH
+
+Esta função mostra o mês de uma data.
+
+Exemplo:
+
+```sql
+SELECT MONTH('2019-03-17') AS 'Mês';
+```
+
+#### DAY
+
+Esta função mostra o dia de uma data.
+
+Exemplo:
+
+```sql
+SELECT DAY('2019-03-17') AS 'Dia';
+```
