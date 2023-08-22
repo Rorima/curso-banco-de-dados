@@ -686,7 +686,7 @@ CREATE TABLE clientes(
 );
 ```
 
-Agora iremos inserir alguns dados. O formato da data de nascimento é yyyy-mm-dd, em que 'y' refere-se ao mês ano, 'm' ao mês e 'd' ao dia:
+Agora iremos inserir alguns dados. O formato da data de nascimento é yyyy-mm-dd, em que 'y' refere-se ao ano, 'm' ao mês e 'd' ao dia:
 
 ```sql
 INSERT INTO profissoes (cargo) VALUES ('Programador');
@@ -901,7 +901,7 @@ FROM clientes
 NATURAL JOIN profissoes;
 ```
 
-No caso dessas duas tabelas utilizadas, o único campo comum é o id, então ele será usado. Cada linha do id de uma tabela corresponde a lnha do id da outra tabela.
+No caso dessas duas tabelas utilizadas, o único campo comum é o id, então ele será usado. Cada linha do id de uma tabela corresponde a linha do id da outra tabela.
 
 ### Funções de Agregação
 
@@ -915,7 +915,7 @@ Exemplo:
 
 `nome-da-funcao(coluna)`
 
-Considere o seguinte código:
+Considere o seguinte código e a explicação das funções logo abaixo:
 
 ```sql
 CREATE TABLE categorias(
@@ -994,7 +994,7 @@ GROUP BY id_categoria
 HAVING MAX(preco_venda) > 10;
 ```
 
-No exemplo acima, estamos buscando o maior preço de venda em cada uma das categorias de produtos que temos em que o preço de venda seja maior que 3.00. Ao final, estamos agrupando pelo id da categoria. A cláusula HAVING funciona quase como um WHERE, mas é geralmente utilizada em conjunto com funções de agregação, enquanto que o WHERE é utilizado com o SELECT.
+No exemplo acima, estamos buscando o maior preço de venda em cada uma das categorias de produtos que temos em que o preço de venda seja maior que 10.00. Ao final, estamos agrupando pelo id da categoria. A cláusula HAVING funciona quase como um WHERE, mas é geralmente utilizada em conjunto com funções de agregação, enquanto que o WHERE é utilizado com o SELECT.
 
 #### Min
 
@@ -1008,7 +1008,7 @@ SELECT MIN(preco_venda) FROM produtos;
 
 #### Sum
 
-Esta função realisa a soma dos valores em uma única coluna e retorna esse resultado.
+Esta função realiza a soma dos valores em uma única coluna e retorna esse resultado.
 
 Exemplo:
 
@@ -1040,6 +1040,8 @@ Exemplo:
 SELECT ROUND(AVG(preco_venda), 2) FROM produtos;
 ```
 
+Estamos apresentando duas casas decimais após a vírgula.
+
 #### Count
 
 Esta função retorna o total de linhas selecionadas. Podemos passar por parâmetro o nome da coluna ou um asterisco. Por padrão, quando informado o nome de uma coluna, valores do tipo NULL serão ignorados, mas quando informado um asterisco, todas as linhas serão contabilizadas.
@@ -1052,3 +1054,224 @@ WHERE id_categoria = 1;
 
 No exemplo acima, estamos contando quantos produtos da categoria 1 temos cadastrados.
 
+### Agrupamento e Ordenação
+
+Considere o seguinte código:
+
+```sql
+CREATE DATABASE agrupamento;
+
+USE agrupamento;
+
+CREATE TABLE  tipos(
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(60) NOT NULL
+);
+
+CREATE TABLE fabricantes(
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(60) NOT NULL
+);
+
+CREATE TABLE produtos(
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(60) NOT NULL,
+  id_fabricante INT NOT NULL,
+  quantidade INT NOT NULL,
+  id_tipo INT NOT NULL,
+  FOREIGN KEY (id_fabricante) REFERENCES fabricantes(id),
+  FOREIGN KEY (id_tipo) REFERENCES tipos(id)
+);
+```
+
+Agora popularemos as tabelas:
+
+```sql
+INSERT INTO tipos (nome) VALUES ('Console');
+INSERT INTO tipos (nome) VALUES ('Notebook');
+INSERT INTO tipos (nome) VALUES ('Celular');
+INSERT INTO tipos (nome) VALUES ('Smartphone');
+INSERT INTO tipos (nome) VALUES ('Sofá');
+INSERT INTO tipos (nome) VALUES ('Armário');
+INSERT INTO tipos (nome) VALUES ('Refrigerador');
+
+INSERT INTO fabricantes (nome) VALUES ('Sony');
+INSERT INTO fabricantes (nome) VALUES ('Dell');
+INSERT INTO fabricantes (nome) VALUES ('Microsoft');
+INSERT INTO fabricantes (nome) VALUES ('Samsung');
+INSERT INTO fabricantes (nome) VALUES ('Apple');
+INSERT INTO fabricantes (nome) VALUES ('Beline');
+INSERT INTO fabricantes (nome) VALUES ('Magno');
+INSERT INTO fabricantes (nome) VALUES ('CCE');
+INSERT INTO fabricantes (nome) VALUES ('Nintendo');
+
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo)
+VALUES ('Playstation 3', 1, 100, 1);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo)
+VALUES ('Core 2 Duo 4GB Ram 500GB HD', 2, 200, 2);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo)
+VALUES ('Xbox 360 120GB', 3, 350, 1);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo)
+VALUES ('GT-I6220 Quad band', 4, 300, 3);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo)
+VALUES ('iPhone 4 32GB', 5, 50, 4);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo)
+VALUES ('Playstation 2', 1, 100, 1);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo)
+VALUES ('Sofá Estofado', 6, 200, 5);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo)
+VALUES ('Armário de Serviço', 7, 50, 6);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo)
+VALUES ('Refrigerador 420L', 8, 200, 7);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo)
+VALUES ('Wii 120GB', 8, 250, 1);
+```
+
+#### GROUP BY
+
+Utilizamos esta cláusula para agrupar elementos do mesmo tipo.
+
+Exemplo:
+
+```sql
+SELECT 
+   t.nome AS Tipo, 
+   SUM(p.quantidade) AS 'Quantidade em Estoque'
+FROM 
+   tipos AS t, 
+   produtos AS p
+WHERE t.id = p.id_tipo
+GROUP BY t.nome;
+```
+
+No exemplo acima, estamos solicitando a quantidade de produtos em estoque, agrupados pelo tipo. Utilizamos a função de agregação `SUM()` para efetuar a soma de cada tipo de produto.
+
+Outro exemplo:
+
+```sql
+SELECT 
+   f.nome AS Fabricante, 
+   SUM(p.quantidade) AS 'Quantidade em Estoque'
+FROM 
+   fabricantes AS f, 
+   produtos AS p
+WHERE f.id = p.id_fabricante
+GROUP BY f.nome;
+```
+
+No exemplo acima estamos ordenando a tabela pelo nome do fabricante.
+
+Outro exemplo:
+
+```sql
+SELECT
+   t.nome AS Tipo,
+   f.nome AS Fabricante,
+   SUM(p.quantidade) AS 'Quantidade em Estoque'
+FROM 
+   tipos AS t,
+   fabricantes AS f,
+   produtos AS p
+WHERE
+   t.id = p.id_tipo
+   AND
+   f.id = p.id_fabricante
+GROUP BY t.nome, f.nome;
+```
+
+No exemplo acima, estamos solicitando a quantidade de produtos em estoque de acordo com os tipos e fabricantes.
+
+Outro exemplo:
+
+```sql
+SELECT
+   t.nome AS Tipo,
+   f.nome AS Fabricante,
+   SUM(p.quantidade) AS 'Quantidade em Estoque'
+FROM 
+   tipos AS t,
+   fabricantes AS f,
+   produtos AS p
+WHERE
+   t.id = p.id_tipo
+   AND 
+   f.id = p.id_fabricante
+GROUP BY
+   t.nome,
+   f.nome
+HAVING SUM(p.quantidade) > 200;
+```
+No exemplo acima, estamos solicitando a quantidade de produtos em estoquede acordo com os tipos e fabricantes em que a quantidade seja maior que 200 itens em estoque.
+
+Outro exemplo:
+
+```sql
+SELECT
+   t.nome AS Tipo
+FROM 
+   produtos AS p, 
+   tipos AS t
+WHERE
+   t.id = p.id_tipo
+GROUP BY
+   t.nome;
+```
+
+No exemplo acima estamos mostrando todos os tipos de produtos sem repetir o nome deles. Se não utilizássemos o `GROUP BY`, teríamos vários valores repetidos.
+
+#### ORDER BY
+
+Utilizamos esta cláusula para ordenar os dados em ordem alfabética ou numérica. A ordenação pode ser `ASC` (ascendente) ou `DESC` (descendente). Por padrão, a ordenação é ascendente, ou seja, do menor para o maior.
+
+Se quisermos realizar a ordenação padrão trazendo todos os campos, podemos utilizar o asterisco, mas se quisermos ordenar por um campo específico ou mesmo mudar a forma de ordenação, devemos informar os campos.
+
+Exemplo:
+
+```sql
+SELECT
+   id,
+   nome,
+   id_tipo,
+   id_fabricante,
+   quantidade
+FROM
+   produtos
+ORDER BY
+   id ASC;
+```
+
+No exemplo acima, a tabela é ordenada pelo id de forma ascendente. Um `SELECT` normal, sem o `ORDER BY`, produziria o mesmo resultado, pois por padrão a ordenação é feita pelo id de forma ascendente.
+
+Outro exemplo:
+
+```sql
+SELECT
+   id,
+   nome,
+   id_tipo,
+   id_fabricante,
+   quantidade
+FROM
+   produtos
+ORDER BY
+   id DESC;
+```
+
+No exemplo acima, ordenamos a tabela pelo campo id de maneira descendente.
+
+Outro exemplo:
+
+```sql
+SELECT
+   id,
+   nome,
+   id_tipo,
+   id_fabricante,
+   quantidade
+FROM
+   produtos
+ORDER BY
+   quantidade DESC;
+```
+
+Aqui ordenamos de forma descendente pela quantidade de produtos.
