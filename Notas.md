@@ -983,7 +983,7 @@ FROM produtos
 GROUP BY id_categoria;
 ```
 
-No exemplo acima, estamos buscando o maior preço de venda em todas as categorias de produtos que temos. Ao final estamos agrupando pelo id da categoria. Iremos estudar sobre agrupamento e ordenação mais a fente. Quando utilizamos uma função de agregação em uma consulta juntamente com outros campos, devemos sempre utilizar o agrupamento (GROUP BY) por algum elemento da consulta.
+No exemplo acima, estamos buscando o maior preço de venda em todas as categorias de produtos que temos. Ao final estamos agrupando pelo id da categoria. Iremos estudar sobre agrupamento e ordenação mais a fente. Quando utilizamos uma função de agregação em uma consulta juntamente com outros campos, devemos sempre utilizar o agrupamento (`GROUP BY`) por algum elemento da consulta.
 
 Outro exemplo:
 
@@ -994,7 +994,7 @@ GROUP BY id_categoria
 HAVING MAX(preco_venda) > 10;
 ```
 
-No exemplo acima, estamos buscando o maior preço de venda em cada uma das categorias de produtos que temos em que o preço de venda seja maior que 10.00. Ao final, estamos agrupando pelo id da categoria. A cláusula HAVING funciona quase como um WHERE, mas é geralmente utilizada em conjunto com funções de agregação, enquanto que o WHERE é utilizado com o SELECT.
+No exemplo acima, estamos buscando o maior preço de venda em cada uma das categorias de produtos que temos em que o preço de venda seja maior que 10.00. Ao final, estamos agrupando pelo id da categoria. A cláusula `HAVING` funciona quase como um `WHERE`, mas é geralmente utilizada em conjunto com funções de agregação, enquanto que o `WHERE` é utilizado com o `SELECT`.
 
 #### Min
 
@@ -1570,7 +1570,7 @@ SELECT DAY('2019-03-17') AS 'Dia';
 
 De forma geral, grande parte das consultas realizadas em bancos de dados podem ser resolvidas de forma simples, todavia existem casos em que é necessário aumentar a complexidade dessas consultas, até mesmo para facilitar o resultado final e melhorar a leitura delas. Por isso, precisamos das subconsultas ou *subqueries*.
 
-Uma subconsulta é uma instrução *SELECT* dentro de outro *SELECT*, que retorna algumas colunas específicas que são usadas em algumas funções, como `INSERT`, `UPDATE` e `DELETE`, por exemplo.
+Uma subconsulta é uma instrução `SELECT` dentro de outro `SELECT`, que retorna algumas colunas específicas que são usadas em algumas funções, como `INSERT`, `UPDATE` e `DELETE`, por exemplo.
 
 Uma subconsulta é chamada de consulta interna, enquanto que a consulta que a contém é chamada de consulta externa.
 
@@ -1674,6 +1674,24 @@ No exemplo acima, estamos efetuando uma junção de tabela por produto cartesian
 
 Outro exemplo:
 
+``` sql
+SELECT nome
+FROM funcionarios AS f, pagamentos AS p
+WHERE f.id = p.id_funcionario AND p.salario > '5000';
+
+SELECT nome
+FROM funcionarios
+WHERE funcionarios.id IN (
+  SELECT id_funcionario
+  FROM pagamentos
+  WHERE salario > '5000'
+);
+```
+
+No exemplo acima estamos consultando quem ganha mais de 5 mil.
+
+Outro exemplo:
+
 ```sql
 SELECT 
    f.nome,
@@ -1693,4 +1711,14 @@ WHERE
 ```
 
 O exemplo acima se parece bastante com o exemplo anterior. A diferença é que estamos vendo quem ganha menos que a média.
+
+## Introdução ao MySQL
+
+O servidor de banco de dados MySQL (SGBD) foi lançado pela empresa MySQL AB em 23 de maio de 1995. Nesse tempo, a Internet estava dando seus primeiros passos ao público em geral, e esse banco de dados, junto com a linguagem PHP, praticamente nasceram juntos e dominaram a Internet por muito tempo.
+
+A empresa MySQL AB lançou o banco de dados MySQL como um *software* *open-source* desde seu início. Isso significa que o código fonte, desenvolvido em C e C++, estava disponível para qualquer pessoa ler, modificar e ajudar a melhorar o sistema.
+
+Em janeiro de 2008, a empresa Sun Microsystems comprou a MySQL AB por U$ 1 bilhão. Em abril de 2009, a empresa Oracle comprou a Sun Microsystems por U$ 7.4 bilhões. Por conta dessas compras, a comunidade do MySQL aproveitou que seu código era open-source e criou um *fork* (ou bifurcação) do projeto chamando-o de MariaDB, que pretende manter o máximo de compatibilidade possível com o MySQL, mas adicionando suas próprias melhorias. Sendo assim, hoje podemos utilizar tanto o MySQL, oferecido hoje pela Oracle, ou o MariaDB, que tem o suporte da comunidade.
+
+O servidor MySQL é utilizado por empresas do mundo inteiro, incluindo: Google, Facebook, Twitter, Flickr e YouTube.
 
