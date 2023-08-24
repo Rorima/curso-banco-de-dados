@@ -1722,3 +1722,195 @@ Em janeiro de 2008, a empresa Sun Microsystems comprou a MySQL AB por U$ 1 bilh�
 
 O servidor MySQL é utilizado por empresas do mundo inteiro, incluindo: Google, Facebook, Twitter, Flickr e YouTube.
 
+### Console do MySQL
+
+Quando instalado, o MySQL Server não apresenta nenhuma interface gráfica para o usuário, sendo assim, é necessário que o usuário utilize o console.
+
+Para iniciar o console MySQL, abra o terminal e digite:
+
+`mysql -u root -p`
+
+Logo após digitar isso, você vai precisar usar a senha do usuário root que você cadastrou durante a instalação. O singificado desse comando é:
+
+* `mysql`: acesse o MySQL;
+* `-u`: Indica o usuário;
+* `root`: Esse é o nome de usuário;
+* `-p`: Indica a senha (password).
+
+Logo após dar ENTER, você poderá digitar sua senha. Você não pode digitar a senha logo na frente do `-p` porque daria pra ver qual é a senha. Quando você dá ENTER, o console te deixa digitar a senha trocando os seus caracteres por asteriscos, assim não dá pra ver qual é a senha.
+
+#### Criando usuários
+
+Não é recomendado utilizar o servidor de banco de dados com o usuário administrador. O ideal é criar um ou mais usuários com poderes reduzidos para cada novo projeto que criamos.
+
+Para criar um usuário digite o seguinte comando:
+
+```sql
+CREATE USER 'nome'@'localhost' IDENTIFIED BY 'senha';
+```
+
+Substitua `'nome'` e `'senha'` pelo nome de usuário e senha desejados.
+
+O `'@localhost'` significa que o usuário está sendo criado na máquina local.
+
+Depois disso, dê privilégios de ação ao novo usuário:
+
+```sql
+GRANT ALL PRIVILEGES ON base_de_dados.* TO 'nome'@'localhost' WITH GRANT OPTION;
+```
+
+Troque `base_de_dados` pelo nome da base na qual você deseja dar privilégios ao usuário. Você pode usar o asterisco nesse mesmo lugar para se referir a todas as bases de dados.
+
+Por fim, use o `FLUSH PRIVILEGES` para que as mudanças sejam efetivadas. Esse comando é usado para recarregar os privilégios da tabela de privilégios do MySQL.
+
+```sql
+FLUSH PRIVILEGES;
+```
+
+Agora para logar com o usuário que você acabou de criar você pode utilizar o mesmo comando que utiliza para logar com o administrador. Primeiramente é necessário que você saia do console escrevendo o comando `EXIT;`, e então entre com o novo usuário:
+
+`mysql -u nome -p`
+
+`nome` é deve ser substituído pelo nome que você escolheu para o seu usuário.
+
+E então digite sua senha.
+
+#### Comandos úteis
+
+Você pode verificar os bancos de dados existentes pelo seguinte comando:
+
+```sql
+SHOW DATABASES;
+```
+
+Inicialmente, aparecerá quatro bancos de dados, que são os bancos de dados que são instalados por padrão quando você instala o servidor MySQL. Eles são necessários para o servidor de dados.
+
+**Escolhendo um banco de dados**
+
+Podemos usar um banco de dados utilizando o seguinte comando 
+
+```sql
+USE nome_banco;
+```
+
+`nome_banco` deve ser substituído pelo nome do banco de dados.
+
+**Mostrando as tabelas**
+
+Podemos ver todas as tabelas de um banco de dados usando o seguinte comando 
+
+```sql
+SHOW TABLES;
+```
+
+### Códigos SQL
+
+Primeiramente precisamos criar o banco de dados, as tabelas e então populá-las. Aqui está o código para fazer isso:
+
+```sql
+CREATE DATABASE secao04;
+
+USE secao04;
+
+CREATE TABLE  tipos_produto(
+	codigo INT NOT NULL AUTO_INCREMENT,
+    descricao VARCHAR(30) NOT NULL,
+    PRIMARY KEY (codigo)
+);
+
+CREATE TABLE produtos(
+	codigo INT NOT NULL AUTO_INCREMENT,
+    descricao VARCHAR(30) NOT NULL,
+    preco DECIMAL(9, 2) NOT NULL,
+    codigo_tipo INT NOT NULL,
+    PRIMARY KEY (codigo),
+    FOREIGN KEY (codigo_tipo) REFERENCES tipos_produto (codigo)
+);
+
+INSERT INTO tipos_produto (descricao) VALUES ('Computadores');
+INSERT INTO tipos_produto (descricao) VALUES ('Impressoras');
+
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Desktop', '1200', '1');
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Laptop', '1800', '1');
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Impressora Jato de Tinta', '300', '2');
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Impressora Laser', '500', '2');
+```
+
+**Prática DQL**
+
+```sql
+-- Selecionando tudo
+SELECT * FROM tipos_produto;
+
+SELECT * FROM produtos;
+
+-- Selecionando com alias
+SELECT
+	p.codigo AS cod,
+    p.descricao AS descri,
+    p.preco AS pre,
+    p.codigo_tipo AS ctp
+FROM produtos AS p;
+```
+
+**Prática DML**
+
+```sql
+-- Adicionando novos produtos
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Notebook', '1200', '1');
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Macbook Pro', '7200', '1');
+-- Adicionando um novo tipo
+INSERT INTO tipos_produto (descricao) VALUES ('Apple');
+-- Adicionando um novo produto com o novo tipo
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Macbook Air', '5200', '3');
+-- Fazendo a alteração de dados
+UPDATE produtos SET codigo_tipo = 3 WHERE codigo = 6;
+UPDATE produtos SET descricao = 'Impressora a Laser', preco = '700' WHERE codigo = 4;
+UPDATE produtos SET codigo_tipo = 2 WHERE codigo >= 6;
+DELETE FROM tipos_produto WHERE codigo = 3;
+```
+
+**Prática DDL**
+
+Primeiro criaremos um novo banco de dados e uma nova tabela:
+
+```sql
+CREATE DATABASE treino;
+USE treino;
+CREATE TABLE pessoas(
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL
+);
+```
+
+O comando `CREATE` já faz parte da DDL.
+
+Agora adicionaremos um campo a tabela:
+
+```sql
+ALTER TABLE pessoas ADD ano_nascimento INT NOT NULL;
+```
+
+Excluindo uma tabela:
+
+```
+DROP TABLE pessoas;
+```
+
+**Prática DCL**
+
+No console MySQL:
+
+```sql
+GRANT ALL PRIVILEGES ON secao04.* TO 'user'@'localhost' WITH GRANT OPTION;
+```
+
+**Prática DTL**
+
+```sql
+START TRANSACTION;
+	INSERT INTO tipos_produto (descricao) VALUES ('Acessórios');
+    INSERT INTO tipos_produto (descricao) VALUES ('Equipamentos');
+COMMIT;
+```
+
