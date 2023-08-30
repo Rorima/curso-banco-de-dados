@@ -1914,3 +1914,20 @@ START TRANSACTION;
 COMMIT;
 ```
 
+
+Se der erro no MySQL, tente ativar ele porque você botou pra ele não inciar junto com o computador.
+
+https://onecompiler.com/mysql/3zhwmzu7m
+o código tá nos downloads
+
+Curso de modelagem de dados
+https://www.youtube.com/watch?v=wdNA_hQAscY&list=PLdoTFRH60cIASgUnYlQUTqAQsUg1dlKGQ&ab_channel=ProgramarIsCool
+
+Curso de normalização
+https://www.youtube.com/watch?v=URKIELxrGSc&list=PLdoTFRH60cIB7Eqj9EmydOr_WUNzYNs6U&ab_channel=ProgramarIsCool
+
+Curso de fundamentos do SGBDR MySQL
+https://www.youtube.com/playlist?list=PLdoTFRH60cIDpkdoMp-Yv8hqNwInrJg_s
+
+Use w3 schools to learn deeper
+
