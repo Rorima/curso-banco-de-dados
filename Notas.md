@@ -2249,6 +2249,8 @@ COMMIT;
 
 ### Código SQL da seção 5
 
+**Criação e consulta**
+
 ```sql
 CREATE TABLE tipos_produto(
 	codigo SERIAL PRIMARY KEY,
@@ -2275,4 +2277,512 @@ INSERT INTO produtos (descricao, preco, codigo_tipo)
 VALUES ('Impr. Jato de Tinta', 300, 2);
 
 SELECT * FROM tipos_produto WHERE codigo = 1;
+
+SELECT * FROM produtos WHERE descricao = 'Laptop';
+
+SELECT * FROM produtos WHERE preco <= '500';
+
+SELECT
+	p.codigo AS "Código",
+	p.descricao AS "Descrição",
+	p.preco AS "Preço",
+	tp.descricao AS "Tipo Produto"
+FROM 
+	produtos AS p, 
+	tipos_produto AS tp
+WHERE 
+	p.codigo_tipo = tp.codigo;
+```
+
+**Junções**
+
+```sql
+CREATE DATABASE juncao;
+
+CREATE TABLE profissoes(
+	id SERIAL PRIMARY KEY,
+	cargo VARCHAR(60) NOT NULL
+);
+
+CREATE TABLE clientes(
+	id SERIAL PRIMARY KEY, 
+	nome VARCHAR(60) NOT NULL,
+	data_nascimento DATE NOT NULL,
+	telefone VARCHAR(10) NOT NULL,
+	id_profissao INT  REFERENCES profissoes(id) NOT NULL
+);
+
+CREATE TABLE consumidor(
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL,
+    contato VARCHAR(50) NOT NULL,
+    endereco VARCHAR(100) NOT NULL,
+    cidade VARCHAR(100) NOT NULL,
+    cep VARCHAR(20) NOT NULL,
+    pais VARCHAR(50) NOT NULL
+);
+
+INSERT INTO profissoes (cargo) VALUES ('Programador');
+INSERT INTO profissoes (cargo) VALUES ('Analista de Sistemas');
+INSERT INTO profissoes (cargo) VALUES ('Suporte');
+INSERT INTO profissoes (cargo) VALUES ('Gerente');
+
+INSERT INTO clientes (nome, data_nascimento, telefone, id_profissao)
+VALUES ('João Pereira', '1981-06-15', '1234-5688', 1);
+INSERT INTO clientes (nome, data_nascimento, telefone, id_profissao)
+VALUES ('Ricardo da Silva', '1973-10-10', '2234-5669', 2);
+INSERT INTO clientes (nome, data_nascimento, telefone, id_profissao)
+VALUES ('Felipe Oliveira', '1987-08-01', '4234-5640', 3);
+INSERT INTO clientes (nome, data_nascimento, telefone, id_profissao)
+VALUES ('Mário Pirez', '1991-02-05', '5234-5621', 1);
+
+INSERT INTO consumidor (nome, contato, endereco, cidade, cep, pais)
+VALUES ('Alfredo Nunes', 'Maria Nunes', 'Rua da paz, 47', 'São Paulo', '123.456-87', 'Brasil');
+INSERT INTO consumidor (nome, contato, endereco, cidade, cep, pais)
+VALUES ('Ana Trujillo', 'Guilherme Souza', 'Rua Dourada, 452', 'Goiânia', '232.984-23', 'Brasil');
+INSERT INTO consumidor (nome, contato, endereco, cidade, cep, pais)
+VALUES ('Leandro Veloz', 'Pedro Siqueira', 'Rua Vazia, 72', 'São Paulo', '936.738-23', 'Brasil');
+
+-- Junção de produto cartesiano
+SELECT 
+	c.id, 
+	c.nome, 
+	c.data_nascimento, 
+	c.telefone, 
+	p.cargo 
+FROM 
+	clientes AS c, 
+	profissoes AS p
+WHERE c.id_profissao = p.id;
+
+-- Inner Join
+SELECT 
+	c.id, c.nome, 
+	c.data_nascimento, 
+	c.telefone, 
+	p.cargo
+FROM clientes AS c 
+INNER JOIN profissoes AS p
+ON  c.id_profissao = p.id;
+
+-- Left Outer Join
+SELECT * FROM clientes
+LEFT OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id;
+
+-- Right Outer Join
+SELECT * FROM clientes
+RIGHT OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id;
+
+-- Full Outer Join -- Funciona no PostgreSQL mas nao funciona no MySQL
+SELECT * FROM clientes
+FULL OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id;
+
+-- Full Outer Join (Versão MySQL)
+SELECT * FROM clientes
+LEFT OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id
+UNION
+SELECT * FROM clientes
+RIGHT OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id;
+
+-- Cross Join
+SELECT 
+	c.id, c.nome, 
+	c.data_nascimento,
+	c.telefone, 
+	p.cargo
+FROM clientes AS c
+CROSS JOIN profissoes AS p;
+
+-- Self Join
+SELECT 
+	a.nome AS Consumidor1, 
+	b.nome AS Consumidor2, 
+	a.cidade
+FROM consumidor AS a
+INNER JOIN consumidor AS b
+ON a.id <> b.id
+AND a.cidade = b.cidade
+ORDER BY a.cidade;
+```
+
+**Funções de agregação**
+
+```sql
+CREATE DATABASE agregacao;
+
+CREATE TABLE categorias(
+	id SERIAL PRIMARY KEY,
+ 	nome VARCHAR(60) NOT NULL
+);
+
+CREATE TABLE produtos(
+	id SERIAL PRIMARY KEY, 
+	descricao VARCHAR(60) NOT NULL,
+	preco_venda DECIMAL(8,2) NOT NULL,
+	preco_custo MONEY NOT NULL,
+	id_categoria INT REFERENCES categorias(id) NOT NULL
+);
+
+INSERT INTO categorias (nome) VALUES ('Material Escolar');
+INSERT INTO categorias (nome) VALUES ('Acessório Informática');
+INSERT INTO categorias (nome) VALUES ('Material Escritório');
+INSERT INTO categorias (nome) VALUES ('Game');
+
+INSERT INTO produtos (descricao, preco_venda, preco_custo, id_categoria) VALUES ('Caderno', 5.45, 2.30, 1);
+INSERT INTO produtos (descricao, preco_venda, preco_custo, id_categoria) VALUES ('Caneta', 1.20, 0.45, 1);
+INSERT INTO produtos (descricao, preco_venda, preco_custo, id_categoria) VALUES ('Pendrive 32GB', 120.54, 32.55, 2);
+INSERT INTO produtos (descricao, preco_venda, preco_custo, id_categoria) VALUES ('Mouse', 17.00, 4.30, 2);
+
+-- max
+SELECT MAX(preco_venda) FROM produtos;
+
+-- min
+SELECT MIN(preco_venda) FROM produtos;
+
+SELECT AVG(preco_custo) FROM produtos; -- não funciona porque é tipo Money
+
+SELECT AVG(preco_venda) FROM produtos; -- precisão grande
+
+SELECT TO_CHAR(AVG(preco_venda),'99999999D99') AS Media FROM produtos; -- Formatado para string. O D indica as casas decimais. Cada nove representa um dígito
+
+SELECT ROUND(AVG(preco_venda)::numeric,2) FROM produtos; -- Formatado para numerico
+
+SELECT ROUND(AVG(preco_custo::numeric), 2) FROM produtos; -- Calculando a média de valor Money. Estamos fazendo um casting
+
+SELECT ROUND(AVG(preco_venda), 4) FROM produtos;
+
+SELECT COUNT(preco_venda) AS Quantidade FROM produtos WHERE id_categoria = 1;
+
+-- group by
+SELECT id_categoria, MAX(preco_venda) FROM produtos GROUP BY id_categoria;
+
+-- having
+SELECT id_categoria, MAX(preco_venda) FROM produtos GROUP BY id_categoria HAVING MAX(preco_venda) > 10;
+```
+
+**Agrupamento**
+
+```sql
+CREATE DATABASE agrupamento;
+
+CREATE TABLE tipos(
+	id SERIAL PRIMARY KEY,
+	nome VARCHAR(60) NOT NULL
+);
+
+CREATE TABLE fabricantes(
+	id SERIAL PRIMARY KEY,
+	nome VARCHAR(60) NOT NULL
+);
+
+CREATE TABLE produtos(
+	id SERIAL PRIMARY KEY, 
+	nome VARCHAR(60) NOT NULL,
+	id_fabricante INT REFERENCES fabricantes(id) NOT NULL,
+	quantidade INT NOT NULL,
+	id_tipo INT REFERENCES tipos(id) NOT NULL
+);
+
+INSERT INTO tipos (nome) VALUES ('Console');
+INSERT INTO tipos (nome) VALUES ('Notebook');
+INSERT INTO tipos (nome) VALUES ('Celular');
+INSERT INTO tipos (nome) VALUES ('Smartphone');
+INSERT INTO tipos (nome) VALUES ('Sofá');
+INSERT INTO tipos (nome) VALUES ('Armário');
+INSERT INTO tipos (nome) VALUES ('Refrigerador');
+
+INSERT INTO fabricantes (nome) VALUES ('Sony');
+INSERT INTO fabricantes (nome) VALUES ('Dell');
+INSERT INTO fabricantes (nome) VALUES ('Microsoft');
+INSERT INTO fabricantes (nome) VALUES ('Samsung');
+INSERT INTO fabricantes (nome) VALUES ('Apple');
+INSERT INTO fabricantes (nome) VALUES ('Beline');
+INSERT INTO fabricantes (nome) VALUES ('Magno');
+INSERT INTO fabricantes (nome) VALUES ('CCE');
+INSERT INTO fabricantes (nome) VALUES ('Nintendo');
+
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Playstation 3', 1, 100, 1);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Core 2 Duo 4GB RAM 500GB HD', 2, 200, 2);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Xbox 360 120GB', 3, 350, 1);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('GT-I6220 Quad band', 4, 300, 3);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('iPhone 4 32GB', 5, 50, 4);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Playstation 2', 1, 100, 1);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Sofá Estofado', 6, 200, 5);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Armário de Serviço', 7, 50, 6);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Refrigerador 420L', 8, 200, 7);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Wii 120GB', 8, 250, 1);
+
+-- Group By
+SELECT 
+	t.nome AS Tipo, 
+	f.nome AS Fabricante, 
+	SUM(p.quantidade) AS Quantidade_em_Estoque 
+FROM 
+	tipos AS t, 
+	fabricantes AS f, 
+	produtos AS p 
+WHERE 
+	t.id = p.id_tipo 
+	AND f.id = p.id_fabricante 
+GROUP BY 
+	t.nome, 
+	f.nome;
+
+-- Having
+SELECT 
+	t.nome AS Tipo, 
+	f.nome AS Fabricante, 
+	SUM(p.quantidade) AS Quantidade_em_Estoque 
+FROM 
+	tipos AS t, 
+	fabricantes AS f, produtos AS p 
+WHERE 
+	t.id = p.id_tipo 
+	AND f.id = p.id_fabricante 
+GROUP BY 
+	t.nome, 
+	f.nome
+HAVING 
+	SUM(p.quantidade) > 200;
+
+-- Order By ASC
+SELECT 
+	id, 
+	nome, 
+	id_fabricante, 
+	quantidade, 
+	id_tipo 
+FROM produtos 
+ORDER BY id DESC LIMIT 3;
+
+SELECT id, nome, id_tipo, id_fabricante, quantidade  FROM produtos ORDER BY id ASC;
+
+-- Order by DESC
+SELECT id, nome, id_tipo, id_fabricante, quantidade FROM produtos ORDER BY quantidade DESC LIMIT 5;
+```
+
+**Data e Hora**
+
+```sql
+-- Data Atual
+SELECT CURRENT_DATE AS Data_Atual;
+
+-- Hora Atual
+SELECT CURRENT_TIME AS Hora_Atual;
+
+-- Calcular data futura
+SELECT CURRENT_DATE + INTERVAL '3 DAY' AS Data_Vencimento;
+
+SELECT CURRENT_DATE + INTERVAL '1 MONTH' AS Data_Vencimento;
+
+SELECT CURRENT_DATE + INTERVAL '2 YEAR' AS Data_Vencimento;
+
+-- Calcular data passada 
+SELECT CURRENT_DATE - INTERVAL '3 DAY' AS Data_Matricula;
+
+SELECT CURRENT_DATE - INTERVAL '1 MONTH' AS Data_Matricula;
+
+SELECT CURRENT_DATE - INTERVAL '2 YEAR' AS Data_Matricula;
+
+-- Diferenca entre datas
+
+-- Em anos
+SELECT DATE_PART('year', '2019-01-01'::date) - DATE_PART('year', '2011-10-02'::date) AS Em_anos;
+
+-- Em meses
+SELECT (DATE_PART('year', '2019-01-01'::date) - DATE_PART('year', '2011-10-02'::date)) * 12 +
+(DATE_PART('month', '2019-01-01'::date) - DATE_PART('month', '2011-10-02'::date)) AS Em_meses;
+
+-- Em semanas
+SELECT TRUNC(DATE_PART('day', '2019-01-01'::timestamp - '2011-12-22'::timestamp)/7) AS Em_Semanas;
+
+-- Em dias
+SELECT DATE_PART('day', '2019-01-01'::timestamp - '2011-10-02'::timestamp) AS Em_dias;
+
+-- Em Horas
+SELECT DATE_PART('day', '2019-01-01 11:55'::timestamp - '2019-01-01 09:55'::timestamp) * 24 + 
+DATE_PART('hour', '2019-01-01 11:55'::timestamp - '2019-01-01 09:55'::timestamp) AS Em_horas;
+
+-- Em Minutos
+SELECT (DATE_PART('day', '2019-01-01 11:55'::timestamp - '2019-01-01 09:55'::timestamp) * 24 + 
+DATE_PART('hour', '2019-01-01 11:55'::timestamp - '2019-01-01 09:55'::timestamp)) * 60 +
+DATE_PART('minute', '2019-01-01 11:55'::timestamp - '2019-01-01 09:55'::timestamp) AS Em_minutos;
+
+-- Em Segundos
+SELECT ((DATE_PART('day', '2019-01-01 11:55'::timestamp - '2019-01-01 09:55'::timestamp) * 24 + 
+DATE_PART('hour', '2019-01-01 11:55'::timestamp - '2019-01-01 09:55'::timestamp)) * 60 +
+DATE_PART('minute', '2019-01-01 11:55'::timestamp - '2019-01-01 09:55'::timestamp)) * 60 +
+DATE_PART('second', '2019-01-01 11:55'::timestamp - '2019-01-01 09:55'::timestamp) AS Em_segundos;
+
+-- Formatando data no PostgreSQL
+SELECT TO_CHAR(CURRENT_DATE, 'dd/mm/YYYY') AS Data_Atual;
+
+SELECT TO_CHAR(NOW(), 'dd/mm/YYYY HH24:MM:SS') AS Data_Hora_Atual;
+
+DAYNAME PostgreSQL
+
+-- Com inicial maiúscula
+SELECT TO_CHAR(CURRENT_TIMESTAMP, 'Day') AS Dia_da_Semana;
+
+-- Com short maiúscula
+SELECT TO_CHAR(CURRENT_TIMESTAMP, 'Dy') AS Dia_da_Semana;
+
+-- Com inicial minúscula
+SELECT TO_CHAR(CURRENT_TIMESTAMP, 'day') AS Dia_da_Semana;
+
+-- Com short minúscula
+SELECT TO_CHAR(CURRENT_TIMESTAMP, 'dy') AS Dia_da_Semana;
+
+-- Tudo maiúscula
+SELECT TO_CHAR(CURRENT_TIMESTAMP, 'DAY') AS Dia_da_Semana;
+
+-- Mes tudo maiúsculo
+SELECT TO_CHAR(CURRENT_TIMESTAMP, 'MONTH') AS Mes;
+
+-- Mes tudo minúsculo
+SELECT TO_CHAR(CURRENT_TIMESTAMP, 'month') AS Mes;
+
+-- Mes iniciais minúsculo
+SELECT TO_CHAR(CURRENT_TIMESTAMP, 'mon') AS Mes;
+
+-- Mes iniciais maiúsculo
+SELECT TO_CHAR(CURRENT_TIMESTAMP, 'Mon') AS Mes;
+
+SHOW lc_time;
+
+SET lc_time='pt_BR.UTF8';
+
+SELECT TO_CHAR(CURRENT_TIMESTAMP, 'TMDay') AS Dia_da_Semana;
+
+SELECT TO_CHAR(CURRENT_TIMESTAMP, 'TMMonth') AS Mes;
+
+-- Extraindo partes de uma data
+SELECT EXTRACT(MONTH FROM CURRENT_TIMESTAMP) AS Numero_do_Mes;
+
+SELECT EXTRACT(DAY FROM CURRENT_TIMESTAMP) AS Dia_do_Mes;
+
+SELECT EXTRACT(YEAR FROM CURRENT_TIMESTAMP) AS Ano;
+
+SELECT EXTRACT(WEEK FROM CURRENT_TIMESTAMP) AS Numero_da_Semana;
+
+SELECT NOW() AS Data_hora;
+
+SELECT EXTRACT(HOUR FROM CURRENT_TIMESTAMP) AS hora;
+
+SELECT EXTRACT(Minute FROM CURRENT_TIMESTAMP) AS Minuto;
+
+SELECT EXTRACT(Second FROM CURRENT_TIMESTAMP) AS Segundo;
+
+SELECT EXTRACT(millisecond FROM CURRENT_TIMESTAMP) AS MiliSegundo;
+
+-- Convertendo de segundos para hora
+SELECT TO_CHAR((71741.733159 || 'seconds')::interval, 'HH24:MM:SS') AS Tempo_Total;
+
+SELECT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP::time) AS Em_Segundos;
+```
+
+**Subconsultas**
+
+```sql
+CREATE DATABASE subconsulta;
+
+CREATE TABLE escritorios(
+   id SERIAL PRIMARY KEY,
+   pais VARCHAR(30) NOT NULL
+);
+
+CREATE TABLE funcionarios(
+   id SERIAL PRIMARY KEY, 
+   nome VARCHAR(20) NOT NULL,
+   sobrenome VARCHAR(20) NOT NULL,
+   id_escritorio INT REFERENCES escritorios(id) NOT NULL
+);
+
+CREATE TABLE pagamentos(
+   id SERIAL PRIMARY KEY,
+   id_funcionario INT REFERENCES funcionarios(id) NOT NULL,
+   salario DECIMAL(8,2) NOT NULL,
+   data DATE NOT NULL
+);
+
+INSERT INTO escritorios (pais) VALUES ('Brasil');
+INSERT INTO escritorios (pais) VALUES ('Estados Unidos');
+INSERT INTO escritorios (pais) VALUES ('Alemanha');
+INSERT INTO escritorios (pais) VALUES ('França');
+
+INSERT INTO funcionarios (nome, sobrenome, id_escritorio) 
+VALUES ('Pedro', 'Souza', 1);
+INSERT INTO funcionarios (nome, sobrenome, id_escritorio) 
+VALUES ('Sandra', 'Rubin', 2);
+INSERT INTO funcionarios (nome, sobrenome, id_escritorio) 
+VALUES ('Mikail', 'Schumer', 3);
+INSERT INTO funcionarios (nome, sobrenome, id_escritorio) 
+VALUES ('Olivier', 'Gloçan', 4);
+
+INSERT INTO pagamentos (id_funcionario, salario, data) 
+VALUES (1, '5347.55', '2019-03-17');
+INSERT INTO pagamentos (id_funcionario, salario, data) 
+VALUES (2, '9458.46', '2019-03-17');
+INSERT INTO pagamentos (id_funcionario, salario, data) 
+VALUES (3, '4669.67', '2019-03-17');
+INSERT INTO pagamentos (id_funcionario, salario, data) 
+VALUES (4, '2770.32', '2019-03-17');
+
+-- Exemplo 1
+SELECT 
+   nome, 
+   sobrenome 
+FROM funcionarios 
+WHERE id_escritorio IN (
+   SELECT id 
+   FROM escritorios 
+   WHERE pais = 'Brasil'
+);
+
+-- Sem subconsulta
+SELECT 
+   nome, 
+   sobrenome 
+FROM 
+   funcionarios, 
+   escritorios AS e 
+WHERE 
+   id_escritorio = e.id 
+   AND e.pais = 'Brasil'; 
+
+-- Exemplo 2
+SELECT 
+   f.nome, 
+   f.sobrenome, 
+   e.pais, 
+   p.salario 
+FROM 
+   pagamentos AS p, 
+   funcionarios AS f, 
+   escritorios AS e
+WHERE 
+   f.id_escritorio = e.id 
+   AND f.id = p.id_funcionario
+   AND salario = (SELECT MAX(salario) FROM pagamentos);
+
+
+-- Exemplo 3
+SELECT 
+   f.nome, 
+   f.sobrenome, 
+   e.pais, 
+   p.salario 
+FROM 
+   pagamentos AS p, 
+   funcionarios AS f, 
+   escritorios AS e
+WHERE 
+   f.id_escritorio = e.id 
+   AND f.id = p.id_funcionario
+   AND salario < (SELECT AVG(salario) FROM pagamentos);
 ```
