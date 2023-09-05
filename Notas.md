@@ -1920,3 +1920,359 @@ O servidor de bancos de dados PostgreSQL (SGBD) teve seu projeto iniciado na dé
 
 O PostgreSQL é um banco de dados open-source, e foi pioneiro em muitos dos conceitos que só se tornaram disponíveis em alguns sitemas de bancos de dados comerciais mais tarde. Ele é usado por milhares de empresas, incluindo: Uber, Spotify, Instagram, Netflix, Reddit, Twitch, etc.
 
+### Código SQL da seção 3
+
+**Criando tabelas**
+
+```sql
+CREATE TABLE tipos_produtos(
+	id SERIAL PRIMARY KEY,
+	descricao CHARACTER VARYING(50) NOT NULL
+);
+
+CREATE TABLE produtos(
+	id SERIAL PRIMARY KEY,
+	descricao CHARACTER VARYING(50) NOT NULL,
+	preco MONEY NOT NULL,
+	id_tipo INT REFERENCES tipos_produtos(id) NOT NULL
+);
+
+CREATE TABLE cadastro_paciente(
+	id SERIAL PRIMARY KEY,
+	nome CHARACTER VARYING(50) NOT NULL,
+	endereco CHARACTER VARYING(50) NOT NULL,
+	bairro CHARACTER VARYING(40) NOT NULL,
+	cidade CHARACTER VARYING(40) NOT NULL,
+	estado CHAR(2) NOT NULL,
+	cep CHARACTER VARYING(7) NOT NULL,
+	data_nascimento DATE NOT NULL
+);
+
+CREATE TABLE professores (
+	id SERIAL PRIMARY KEY,
+	telefone INT NOT NULL, -- indicado pelo professor
+	nome CHARACTER VARYING(50) NOT NULL
+);
+
+CREATE TABLE turmas (
+	id SERIAL PRIMARY KEY,
+	capacidade INT NOT NULL,
+	id_professor INT REFERENCES professores(id)
+);
+```
+
+No PostgreSQL, o tipo `SERIAL` significa que o tipo é int e que se auto-incrementa. O `CHARACTER VARYING` é o mesmo `VARCHAR` do MySQL. O PostgreSQL também tem o `VARCHAR`, mas o `CHARACTER VARYING` é mais usado.
+
+**Inserindo Dados**
+
+```sql
+INSERT INTO tipos_produtos (descricao) VALUES ('Computador');
+INSERT INTO tipos_produtos (descricao) VALUES ('Impressoras');
+INSERT INTO tipos_produtos (descricao) VALUES ('Diversos');
+
+INSERT INTO produtos (descricao, preco, id_tipo) 
+VALUES ('Notebook DELL 1544', 2345.67, 1);
+INSERT INTO produtos (descricao, preco, id_tipo) 
+VALUES ('Impr. Jato de Tinta', 456.00, 2);
+INSERT INTO produtos (descricao, preco, id_tipo) 
+VALUES ('Mouse Sem Fio', 45.00, 3);
+
+INSERT INTO cadastro_paciente (
+	nome, endereco, bairro, cidade, 
+	estado, cep, data_nascimento
+)
+VALUES (
+	'Angelina Jolie', 'Rua da paz, 44', 'Nova Lima',
+	'Santos', 'SP', '123123', '1978-04-24'
+);
+```
+
+### Código SQL da seção 4
+
+**DDL**:
+
+```sql
+-- Criando uma tabela para armazenar informaçoes sobre usuários
+CREATE TABLE users (
+    user_id serial PRIMARY KEY,
+    username VARCHAR (50) UNIQUE NOT NULL,
+    email VARCHAR (100) UNIQUE NOT NULL,
+    created_at TIMESTAMP NOT NULL
+);
+
+-- Criando uma tabela para armazenar posts
+CREATE TABLE posts (
+    post_id serial PRIMARY KEY,
+    title VARCHAR (255) NOT NULL,
+    content TEXT,
+    user_id INT REFERENCES users(user_id),
+    created_at TIMESTAMP NOT NULL
+);
+
+/* Adicionando uma constraint de chave estrangeira
+* Essa constraint faz com que o id do usuário na tabela
+* postsreferencie um usuário válido na tabela de usuários.
+*/
+ALTER TABLE posts
+ADD CONSTRAINT fk_user_id
+FOREIGN KEY (user_id)
+REFERENCES users(user_id);
+```
+
+**DQL**
+
+```sql
+-- Selecionando todos os usuários da tabela "usuarios"
+SELECT * FROM users;
+
+-- Selecionando colunas específicas da tabela "usuarios"
+SELECT user_id, username FROM users;
+
+-- Selecionando todos os posts da tabela "posts"
+SELECT * FROM posts;
+
+-- Selecionando posts com um id de usuário específico
+SELECT * FROM posts WHERE user_id = 1;
+
+-- Fazendo join com as tabelas para conseguir os detalhes das duas
+SELECT u.username, p.title
+FROM users u
+INNER JOIN posts p ON u.user_id = p.user_id;
+
+-- Calculando o número total de posts para cada usuário e ordenando os resultados
+SELECT u.username, COUNT(p.post_id) AS post_count
+FROM users u
+LEFT JOIN posts p ON u.user_id = p.user_id
+GROUP BY u.username
+ORDER BY post_count DESC;
+
+-- Encontrando os usuários que nunca criaram um post
+SELECT u.username
+FROM users u
+LEFT JOIN posts p ON u.user_id = p.user_id
+WHERE p.post_id IS NULL;
+```
+
+**DML**
+
+```sql
+-- Inserindo um novo usuário na tabela de usuários
+INSERT INTO users (username, email, created_at)
+VALUES
+    ('john_doe', 'john.doe@example.com', NOW()),
+    ('jane_smith', 'jane.smith@example.com', NOW());
+
+-- Inserindo novos posts na tabela de posts
+INSERT INTO posts (title, content, user_id, created_at)
+VALUES
+    ('Post 1', 'This is the content of post 1', 1, NOW()),
+    ('Post 2', 'This is the content of post 2', 2, NOW());
+
+-- Atualizando o endereço de email de um usuário
+UPDATE users
+SET email = 'new_email@example.com'
+WHERE username = 'john_doe';
+
+-- Atualizando o conteúdo de um post
+UPDATE posts
+SET content = 'Updated content for Post 1'
+WHERE post_id = 1;
+
+-- Deletando um usuário e seus posts
+DELETE FROM users
+WHERE username = 'jane_smith';
+
+-- Deletando um post específico
+DELETE FROM posts
+WHERE post_id = 2;
+```
+
+**DCL**
+
+```sql
+-- Criando um novo usuário
+CREATE USER myuser WITH PASSWORD 'mypassword';
+
+-- Dando os privilégios SELECT e INSERT na tabela "usuarios"
+GRANT SELECT, INSERT ON users TO myuser;
+
+-- Dando os privilégios SELECT, INSERT, UPDATE, e DELETE na tabela "posts"
+GRANT SELECT, INSERT, UPDATE, DELETE ON posts TO myuser;
+
+-- Revogando os privilégios de INSERT na tabela "usuários"
+REVOKE INSERT ON users FROM myuser;
+
+-- Revogando todos os privilégios da tabela "posts"
+REVOKE ALL PRIVILEGES ON posts FROM myuser;
+
+-- Dando o privilégio de uso na arquivo de sequência "user_id_seq"
+GRANT USAGE ON SEQUENCE user_id_seq TO myuser;
+
+-- Dando privilégios de superusuário
+ALTER USER myuser WITH SUPERUSER;
+
+-- Revogando privilégios de superusuário
+ALTER USER myuser WITH NOSUPERUSER;
+
+-- Removendo o usuário
+DROP USER myuser;
+```
+
+**TCL**
+
+```sql
+-- Começando uma nova transação
+BEGIN;
+
+-- Inserindo um novo usuário
+INSERT INTO users (username, email, created_at)
+VALUES ('alice', 'alice@example.com', NOW());
+
+-- Inserindo um novo post
+INSERT INTO posts (title, content, user_id, created_at)
+VALUES ('Post by Alice', "This is Alice's post", 3, NOW());
+
+-- Commitando a transação para salvar as mudanças
+COMMIT;
+
+-- Começando uma nova transação
+BEGIN;
+
+-- Atualizando o email de usuário
+UPDATE users
+SET email = 'new_email@example.com'
+WHERE username = 'alice';
+
+-- Fazendo um rollback para desfazer as mudanças
+ROLLBACK;
+
+-- Começando uma nova transação
+BEGIN;
+
+-- Deletando um post específico
+DELETE FROM posts
+WHERE title = 'Post by Alice';
+
+-- Commitando a transação
+COMMIT;
+```
+
+**Código usado na aula**
+
+```sql
+CREATE TABLE tipos_produto (
+	codigo SERIAL NOT NULL,
+	descricao VARCHAR(30) NOT NULL,
+	PRIMARY KEY (codigo)
+);
+
+CREATE TABLE produtos (
+	codigo SERIAL PRIMARY KEY,
+	descricao VARCHAR(30) NOT NULL,
+	preco MONEY NOT NULL,
+	codigo_tipo INT NOT NULL,
+	FOREIGN KEY (codigo_tipo) REFERENCES tipos_produto(codigo)
+);
+
+INSERT INTO tipos_produtos (descricao) VALUES ('Computador');
+INSERT INTO tipos_produtos (descricao) VALUES ('Impressoras');
+INSERT INTO tipos_produtos (descricao) VALUES ('Diversos');
+
+INSERT INTO produtos (descricao, preco, codigo_tipo) 
+VALUES ('Notebook DELL 1544', 2345.67, 1);
+INSERT INTO produtos (descricao, preco, codigo_tipo) 
+VALUES ('Impr. Jato de Tinta', 456.00, 2);
+INSERT INTO produtos (descricao, preco, codigo_tipo) 
+VALUES ('Mouse Sem Fio', 45.00, 3);
+```
+
+```sql
+SELECT 
+	p.codigo AS cod,
+	p.descricao AS descr,
+	p.preco AS pre,
+	p.codigo_tipo AS ctp
+FROM produtos AS p;
+```
+
+```sql
+UPDATE tipos_produto SET descricao = 'Nobreak' WHERE codigo = 3;
+```
+
+```sql
+DELETE FROM produtos WHERE codigo = 1;
+```
+
+```sql
+ALTER TABLE tipos_produto ADD peso DECIMAL(8, 2);
+```
+
+```sql
+DROP TABLE produtos;
+```
+
+```sql
+CREATE USER estagiario WITH PASSWORD 'estagiario';
+```
+
+```sql
+GRANT ALL ON empresas TO estagiario;
+GRANT USAGE, SELECT ON SEQUENCE empresas_id_seq TO estagiario;
+```
+
+O PostgreSQL não dá um GRANT completo. Por isso é necessária a segunda linha de código no exemplo acima. Se você for apagar esse usuário, você vai  ter que remover essa permissão adicional também, senão não dá pra apagar o usuário.
+
+```sql
+REVOKE ALL ON empresas FROM estagiario;
+```
+
+```sql
+GRANT SELECT ON empresas TO estagiario;
+```
+
+```sql
+REVOKE USAGE, SELECT ON SEQUENCE empresas_id_seq FROM estagiario;
+```
+
+```sql
+DROP USER estagiario;
+```
+
+```sql
+BEGIN TRANSACTION;
+
+INSERT INTO tipos_produtos (descricao) VALUES ('Equipamentos');
+INSERT INTO tipos_produtos (descricao) VALUES ('Nobreak');
+
+COMMIT;
+```
+
+### Código SQL da seção 5
+
+```sql
+CREATE TABLE tipos_produto(
+	codigo SERIAL PRIMARY KEY,
+	descricao VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE produtos(
+	codigo SERIAL PRIMARY KEY,
+	descricao VARCHAR(50) NOT NULL,
+	preco MONEY NOT NULL,
+	codigo_tipo INT REFERENCES tipos_produto(codigo)
+);
+
+INSERT INTO tipos_produto (descricao) VALUES ('Computador');
+INSERT INTO tipos_produto (descricao) VALUES ('Impressora');
+
+INSERT INTO produtos (descricao, preco, codigo_tipo)
+VALUES ('Desktop', 1200, 1);
+INSERT INTO produtos (descricao, preco, codigo_tipo)
+VALUES ('Laptop', 1800, 1);
+INSERT INTO produtos (descricao, preco, codigo_tipo)
+VALUES ('Impr. Laser', 500, 2);
+INSERT INTO produtos (descricao, preco, codigo_tipo)
+VALUES ('Impr. Jato de Tinta', 300, 2);
+
+SELECT * FROM tipos_produto WHERE codigo = 1;
+```
