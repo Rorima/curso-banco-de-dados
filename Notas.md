@@ -2786,3 +2786,187 @@ WHERE
    AND f.id = p.id_funcionario
    AND salario < (SELECT AVG(salario) FROM pagamentos);
 ```
+
+### Projeto na prática
+
+Os analistas de sistemas estão desenvolvendo um sistema para uma empresa e foram fazer diversas entrevistas com os funcionários de diversas áreas. Ao final dessa análise de requisitos, foi gerado um documento descritivo com o que será necessário para o sistema. Sua tarefa é analisar esse documento, extrair as entidades, campos, relacionamentos e gerar o Modelo de Entidade e Relacionamento.
+
+**Projeto Completo Parte 1 - Modelagem**
+
+Uma pequena locadora de vídeos possui ao redor de 2000 DVDs, cujo empréstimo deve ser controlado. Cada DVD possui um número de identificação e contém um único filme. Cada filme recebe um identificador próprio, e sabe-se o título e categoria (comédia, drama, aventura, ...).
+
+Para cada filme cadastrado há pelo menos um DVD. Além disso, filmes mais longos necessitam de dois DVDs. Os clientes podem desejar encontrar os filmes estrelados pelo seu ator predileto. Por isso, é necessário manter a informação dos atores que estrelam em cada filme, mas nem todo filme possui estrelas.
+
+Muitos clientes, quando vêem a listagem de atores do filme escolhido, ficam interessados em saber, para um determinado ator, o seu nome real e de quais outros filmes do mesmo gênero aquele ator participou. 
+
+A locadora possui muitos clientes cadastrados, dos quais sabe-se nome, sobrenome, telefone e endereço de contato. Além disso, cada cliente recebe um número de associado.
+
+Finalmente o sistema deve permitir a consulta a empréstimos de DVDs, com informações de qual cliente alugou o quê, datas de empréstimo e devolução, valor pago ou a pagar, atrasos, etc.
+
+**Resolução**
+
+Para resolver o problema utilizaremos o site https://dbdiagram.io/home. Nele podemos criar Diagramas de Entidade e Relacionamento e podemos exportá-lo para vários formatos, inclusive o formato SQL compatível com o PostgreSQL.
+
+Este é o código do dbdiagram:
+
+```sql
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+table generos {
+  id int [primary key]
+  genero varchar [not null]
+}
+
+Table filmes {
+  id int [primary key]
+  titulo varchar [not null]
+  id_genero int [ref: > generos.id, not null]
+  valor decimal(8,2) [not null]
+}
+
+table dvds {
+  id int [primary key]
+  id_filme int [ref: > filmes.id, not null]
+  quantidade int [not null]
+}
+
+table atores {
+  id int [primary key]
+  nome varchar [not null]
+}
+
+table atores_filme {
+  id int [primary key]
+  id_filme int [ref: > filmes.id, not null]
+  id_ator int [ref: > atores.id, not null]
+  personagem varchar [not null]
+}
+
+table clientes {
+  id int [primary key]
+  nome varchar [not null]
+  sobrenome varchar [not null]
+  telefone varchar [not null]
+  endereco varchar [not null]
+}
+
+table emprestimos {
+  id int [primary key]
+  id_cliente int [ref: > clientes.id, not null]
+  id_dvd int [ref: > dvds.id, not null]
+  data datetime [not null]
+}
+
+table filmes_emprestimo {
+  id int [primary key]
+  id_emprestimo int [ref: > emprestimos.id, not null]
+  id_filme int [ref: > filmes.id, not null]
+}
+
+table devolucoes {
+  id int [primary key]
+  id_emprestimo int [ref: > emprestimos.id, not null]
+  data datetime [not null]
+}
+
+table filmes_devolucao {
+  id int [primary key]
+  id_devolucao int [ref: > devolucoes.id, not null]
+  id_filmes_emprestimo int [ref: > filmes_emprestimo.id, not null]
+}
+```
+
+Essa ferramenta, por mais que exporte um código PostgreSQL, o código não é 100% compatível, e vai ser necessário fazer algumas mudanças para que o código funcione. Aqui vai o código SQL já mudado:
+
+```sql
+--CREATE DATABASE locadora;
+
+CREATE TABLE "generos" (
+  "id" SERIAL PRIMARY KEY,
+  "genero" varchar(50) NOT NULL
+);
+
+CREATE TABLE "filmes" (
+  "id" SERIAL PRIMARY KEY,
+  "titulo" varchar(100) NOT NULL,
+  "id_genero" int NOT NULL,
+  "valor" decimal(8,2) NOT NULL
+);
+
+CREATE TABLE "dvds" (
+  "id" SERIAL PRIMARY KEY,
+  "id_filme" int NOT NULL,
+  "quantidade" int NOT NULL
+);
+
+CREATE TABLE "atores" (
+  "id" SERIAL PRIMARY KEY,
+  "nome" varchar(100) NOT NULL
+);
+
+CREATE TABLE "atores_filme" (
+  "id" SERIAL PRIMARY KEY,
+  "id_filme" int NOT NULL,
+  "id_ator" int NOT NULL,
+  "personagem" varchar(100) NOT NULL
+);
+
+CREATE TABLE "clientes" (
+  "id" SERIAL PRIMARY KEY,
+  "nome" varchar (50) NOT NULL,
+  "sobrenome" varchar (50) NOT NULL,
+  "telefone" varchar (20) NOT NULL,
+  "endereco" varchar (100) NOT NULL
+);
+
+CREATE TABLE "emprestimos" (
+  "id" SERIAL PRIMARY KEY,
+  "id_cliente" int NOT NULL,
+  "id_dvd" int NOT NULL,
+  "data" date NOT NULL
+);
+
+CREATE TABLE "filmes_emprestimo" (
+  "id" SERIAL PRIMARY KEY,
+  "id_emprestimo" int NOT NULL,
+  "id_filme" int NOT NULL
+);
+
+CREATE TABLE "devolucoes" (
+  "id" SERIAL PRIMARY KEY,
+  "id_emprestimo" int NOT NULL,
+  "data" date NOT NULL
+);
+
+CREATE TABLE "filmes_devolucao" (
+  "id" SERIAL PRIMARY KEY,
+  "id_devolucao" int NOT NULL,
+  "id_filmes_emprestimo" int NOT NULL
+);
+
+ALTER TABLE "filmes" ADD FOREIGN KEY ("id_genero") REFERENCES "generos" ("id");
+
+ALTER TABLE "dvds" ADD FOREIGN KEY ("id_filme") REFERENCES "filmes" ("id");
+
+ALTER TABLE "atores_filme" ADD FOREIGN KEY ("id_filme") REFERENCES "filmes" ("id");
+
+ALTER TABLE "atores_filme" ADD FOREIGN KEY ("id_ator") REFERENCES "atores" ("id");
+
+ALTER TABLE "emprestimos" ADD FOREIGN KEY ("id_cliente") REFERENCES "clientes" ("id");
+
+ALTER TABLE "emprestimos" ADD FOREIGN KEY ("id_dvd") REFERENCES "dvds" ("id");
+
+ALTER TABLE "filmes_emprestimo" ADD FOREIGN KEY ("id_emprestimo") REFERENCES "emprestimos" ("id");
+
+ALTER TABLE "filmes_emprestimo" ADD FOREIGN KEY ("id_filme") REFERENCES "filmes" ("id");
+
+ALTER TABLE "devolucoes" ADD FOREIGN KEY ("id_emprestimo") REFERENCES "emprestimos" ("id");
+
+ALTER TABLE "filmes_devolucao" ADD FOREIGN KEY ("id_devolucao") REFERENCES "devolucoes" ("id");
+
+ALTER TABLE "filmes_devolucao" ADD FOREIGN KEY ("id_filmes_emprestimo") REFERENCES "filmes_emprestimo" ("id");
+```
+
+
+
