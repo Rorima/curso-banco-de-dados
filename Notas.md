@@ -3348,4 +3348,28 @@ Porque todos os campos das tabelas são NOT NULL, é necessário excluir todos o
 
 ## SQLite
 
+O SQLite é uma biblioteca open-source escrita em C, que implementa um banco de dados SQL embutido. Ele não é uma biblioteca cliente usada para conectar com um grande servidor de banco de dados, mas sim o próprio servidor. Com esta biblioteca podemos ler e escrever diretamente no arquivo de banco de dados no disco. A versão 1.0 foi lançada em agosto de 2000 por D. Richard Hipp, e segue uma sintaxe SQL baseada no PostgreSQL.
+
+O SQLite é o SGBD mais utilizado no mundo. Encontramos esta biblioteca em:
+
+* Todo smartphone Android;
+* Todo smartphone iOS;
+* Todo navegador web (Firefox, Chrome, Safari, Opera, etc.);
+* Toda Smart TV;
+* Todo roteador Wi-Fi;
+
+Milhares de empresas utilizam o SQLite em seus produtos, incluindo: 
+
+- Adobe;
+- Airbus;
+- Apple;
+- Bosch;
+- Dropbox;
+- Facebook;
+- General Electric;
+- Google;
+- McAfee;
+- Microsoft;
+- Mozilla;
+- Skype.
 
