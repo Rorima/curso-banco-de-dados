@@ -1914,7 +1914,7 @@ START TRANSACTION;
 COMMIT;
 ```
 
-## Postgre SQL
+## PostgreSQL
 
 O servidor de bancos de dados PostgreSQL (SGBD) teve seu projeto iniciado na década de 1980 na Universidade de Berkeley, com o nome de Ingres, e posteriormente teve seu nome alterado para Post Ingres. Por fim, foi lançado em sua verção inical como PostgreSQL em 1996.
 
@@ -2930,7 +2930,7 @@ CREATE TABLE "emprestimos" (
 CREATE TABLE "filmes_emprestimo" (
   "id" SERIAL PRIMARY KEY,
   "id_emprestimo" int NOT NULL,
-  "id_filme" int NOT NULL
+  "id_dvd" int NOT NULL
 );
 
 CREATE TABLE "devolucoes" (
@@ -2959,7 +2959,7 @@ ALTER TABLE "emprestimos" ADD FOREIGN KEY ("id_dvd") REFERENCES "dvds" ("id");
 
 ALTER TABLE "filmes_emprestimo" ADD FOREIGN KEY ("id_emprestimo") REFERENCES "emprestimos" ("id");
 
-ALTER TABLE "filmes_emprestimo" ADD FOREIGN KEY ("id_filme") REFERENCES "filmes" ("id");
+ALTER TABLE "filmes_emprestimo" ADD FOREIGN KEY ("id_dvd") REFERENCES "dvds" ("id");
 
 ALTER TABLE "devolucoes" ADD FOREIGN KEY ("id_emprestimo") REFERENCES "emprestimos" ("id");
 
@@ -2968,5 +2968,384 @@ ALTER TABLE "filmes_devolucao" ADD FOREIGN KEY ("id_devolucao") REFERENCES "devo
 ALTER TABLE "filmes_devolucao" ADD FOREIGN KEY ("id_filmes_emprestimo") REFERENCES "filmes_emprestimo" ("id");
 ```
 
+Criaremos outro banco de dados, mas desta vez utilizaremos o código escrito pelo MySQL WorkBench. Faremos as mudanças necessárias. Este é o código já editado:
+
+```sql
+-- -----------------------------------------------------
+-- Table `locadora`.`atores`
+-- -----------------------------------------------------
+CREATE TABLE atores (
+   id SERIAL PRIMARY KEY,
+   nome VARCHAR(100) NOT NULL
+);
+
+-- -----------------------------------------------------
+-- Table `locadora`.`generos`
+-- -----------------------------------------------------
+CREATE TABLE generos (
+   id SERIAL PRIMARY KEY,
+   genero VARCHAR(45) NOT NULL
+);
+
+-- -----------------------------------------------------
+-- Table `locadora`.`clientes`
+-- -----------------------------------------------------
+CREATE TABLE clientes (
+   id SERIAL PRIMARY KEY,
+   nome VARCHAR(45) NOT NULL,
+   sobrenome VARCHAR(45) NOT NULL,
+   telefone VARCHAR(45) NOT NULL,
+   endereco VARCHAR(45) NOT NULL
+);
+
+-- -----------------------------------------------------
+-- Table `locadora`.`filmes`
+-- -----------------------------------------------------
+CREATE TABLE filmes (
+   id SERIAL PRIMARY KEY,
+   id_genero INT NOT NULL,
+   titulo VARCHAR(100) NOT NULL,
+   valor DECIMAL(8,2) NOT NULL,
+   FOREIGN KEY (id_genero)
+   REFERENCES generos (id)
+);
+
+-- -----------------------------------------------------
+-- Table `locadora`.`atores_filme`
+-- -----------------------------------------------------
+CREATE TABLE atores_filme (
+   id SERIAL PRIMARY KEY,
+   id_filme INT NOT NULL,
+   id_ator INT NOT NULL,
+   personagem VARCHAR(100) NOT NULL,
+   FOREIGN KEY (id_filme)
+   REFERENCES filmes (id), 
+   FOREIGN KEY (id_ator)
+   REFERENCES atores (id)
+);
+
+-- -----------------------------------------------------
+-- Table `locadora`.`dvds`
+-- -----------------------------------------------------
+CREATE TABLE dvds (
+   id SERIAL PRIMARY KEY,
+   id_filme INT NOT NULL,
+   quantidade INT NOT NULL,
+   FOREIGN KEY (id_filme)
+   REFERENCES filmes (id)
+);
+
+-- -----------------------------------------------------
+-- Table `locadora`.`emprestimos`
+-- -----------------------------------------------------
+CREATE TABLE emprestimos (
+   id SERIAL PRIMARY KEY,
+   id_cliente INT NOT NULL,
+   data DATE NOT NULL,
+   FOREIGN KEY (id_cliente)
+   REFERENCES clientes (id)
+);
+
+-- -----------------------------------------------------
+-- Table `locadora`.`filmes_emprestimo`
+-- -----------------------------------------------------
+CREATE TABLE filmes_emprestimo (
+   id SERIAL PRIMARY KEY,
+   id_dvd INT NOT NULL,
+   id_emprestimo INT NOT NULL,
+   FOREIGN KEY (id_dvd)
+   REFERENCES dvds (id),
+   FOREIGN KEY (id_emprestimo)
+   REFERENCES emprestimos (id)
+);
+
+-- -----------------------------------------------------
+-- Table `locadora`.`devolucoes`
+-- -----------------------------------------------------
+CREATE TABLE devolucoes (
+   id SERIAL PRIMARY KEY,
+   id_emprestimo INT NOT NULL,
+   data DATE NOT NULL,
+   FOREIGN KEY (id_emprestimo) 
+   REFERENCES emprestimos (id)
+);
+
+-- -----------------------------------------------------
+-- Table `locadora`.`filmes_devolucao`
+-- -----------------------------------------------------
+CREATE TABLE locadorafilmes_devolucao (
+   id SERIAL PRIMARY KEY,
+   id_devolucao INT NOT NULL,
+   id_filme_emprestimo INT NOT NULL,
+   FOREIGN KEY (id_devolucao)
+   REFERENCES devolucoes (id),
+   FOREIGN KEY (id_filme_emprestimo)
+   REFERENCES filmes_emprestimo (id)
+);
+```
+
+**Inserindo dados**
+
+```sql
+-- Atores
+INSERT INTO atores (nome) VALUES ('Brad Pitt');
+INSERT INTO atores (nome) VALUES ('Angelina Jolie');
+INSERT INTO atores (nome) VALUES ('Felicity Jones');
+
+-- Generos
+INSERT INTO generos (genero) VALUES ('Comédia');
+INSERT INTO generos (genero) VALUES ('Terror');
+INSERT INTO generos (genero) VALUES ('Suspense');
+
+-- Filmes
+INSERT INTO filmes (titulo, id_genero, valor) 
+VALUES ('Tomb Raider', 3, 8.99);
+INSERT INTO filmes (titulo, id_genero, valor) 
+VALUES ('Star Wars', 2, 12.99);
+INSERT INTO filmes (titulo, id_genero, valor) 
+VALUES ('Loucademia de Polícia', 1, 5.99);
+
+-- Dvds
+INSERT INTO dvds (id_filme, quantidade) VALUES (1, 1);
+INSERT INTO dvds (id_filme, quantidade) VALUES (2, 1);
+INSERT INTO dvds (id_filme, quantidade) VALUES (3, 1);
+
+-- Clientes
+INSERT INTO clientes (nome, sobrenome, telefone, endereco)
+VALUES ('José', 'Pereira', '00-12345678', 'Rua do ouro - SP');
+INSERT INTO clientes (nome, sobrenome, telefone, endereco)
+VALUES ('Maria', 'Silva', '00-11234567', 'Rua da prata - MG');
+INSERT INTO clientes (nome, sobrenome, telefone, endereco)
+VALUES ('Rita', 'Souza', '00-12234567', 'Rua da paz - RJ');
+
+-- Emprestimos
+INSERT INTO emprestimos (id_cliente, data, id_dvd) VALUES (1, '2019-03-01', 1);
+INSERT INTO emprestimos (id_cliente, data, id_dvd) VALUES (2, '2019-03-15', 2);
+INSERT INTO emprestimos (id_cliente, data, id_dvd) VALUES (3, '2019-06-05', 3);
+
+-- Filmes Emprestimo
+INSERT INTO filmes_emprestimo (id_emprestimo, id_dvd) VALUES (1, 1);
+INSERT INTO filmes_emprestimo (id_emprestimo, id_dvd) VALUES (2, 2);
+INSERT INTO filmes_emprestimo (id_emprestimo, id_dvd) VALUES (3, 3);
+
+-- Devolucoes
+INSERT INTO devolucoes (id_emprestimo, data) VALUES (1, '2019-07-08');
+INSERT INTO devolucoes (id_emprestimo, data) VALUES (2, '2019-07-09');
+INSERT INTO devolucoes (id_emprestimo, data) VALUES (3, '2019-07-10');
+
+-- Filmes Devolucao
+INSERT INTO filmes_devolucao (id_devolucao, id_filmes_emprestimo) VALUES (1, 1);
+INSERT INTO filmes_devolucao (id_devolucao, id_filmes_emprestimo) VALUES (2, 2);
+INSERT INTO filmes_devolucao (id_devolucao, id_filmes_emprestimo) VALUES (3, 3);
+
+-- Atores filme
+INSERT INTO atores_filme (id_filme, id_ator, personagem)
+VALUES (1, 2, 'Lara Croft');
+INSERT INTO atores_filme (id_filme, id_ator, personagem)
+VALUES (2, 1, 'Bartimeu');
+INSERT INTO atores_filme (id_filme, id_ator, personagem)
+VALUES (3, 3, 'Dona Maria');
+```
+
+**Selecionando dados**
+
+```sql
+-- Select simples
+
+-- Atores
+SELECT * FROM atores;
+
+-- Clientes
+SELECT * FROM clientes;
+
+-- Filmes
+SELECT * FROM filmes;
+
+-- Generos
+SELECT * FROM generos;
+
+-- Filtros
+SELECT * FROM generos WHERE id = 2;
+SELECT * FROM generos WHERE genero = 'Terror';
+
+-- Filmes e generos
+SELECT filmes.titulo, filmes.valor, generos.genero
+FROM filmes, generos
+WHERE filmes.id_genero = generos.id;
+
+-- Atores filme
+SELECT 
+	ato.nome AS "Nome",
+	f.titulo AS "Filme",
+	atof.personagem AS "Personagem"
+FROM atores AS ato
+INNER JOIN atores_filme AS atof
+ON ato.id = atof.id_ator
+INNER JOIN filmes AS f
+ON f.id = atof.id_filme;
+
+-- Funções agregadas
+SELECT SUM(valor) AS "Soma" FROM filmes;
+SELECT MAX(valor) AS "Preço Máximo" FROM filmes;
+
+-- Subconsulta
+SELECT * FROM filmes WHERE valor IN (SELECT MAX(valor) FROM filmes);
+```
+
+Código do professor
+
+```sql
+-- Consultas complexas
+-- Encontrar todos os filmes que determinado ator atua
+SELECT f.titulo, g.genero, af.personagem
+	FROM atores_filme AS af, filmes AS f, generos AS g, atores AS a
+	WHERE f.id = af.id_filme AND g.id = f.id_genero AND a.id = af.id_ator
+	AND a.nome = 'Felicity Jones';
+	
+-- Encontrar todos os filmes que determinado ator atuou por genero
+SELECT f.titulo, af.personagem
+	FROM atores_filme AS af, filmes AS f, generos AS g, atores AS a
+	WHERE f.id = af.id_filme AND g.id = f.id_genero AND a.id = af.id_ator
+	AND g.genero = 'Comedia' AND a.nome = 'Bred Pitt';
+	
+-- Verificar qual cliente alugou o que
+SELECT e.id, c.nome, c.sobrenome, e.data, f.titulo, g.genero
+	FROM emprestimos AS e, clientes AS c, filmes AS f, generos AS g, dvds AS d, filmes_emprestimo AS fe
+	WHERE fe.id_emprestimo = e.id AND e.id_cliente = c.id AND f.id = d.id_filme AND fe.id_dvd = d.id
+	AND f.id_genero = g.id;
+	
+-- Verificar o que os clientes devolveram
+SELECT de.id, c.nome, c.sobrenome, de.data, f.titulo
+	FROM devolucoes AS de, 
+		clientes AS c, 
+		filmes AS f, 
+		filmes_devolucao AS fd, 
+		dvds AS d, 
+		emprestimos AS e, 
+		filmes_emprestimo AS fe
+	WHERE fd.id_filme_imprestimo = fe.id
+	AND fd.id_devolucao = de.id
+	AND f.id = d.id_filme
+	AND fe.id_dvd = d.id
+	AND c.id = e.id_cliente
+	AND fe.id_emprestimo = e.id;
+	
+
+-- Verificar quanto cada cliente pagou
+SELECT e.id, c.nome, c.sobrenome, SUM(f.valor)
+	FROM filmes_devolucao AS fd,
+		clientes AS c,
+		dvds AS d,
+		filmes AS f,
+		devolucoes AS de,
+		emprestimos AS e,
+		filmes_emprestimo AS fe
+	WHERE fd.id_filme_imprestimo = fe.id
+	AND fd.id_devolucao = de.id
+	AND f.id = d.id_filme
+	AND fe.id_dvd = d.id
+	AND c.id = e.id_cliente
+	AND fe.id_emprestimo = e.id
+	GROUP BY e.id, c.nome, c.sobrenome;
+```
+
+Meu código:
+
+```sql
+-- Consultas complexas
+-- Encontrando todos os filmes que determinado ator atua
+SELECT
+	f.titulo AS "Filme",
+	g.genero AS "Genero",
+	af.personagem AS "Personagem"
+FROM filmes AS f
+INNER JOIN generos AS g
+ON f.id_genero = g.id
+INNER JOIN atores_filme AS af
+ON af.id_filme = f.id
+INNER JOIN atores AS ato
+ON f.id = af.id_filme AND af.id_ator = ato.id
+WHERE ato.nome = 'Angelina Jolie';
+
+-- Encontrar todos os filmes que determinado ator atuou por genero
+SELECT
+	f.titulo AS "Filme",
+	g.genero AS "Genero",
+	af.personagem AS "Personagem"
+FROM filmes AS f
+INNER JOIN generos AS g
+ON f.id_genero = g.id
+INNER JOIN atores_filme AS af
+ON af.id_filme = f.id
+INNER JOIN atores AS ato
+ON f.id = af.id_filme AND af.id_ator = ato.id
+WHERE ato.nome = 'Angelina Jolie' AND g.genero = 'Suspense';
+
+-- Verificar qual cliente alugou o quê
+SELECT
+	cli.nome,
+	cli.sobrenome,
+	fil.titulo,
+	emp.data
+FROM clientes AS cli
+INNER JOIN emprestimos AS emp
+ON emp.id_cliente = cli.id
+INNER JOIN filmes AS fil
+ON emp.id_dvd = fil.id;
+
+-- Verificar o que os clientes devolveram
+SELECT
+	cli.nome,
+	cli.sobrenome,
+	fil.titulo,
+	dev.data AS "Devolução"
+FROM clientes AS cli
+INNER JOIN emprestimos AS emp
+ON emp.id_cliente = cli.id
+INNER JOIN filmes AS fil
+ON emp.id_dvd = fil.id
+INNER JOIN devolucoes AS dev
+ON dev.id_emprestimo = emp.id;
+
+-- Verificar quanto cada cliente pagou
+SELECT
+	cli.nome AS "Nome",
+	cli.sobrenome AS "Sobrenome",
+	fil.titulo AS "Título do Filme",
+	fil.valor AS "Valor pago"
+FROM emprestimos AS emp
+INNER JOIN clientes AS cli
+ON emp.id_cliente = cli.id
+INNER JOIN dvds AS dvd
+ON emp.id_dvd = dvd.id
+INNER JOIN filmes AS fil
+ON dvd.id_filme = fil.id;
+```
+
+**Atualizando dados**
+
+```sql
+UPDATE atores SET nome = 'Bread Pit Silva' WHERE id = 1;
+
+UPDATE emprestimos SET data = '2019-08-03' WHERE id = 3;
+```
+
+**Excluindo dados**
+
+```sql
+-- Deletando um gênero
+DELETE FROM filmes_devolucao WHERE id = 1;
+DELETE FROM filmes_emprestimo WHERE id = 1;
+DELETE FROM devolucoes WHERE id = 1;
+DELETE FROM emprestimos WHERE id = 1;
+DELETE FROM dvds WHERE id = 1;
+DELETE FROM atores_filme WHERE id = 1;
+DELETE FROM filmes WHERE id = 1;
+DELETE FROM generos WHERE id = 3;
+```
+
+Porque todos os campos das tabelas são NOT NULL, é necessário excluir todos os resquícios de todas as tabelas.
+
+## SQLite
 
 
