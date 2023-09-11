@@ -3373,3 +3373,283 @@ Milhares de empresas utilizam o SQLite em seus produtos, incluindo:
 - Mozilla;
 - Skype.
 
+O SQLite não implementa certos comandos do SQL:
+
+* RIGHT e FULL OUTER JOIN;
+* ALTER TABLE não é implementado por completo. Somente: RENAME TABLE, ADD COLUMN, RENAME COLUMN;
+* Gatilhos FOR EACH ROW são suportados mas não os gatilhos FOR EACH STATEMENT;
+* As VIEWs são somente de leitura. Você não vai conseguir executar DELETE, INSERT ou UPDATE em uma view. Você pode criar um gatilho em uma tentativa de aplicar DELETE, INSERT ou UPDATE em uma view e fazer o que você quiser no corpo do gatilho;
+* GRANT e REVOKE.
+
+### Código da seção 3
+
+O SQL do SQLite se parece bastante com o SQL do PostgreSQL. Somente algumas coisas mudam. 
+
+**Criando tabelas**
+
+```sql
+CREATE TABLE tipos_produtos (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	descricao TEXT NOT NULL 
+);
+
+CREATE TABLE produtos (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	descricao TEXT NOT NULL,
+	preco REAL NOT NULL,
+	id_tipo_produto INTEGER NOT NULL,
+	FOREIGN KEY (id_tipo_produto) REFERENCES tipos_produtos(id) 
+);
+
+CREATE TABLE pacientes (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	nome TEXT NOT NULL,
+	endereco TEXT NOT NULL,
+	bairro TEXT NOT NULL,
+	cidade TEXT NOT NULL,
+	estado TEXT NOT NULL,
+	cep TEXT NOT NULL,
+	data_nascimento TEXT NOT NULL
+);
+
+CREATE TABLE professor (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	telefone INTEGER NOT NULL,
+	nome TEXT NOT NULL
+);
+
+CREATE TABLE turma(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    capacidade INTEGER NOT NULL,
+	id_professor INTEGER NOT NULL,
+	FOREIGN KEY (id_professor) REFERENCES professor(id)
+);
+```
+
+**Inserindo dados**
+
+```sql
+-- INSERTS
+
+-- Tipos Produto
+INSERT INTO tipos_produtos (descricao) VALUES ('Computadores');
+INSERT INTO tipos_produtos (descricao) VALUES ('Impressoras');
+INSERT INTO tipos_produtos (descricao) VALUES ('Diversos');
+
+-- Produtos
+INSERT INTO produtos (descricao, preco, id_tipo_produto) VALUES ('Notebook DELL 1544', 2345.67, 1);
+INSERT INTO produtos (descricao, preco, id_tipo_produto) VALUES ('Impr. Jato de Tinta', 456.00, 2);
+INSERT INTO produtos (descricao, preco, id_tipo_produto) VALUES ('Mouse sem fio', 45, 3);
+
+-- Pacientes
+INSERT INTO pacientes (nome, endereco, bairro, cidade, estado, cep, data_nascimento) 
+	VALUES ('Angelina Jolie', 'Rua da paz, 44', 'Nova Lima', 'Santos', 'SP', '121213213', '1978-04-24');
+
+-- professor
+INSERT INTO professor (telefone, nome) VALUES (12345, 'Fernando Perez');
+
+-- TURMA 
+INSERT INTO turma (capacidade, id_professor) VALUES (50, 1);
+
+-- Selects
+SELECT * FROM tipos_produtos;
+
+SELECT * FROM produtos;
+
+SELECT * FROM pacientes;
+
+SELECT * FROM professor;
+
+SELECT * FROM turma;
+```
+
+### Código da seção 4
+
+```sql
+-- CREATE DATABASE secao04;
+
+CREATE TABLE tipos_produto(
+	codigo INTEGER PRIMARY KEY AUTOINCREMENT,
+	descricao TEXT NOT NULL
+);
+
+CREATE TABLE produtos(
+	codigo INTEGER PRIMARY KEY AUTOINCREMENT, 
+	descricao TEXT NOT NULL,
+	preco REAL NOT NULL,
+	codigo_tipo INTEGER REFERENCES tipos_produto(codigo) NOT NULL
+);
+
+
+INSERT INTO tipos_produto (descricao) VALUES ('Computador');
+INSERT INTO tipos_produto (descricao) VALUES ('Impressora');
+
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Desktop', '1200', 1);
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Laptop', '1800', 1);
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Impr. Jato Tinta', '300', 2);
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Impr. Laser', '500', 2);
+
+-- Select
+SELECT * FROM tipos_produto;
+
+SELECT codigo, descricao FROM tipos_produto;
+
+SELECT * FROM produtos;
+
+SELECT codigo, descricao, codigo_tipo FROM produtos;
+
+-- Erro Select
+SELECT cod, desc, pre, ctp FROM produtos;
+
+-- Alias 
+SELECT p.codigo AS cod, p.descricao AS descr, p.preco AS pre, p.codigo_tipo AS ctp FROM produtos AS p;
+```
+
+**DML**
+
+```sql
+INSERT INTO tipos_produto (descricao) VALUES ('Notebook');
+
+INSERT INTO produtos(descricao, preco, codigo_tipo)
+VALUES ('Notebook', 1200, 3);
+
+UPDATE tipos_produto SET descricao = 'Nobreak' WHERE codigo = 3;
+
+UPDATE produtos  SET descricao = 'PC', preco = "2800" WHERE codigo = 5;
+
+UPDATE produtos SET codigo_tipo = 1 WHERE codigo_tipo = 3;
+
+DELETE FROM tipos_produto WHERE codigo = 3;
+
+DELETE FROM produtos;
+```
+
+**DDL**
+
+```sql
+-- Create
+-- CREATE DATABASE secao04;
+
+-- Create
+CREATE TABLE tipos_produto(
+	codigo INTEGER PRIMARY KEY AUTOINCREMENT,
+	descricao TEXT NOT NULL
+);
+
+-- Create
+CREATE TABLE produtos(
+	codigo INTEGER PRIMARY KEY AUTOINCREMENT, 
+	descricao TEXT NOT NULL,
+	preco REAL NOT NULL,
+	codigo_tipo INTEGER NOT NULL,
+	FOREIGN KEY(codigo_tipo) REFERENCES tipos_produto(codigo)
+);
+
+-- Alter
+ALTER TABLE tipos_produto ADD peso REAL;
+
+-- Verificando se o novo campo foi realmente adicionado
+SELECT * FROM tipos_produtos;
+
+-- Drop 
+DROP TABLE tipos_produtos;
+
+-- Não existe o comando abaixo no SQLite. Basta deletar o arquivo do banco de dados;
+-- DROP DATABASE secao04;
+```
+
+**DCL**
+
+Não existem comandos `GRANT` e `REVOKE` no SQLite.
+
+**DTL**
+
+```sql
+-- CREATE DATABASE secao04;
+
+CREATE TABLE tipos_produto(
+	codigo INTEGER PRIMARY KEY AUTOINCREMENT,
+	descricao TEXT NOT NULL
+);
+
+CREATE TABLE produtos(
+	codigo INTEGER PRIMARY KEY AUTOINCREMENT, 
+	descricao TEXT NOT NULL,
+	preco REAL NOT NULL,
+	codigo_tipo INTEGER NOT NULL,
+	FOREIGN KEY(codigo_tipo) REFERENCES tipos_produto(codigo)
+);
+
+INSERT INTO tipos_produto (descricao) VALUES ('Computador');
+INSERT INTO tipos_produto (descricao) VALUES ('Impressora');
+
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Desktop', '1200', 1);
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Laptop', '1800', 1);
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Impr. Jato Tinta', '300', 2);
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Impr. Laser', '500', 2);
+
+
+-- c) Vamos consultar os dados da tabela tipos_produto;
+SELECT * FROM tipos_produto;
+
+-- d) Já temos a tabela tipos_produto, então podemos iniciar a transação;
+
+-- Begin Transaction 
+BEGIN TRANSACTION;
+
+	INSERT INTO tipos_produto (descricao) VALUES ('Notebook');
+	INSERT INTO tipos_produto (descricao) VALUES ('Nobreak');
+
+-- Commit
+COMMIT;
+
+-- Vamos checar se os dados foram realmente salvos:
+SELECT * FROM tipos_produto;
+
+-- Roll Back
+
+-- a) Vamos iniciar uma nova transação
+BEGIN TRANSACTION;
+
+-- b) Inserir uns dados (poderia ser insert, update, delete, etc)
+INSERT INTO tipos_produto (descricao) VALUES ('Tablet');
+INSERT INTO tipos_produto (descricao) VALUES ('Baterias');
+
+-- Vamos checar se os dados foram salvos mesmo sem o commit:
+SELECT * FROM tipos_produto;
+
+-- Veja que aparentemente tudo está funcionando normalmente. Mas se tivéssemos efetuado o commit não teríamos como fazer o rollback;
+
+-- c) Efetuando o roll back
+ROLLBACK;
+
+-- Vamos checar se os dados foram desfeitos pelo rollback:
+SELECT * FROM tipos_produto;
+
+-- Sim!
+
+-- OBS: Como o campo id da tabela é auto incremento, os dois inserts que fizemos descartaram os valores dos campos removidos. Isso significa que os ids utilizamos não serão reutilizados.
+
+-- Só para efeito de comparação, vamos iniciar uma nova transação, inserir dados e commitar e então tentar o rollback
+
+-- a) Vamos iniciar uma nova transação
+BEGIN TRANSACTION;
+
+-- b) Inserir uns dados (poderia ser insert, update, delete, etc)
+INSERT INTO tipos_produto (descricao) VALUES ('Tablet');
+INSERT INTO tipos_produto (descricao) VALUES ('Baterias');
+
+-- c) Commitar
+COMMIT;
+
+-- d) Consultar os dados
+SELECT * FROM tipos_produto;
+
+-- e) Tentar o rollback (Não é possível efetuar o rollback após commitar)
+ROLLBACK;
+
+-- f) Consultar os dados
+SELECT * FROM tipos_produto;
+
+-- Note que a transação não foi desfeita.
+```
