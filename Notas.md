@@ -3653,3 +3653,371 @@ SELECT * FROM tipos_produto;
 
 -- Note que a transação não foi desfeita.
 ```
+
+### Código da seção 5
+
+**Consultas**
+
+```sql
+CREATE DATABASE secao05;
+
+CREATE TABLE tipos_produto(
+	codigo INTEGER PRIMARY KEY AUTOINCREMENT,
+	descricao TEXT NOT NULL
+);
+
+CREATE TABLE produtos(
+	codigo INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+	descricao TEXT NOT NULL,
+	preco REAL NOT NULL,
+	codigo_tipo INTEGER NOT NULL,
+	FOREIGN KEY (codigo_tipo) REFERENCES tipos_produto(codigo)
+);
+
+INSERT INTO tipos_produto (descricao) VALUES ('Computador');
+INSERT INTO tipos_produto (descricao) VALUES ('Impressora');
+
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Desktop', 1200, 1);
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Laptop', 1800, 1);
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Impr. Jato Tinta', 300, 2);
+INSERT INTO produtos (descricao, preco, codigo_tipo) VALUES ('Impr. Laser', 500, 2);
+
+-- Select
+-- SELECT * FROM tipos_produto WHERE codigo = 1;
+
+-- SELECT codigo, descricao FROM tipos_produto WHERE descricao = 'Computador';
+
+-- SELECT * FROM produtos WHERE preco <= 300;
+
+-- SELECT codigo, descricao, codigo_tipo FROM produtos WHERE descricao = 'Laptop';
+
+-- Alias 
+SELECT p.codigo AS cod, p.descricao AS desc, p.preco AS pre, p.codigo AS ctp FROM produtos AS p WHERE p.codigo = 3;
+```
+
+**Consultas em múltiplas tabelas**
+
+```sql
+SELECT * FROM tipos_produto;
+SELECT * FROM produtos;
+
+-- Conulsta em multiplas tabelas
+SELECT p.codigo AS 'Codigo', p.descricao AS 'Descricao', p.preco AS 'Preco', tp.descricao AS 'Tipo Produto' 
+	FROM produtos AS p, tipos_produto AS tp
+    WHERE p.codigo_tipo = tp.codigo;
+
+-- Usando INNER JOIN
+SELECT
+    p.codigo AS 'Código',
+    p.descricao AS 'Descrição',
+    p.preco AS 'Preço',
+    tp.descricao AS 'Tipo de Produto'
+FROM produtos AS p
+INNER JOIN tipos_produto AS tp
+ON p.codigo_tipo = tp.codigo;
+```
+
+**Junções**
+
+```sql
+
+CREATE TABLE profissoes(
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	cargo TEXT NOT NULL
+);
+
+CREATE TABLE clientes(
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	nome TEXT NOT NULL,
+	data_nascimento TEXT NOT NULL,
+	telefone TEXT NOT NULL,
+	id_profissao INTEGER NOT NULL,
+	FOREIGN KEY (id_profissao) REFERENCES profissoes(id)
+);
+
+CREATE TABLE consumidor(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    contato TEXT NOT NULL,
+    endereco TEXT NOT NULL,
+    cidade TEXT NOT NULL,
+    cep TEXT NOT NULL,
+    pais TEXT NOT NULL
+);
+
+INSERT INTO profissoes (cargo) VALUES ('Programador');
+INSERT INTO profissoes (cargo) VALUES ('Analista de Sistemas');
+INSERT INTO profissoes (cargo) VALUES ('Suporte');
+INSERT INTO profissoes (cargo) VALUES ('Gerente');
+
+INSERT INTO clientes (nome, data_nascimento, telefone, id_profissao) VALUES ('João Pereira', '1981-06-15', '1234-5688', 1);
+INSERT INTO clientes (nome, data_nascimento, telefone, id_profissao) VALUES ('Ricardo da Silva', '1973-10-10', '2234-5669', 2);
+INSERT INTO clientes (nome, data_nascimento, telefone, id_profissao) VALUES ('Felipe Oliveira', '1987-08-01', '4234-5640', 3);
+INSERT INTO clientes (nome, data_nascimento, telefone, id_profissao) VALUES ('Mário Pirez', '1991-02-05', '5234-5621', 1);
+
+INSERT INTO consumidor (nome, contato, endereco, cidade, cep, pais) VALUES ('Alfredo Nunes', 'Maria Nunes', 'Rua da paz, 47', 'São Paulo', '123.456-87', 'Brasil');
+INSERT INTO consumidor (nome, contato, endereco, cidade, cep, pais) VALUES ('Ana Trujillo', 'Guilherme Souza', 'Rua Dourada, 452', 'Goiânia', '232.984-23', 'Brasil');
+INSERT INTO consumidor (nome, contato, endereco, cidade, cep, pais) VALUES ('Leandro Veloz', 'Pedro Siqueira', 'Rua Vazia, 72', 'São Paulo', '936.738-23', 'Brasil');
+
+
+-- Junção de produto cartesiano
+SELECT c.id, c.nome, c.data_nascimento, c.telefone, p.cargo 
+	FROM clientes AS c, profissoes AS p
+    WHERE c.id_profissao = p.id;
+
+
+-- Inner Join
+SELECT c.id, c.nome, c.data_nascimento, c.telefone, p.cargo
+FROM clientes AS c INNER JOIN profissoes AS p
+ON  c.id_profissao = p.id;
+
+-- Left Outer Join
+SELECT * FROM clientes
+LEFT OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id;
+
+-- Right Outer Join - Não Funciona no SQLite
+SELECT * FROM clientes
+RIGHT OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id;
+
+-- Full Outer Join Não Funciona no SQLite
+SELECT * FROM clientes
+FULL OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id;
+
+-- Full Outer Join Versão MySQL - Não Funciona no SQLite
+SELECT * FROM clientes
+LEFT OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id
+UNION
+SELECT * FROM clientes
+RIGHT OUTER JOIN profissoes
+ON clientes.id_profissao = profissoes.id;
+
+-- Cross Join
+SELECT c.id, c.nome, c.data_nascimento, c.telefone, p.cargo
+FROM clientes AS c
+CROSS JOIN profissoes AS p;
+
+-- Self Join
+SELECT a.nome AS Consumidor1, b.nome AS Consumidor2, a.cidade
+FROM consumidor AS a
+INNER JOIN consumidor AS b
+ON a.id <> b.id
+AND a.cidade = b.cidade
+ORDER BY a.cidade;
+```
+
+**Funções de agregação**
+
+```sql
+CREATE TABLE categorias(
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	nome TEXT NOT NULL
+);
+
+CREATE TABLE produtos(
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	descricao TEXT NOT NULL,
+	preco_venda REAL NOT NULL,
+	preco_custo REAL NOT NULL,
+	id_categoria INTEGER NOT NULL,
+	FOREIGN KEY (id_categoria) REFERENCES categorias(id)
+);
+
+INSERT INTO categorias (nome) VALUES ('Material Escolar');
+INSERT INTO categorias (nome) VALUES ('Acessório Informática');
+INSERT INTO categorias (nome) VALUES ('Material Escritório');
+INSERT INTO categorias (nome) VALUES ('Game');
+
+INSERT INTO produtos (descricao, preco_venda, preco_custo, id_categoria) VALUES ('Caderno', 5.45, 2.3, 1);
+INSERT INTO produtos (descricao, preco_venda, preco_custo, id_categoria) VALUES ('Caneta', 1.20, 0.45, 1);
+INSERT INTO produtos (descricao, preco_venda, preco_custo, id_categoria) VALUES ('Pendrive 32GB', 120.54, 32.55, 2);
+INSERT INTO produtos (descricao, preco_venda, preco_custo, id_categoria) VALUES ('Mouse', 17.00, 4.30, 2);
+
+-- max
+-- SELECT MAX(preco_venda) FROM produtos;
+
+-- min
+-- SELECT MIN(preco_venda) FROM produtos;
+
+-- avg
+-- SELECT AVG(preco_venda) FROM produtos;
+
+-- round
+-- SELECT ROUND(AVG(preco_venda), 3) FROM produtos;
+
+-- count
+-- SELECT COUNT(preco_venda) AS Quantidade FROM produtos WHERE id_categoria = 1;
+
+-- group by
+-- SELECT c.id, c.nome, MAX(p.preco_venda) FROM produtos AS p, categorias AS c WHERE c.id = p.id_categoria GROUP BY c.id;
+
+-- having
+SELECT id_categoria, MAX(preco_venda) FROM produtos GROUP BY id_categoria HAVING MAX(preco_venda) > 10;
+```
+
+**Funções de agrupamento e ordenação**
+
+```sql
+-- CREATE DATABASE agrupamento;
+
+
+CREATE TABLE tipos(
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	nome TEXT NOT NULL
+);
+
+CREATE TABLE fabricantes(
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	nome TEXT NOT NULL
+);
+
+CREATE TABLE produtos(
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	nome TEXT NOT NULL,
+	id_fabricante INTEGER REFERENCES fabricantes(id) NOT NULL,
+	quantidade INTEGER NOT NULL,
+	id_tipo INTEGER NOT NULL,
+	FOREIGN KEY(id_tipo) REFERENCES tipos(id)
+);
+
+INSERT INTO tipos (nome) VALUES ('Console');
+INSERT INTO tipos (nome) VALUES ('Notebook');
+INSERT INTO tipos (nome) VALUES ('Celular');
+INSERT INTO tipos (nome) VALUES ('Smartphone');
+INSERT INTO tipos (nome) VALUES ('Sofá');
+INSERT INTO tipos (nome) VALUES ('Armário');
+INSERT INTO tipos (nome) VALUES ('Refrigerador');
+
+INSERT INTO fabricantes (nome) VALUES ('Sony');
+INSERT INTO fabricantes (nome) VALUES ('Dell');
+INSERT INTO fabricantes (nome) VALUES ('Microsoft');
+INSERT INTO fabricantes (nome) VALUES ('Samsung');
+INSERT INTO fabricantes (nome) VALUES ('Apple');
+INSERT INTO fabricantes (nome) VALUES ('Beline');
+INSERT INTO fabricantes (nome) VALUES ('Magno');
+INSERT INTO fabricantes (nome) VALUES ('CCE');
+INSERT INTO fabricantes (nome) VALUES ('Nintendo');
+
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Playstation 3', 1, 100, 1);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Core 2 Duo 4GB RAM 500GB HD', 2, 200, 2);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Xbox 360 120GB', 3, 350, 1);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('GT-I6220 Quad band', 4, 300, 3);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('iPhone 4 32GB', 5, 50, 4);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Playstation 2', 1, 100, 1);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Sofá Estofado', 6, 200, 5);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Armário de Serviço', 7, 50, 6);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Refrigerador 420L', 8, 200, 7);
+INSERT INTO produtos (nome, id_fabricante, quantidade, id_tipo) VALUES ('Wii 120GB', 8, 250, 1);
+
+
+-- Group By
+SELECT t.nome AS Tipo, f.nome AS Fabricante, SUM(p.quantidade) AS 'Quantidade em Estoque' 
+	FROM tipos AS t, fabricantes AS f, produtos AS p 
+    	WHERE t.id = p.id_tipo AND f.id = p.id_fabricante 
+    	GROUP BY t.nome, f.nome;
+
+
+-- Having
+SELECT t.nome AS Tipo, f.nome AS Fabricante, SUM(p.quantidade) AS 'Quantidade em Estoque' 
+	FROM tipos AS t, fabricantes AS f, produtos AS p 
+    	WHERE t.id = p.id_tipo AND f.id = p.id_fabricante 
+    	GROUP BY t.nome, f.nome
+    	HAVING SUM(p.quantidade) > 200;
+
+-- Order By ASC
+SELECT * FROM produtos;
+
+SELECT id, nome, id_tipo, id_fabricante, quantidade  FROM produtos ORDER BY id ASC;
+
+-- Order by DESC
+SELECT id, nome, id_tipo, id_fabricante, quantidade FROM produtos ORDER BY quantidade DESC;
+```
+
+**Funções de data e hora**
+
+```sql
+-- SELECT date();
+
+-- SELECT time();
+
+-- SELECT datetime();
+
+-- SELECT strftime('%d/%m/%Y') AS 'Data';
+
+--SELECT strftime('%H:%M:%S') AS 'Hora';
+
+-- SELECT strftime('%d/%m/%Y %H:%M:%S') AS 'Data Hora';
+
+-- SELECT datetime('now', 'localtime');
+
+-- SELECT time('now', 'localtime');
+
+SELECT datetime(CURRENT_TIMESTAMP, 'localtime');
+```
+
+**Subconsultas**
+
+```sql
+-- CREATE DATABASE subconsulta;
+
+
+CREATE TABLE escritorios(
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	pais TEXT NOT NULL
+);
+
+CREATE TABLE funcionarios(
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	nome TEXT NOT NULL,
+	sobrenome TEXT NOT NULL,
+	id_escritorio INTEGER NOT NULL,
+	FOREIGN KEY(id_escritorio) REFERENCES escritorios(id)
+);
+
+CREATE TABLE pagamentos(
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	salario REAL NOT NULL,
+	data TEXT NOT NULL,
+	id_funcionario INTEGER NOT NULL,
+	FOREIGN KEY(id_funcionario) REFERENCES funcionarios(id)
+);
+
+INSERT INTO escritorios (pais) VALUES ('Brasil');
+INSERT INTO escritorios (pais) VALUES ('Estados Unidos');
+INSERT INTO escritorios (pais) VALUES ('Alemanha');
+INSERT INTO escritorios (pais) VALUES ('França');
+
+INSERT INTO funcionarios (nome, sobrenome, id_escritorio) VALUES ('Pedro', 'Souza', 1);
+INSERT INTO funcionarios (nome, sobrenome, id_escritorio) VALUES ('Sandra', 'Rubin', 2);
+INSERT INTO funcionarios (nome, sobrenome, id_escritorio) VALUES ('Mikail', 'Schumer', 3);
+INSERT INTO funcionarios (nome, sobrenome, id_escritorio) VALUES ('Olivier', 'Gloçan', 4);
+
+INSERT INTO pagamentos (id_funcionario, salario, data) VALUES (1, 5347.55, '2019-03-17');
+INSERT INTO pagamentos (id_funcionario, salario, data) VALUES (2, 9458.46, '2019-03-17');
+INSERT INTO pagamentos (id_funcionario, salario, data) VALUES (3, 4669.67, '2019-03-17');
+INSERT INTO pagamentos (id_funcionario, salario, data) VALUES (4, 2770.32, '2019-03-17');
+
+
+-- Exemplo 1
+SELECT nome, sobrenome FROM funcionarios WHERE id_escritorio IN (SELECT id FROM escritorios WHERE pais = 'Brasil');
+
+-- Sem subconsulta
+SELECT nome, sobrenome FROM funcionarios, escritorios AS e WHERE id_escritorio = e.id AND e.pais = 'Brasil'; 
+
+-- Exemplo 2
+SELECT f.nome, f.sobrenome, e.pais, p.salario 
+	FROM pagamentos AS p, funcionarios AS f, escritorios AS e
+	WHERE f.id_escritorio = e.id 
+		AND f.id = p.id_funcionario
+		AND salario = (SELECT MAX(salario) FROM pagamentos);
+
+-- Exemplo 3
+SELECT f.nome, f.sobrenome, e.pais, p.salario 
+	FROM pagamentos AS p, funcionarios AS f, escritorios AS e
+	WHERE f.id_escritorio = e.id 
+		AND f.id = p.id_funcionario
+		AND salario < (SELECT AVG(salario) FROM pagamentos);
+```
