@@ -4038,9 +4038,7 @@ O projeto MongoDB foi escrito na linguagem C++, é open-source e teve sua prmiei
 
 O MongoDB é um dos bancos de dados NoSQL mais utilizados atualmente por ser extremamente eficiente para se trabalhar com grandes quantidades de dados. Dentre as empresas que o utilizam, destacam-se: Adobe, Amadeus, Amazon, Bosch e AstraZenica.
 
-### O que é NoSQL
-
-NoSQL significa *Not Only SQL* (não somente SQL). No MongoDB não utilizamos comandos SQL.
+### Coleções e documentos
 
 Nos bancos de dados relacionais temos tabelas, já no MongoDB temos algo chamado de "coleções". Dentro delas temos o que chamamos de "documentos". Esses documentos se parecem bastante com objetos do JavaScript ou arquivos JSON com chaves e valores.
 
@@ -4072,59 +4070,106 @@ Um documento dentro de outro seria uma alternativa ao uso de duas tabelas difere
 
 Dependendo da sua experiência com programação, fazer consultas no MongoDB também pode ser mais fácil do que em SQL.
 
+Em uma coleção podemos ter vários documentos. Podemos ter várias coleções diferentes. Por exemplo, podemos ter uma coleção contendo usuários, posts de um blog e comentários. Cada uma dessas coleções pode ter vários documentos com dados respectivos a cada coleção.
 
+Um documento da coleção "posts de blog":
 
+```json
+{
+   "title":"My first blog post",
+   "author":"Yoshi",
+   "tags":["video games","reviews"],
+   "upvotes":20,
+   "body":"Lorem ipsum...",
+   "_id":Object("ai5eg8H9Pk12")
+}
+```
 
+Cada objeto tem que ter um id para identificá-lo e o próprio MongoDB dá um id para um documento quando você o cria. No caso acima, o id é `"_id":Object("ai5eg8H9Pk12")`.
 
+Um documento pode ter como valor um outro documento ou um array de documentos. Nesse caso, chamamos esse tipo de documento de "documento aninhado".
 
+Veja um exemplo:
 
+```json
+{
+   "title":"My first blog post",
+   "author":{
+      "name":"Yoshi",
+      "email":"yoshi@email.com",
+      "role":"Game Reviewer"
+   },
+   "tags":["video games","reviews"],
+   "upvotes":20,
+   "body":"Lorem ipsum...",
+   "_id":Object("ai5eg8H9Pk12")
+}
+```
 
+### MongoDB Compass
 
+Usando a ferramenta MongoDB Compass criaremos um banco de dados chamado "bookstore" e criaremos uma coleção chamada "books". Também criaremos um documento dentro desta coleção:
 
+```json
+/** 
+* Paste one or more documents here
+*/
+{
+   // o id é criado automaticamente e pode ser deletado se desejado
+   // o próprio programa adiciona ele de novo no final
+  "_id": {
+    "$oid": "65035656e97c7a590ff14b85" 
+  },
+  "title": "Name of the Wind",
+  "author": "Patric Rothfuss",
+  "pages": 500,
+  "genres": ["fantasy", "magical"],
+  "rating": 9
+}
+```
 
+Se você for adicionar mais de um documento de uma vez, coloque-os dentro de colchetes:
 
+```json
+[
+  {
+    "title": "The Final Empire",
+    "author": "Brandon Sanderson",
+    "pages": 450,
+    "genres": ["fantasy", "dystopian"],
+    "rating": 8
+  },
+  {
+    "title": "The Way of Kings",
+    "author": "Brandon Sanderson",
+    "pages": 350,
+    "genres": ["fantasy", "dystopian"],
+    "rating": 9
+  },
+  {
+    "title": "The Call of the Weird",
+    "author": "Louis Theroux",
+    "pages": 350,
+    "genres": ["non-fiction", "strange", "comedy"],
+    "rating":7
+  }
+]
+```
 
----
+### MongoDB Shell
 
-Depois de tudo instalado devidamente, entre no CMD, digite `mongosh`.
+Para entrar na shell a partir de um terminal, digite `mongosh`. O próprio Compass já tem uma shell embutida e você pode usá-la.
 
 Alguns comandos:
 
-* `use meubanco`: entra em um banco de dados existente, e se ele não existir, cria um novo banco de dados;
+* `use nome`: entra em um banco de dados existente, e se ele não existir, cria um novo banco de dados (se uma coleção for adicionada);
 * `db`: retorna em qual banco de dados você está conectado;
 * `help`: mostra uma lista de comandos que você pode executar;
 * `show dbs`: retorna os nomes dos bancos de dados existentes;
 * `show collections`: retorna as coleções do banco atual;
+* `cls`: limpa a tela;
+* `var`: cria uma variável. Uso: `var nome = "yoshi"`;
+* `exit`: exits the shell;
 
-Note que se seu banco de dados estiver completamente vazio, o nome dele não vai ser mostrado quando você utilizar o comando `show dbs`.
-
-### Trabalhando com coleções
-
-Uma coleção é iniciada quando colocamos um dado dentro dela. Vamos criar uma coleção chamada "pessoas".
-
-```
-db.pessoas.insert(
-{
-   "nome": "Felicity Jones",
-   "email": "felicity@gmail.com"
-}
-)
-```
-
-Como você pode ver, a estrutura de uma coleção é uma estrutura chave-valor.
-
-
-https://onecompiler.com/mysql/3zhwmzu7m
-o código tá nos downloads
-
-Curso de modelagem de dados
-https://www.youtube.com/watch?v=wdNA_hQAscY&list=PLdoTFRH60cIASgUnYlQUTqAQsUg1dlKGQ&ab_channel=ProgramarIsCool
-
-Curso de normalização
-https://www.youtube.com/watch?v=URKIELxrGSc&list=PLdoTFRH60cIB7Eqj9EmydOr_WUNzYNs6U&ab_channel=ProgramarIsCool
-
-Curso de fundamentos do SGBDR MySQL
-https://www.youtube.com/playlist?list=PLdoTFRH60cIDpkdoMp-Yv8hqNwInrJg_s
-
-Use w3 schools to learn deeper
+### Adicionando novos documentos
 
