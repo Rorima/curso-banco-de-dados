@@ -4173,3 +4173,69 @@ Alguns comandos:
 
 ### Adicionando novos documentos
 
+Para adicionar uma documentos a uma coleção precisamos primeiramente nos referir a coleção. Como queremos nos referir a coleção "books", escreveremos `db.books`. Usaremos um método chamado `insertOne`, que é usado para inserir um documento de cada vez na nossa coleção. Dentro do método passamos um argumento, que é o objeto que representa o livro que queremos adicionar: 
+
+```json
+db.books.insertOne(
+   {
+      "title": "The Color of Magic",
+      "author": "Terry Pratchett",
+      "pages": 300,
+      "genres": ["fantasy", "magic"],
+      "rating": 7
+   }
+)
+```
+
+No terminal, você pode tanto adicionar o código inteiro em uma só linha quanto também pode escrever linha por linha, separadas por ENTER.
+
+Você pode também inserir um documento em uma coleção que ainda não existe. Olhe o seguinte código:
+
+```json
+db.authors.insertOne({
+   "name": "Brandon Sanderson",
+   "age": 60
+})
+```
+
+Ele vai criar uma nova coleção inserir o documento.
+
+Podemos também inserir vários documentos ao mesmo tempo usando o método `insertMany`. Coloque os documentos entre colchetes:
+
+```json
+db.books.insertMany([
+   {
+      "title": "The Light Fantastic",
+      "author": "Terry Pratchett",
+      "pages": 250,
+      "genres": ["fantasy"],
+      "rating": 6
+   },
+   {
+      "title": "Dune",
+      "author": "Frank Herbert",
+      "pages": 500,
+      "genres": ["sci-fi", "dystopian"],
+      "rating": 10
+   }
+])
+```
+
+https://www.youtube.com/watch?v=FLl9m4XwbqQ&list=PL4cUxeGkcC9h77dJ-QJlwGlZlTd4ecZOA&index=7&ab_channel=NetNinja
+0m
+
+
+https://onecompiler.com/mysql/3zhwmzu7m
+o código tá nos downloads
+
+Curso de modelagem de dados
+https://www.youtube.com/watch?v=wdNA_hQAscY&list=PLdoTFRH60cIASgUnYlQUTqAQsUg1dlKGQ&ab_channel=ProgramarIsCool
+
+Curso de normalização
+https://www.youtube.com/watch?v=URKIELxrGSc&list=PLdoTFRH60cIB7Eqj9EmydOr_WUNzYNs6U&ab_channel=ProgramarIsCool
+
+Curso de fundamentos do SGBDR MySQL
+https://www.youtube.com/playlist?list=PLdoTFRH60cIDpkdoMp-Yv8hqNwInrJg_s
+
+Use w3 schools to learn deeper
+
