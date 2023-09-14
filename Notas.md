@@ -4021,3 +4021,110 @@ SELECT f.nome, f.sobrenome, e.pais, p.salario
 		AND f.id = p.id_funcionario
 		AND salario < (SELECT AVG(salario) FROM pagamentos);
 ```
+
+## MongoDB
+
+**Observação**
+
+O curso ensina o MongoDB na versão 4.0. No tempo em que estou estudando, a versão é a 7.0, e me parece que algumas coisas mudaram bastante. Sendo assim, decidi estudar um outro curso, no Youtube mesmo, para aprender como o MongoDB funciona.
+
+[Este](https://www.youtube.com/playlist?list=PL4cUxeGkcC9h77dJ-QJlwGlZlTd4ecZOA) foi o curso que usei.
+
+---
+
+O MongoDB é um poderoso banco de dados não relacional (NoSQL) que armazena **documentos** dentro de **coleções**. O importante é entender que no final das contas, o MongoDB é um banco de dados que podemos utilizar para armazenar dados. A grande diferença é que por ele não ser um banco de dados relacional, não precisa haver qualquer tipo de relação entre os documentos armazenados.
+
+O projeto MongoDB foi escrito na linguagem C++, é open-source e teve sua prmieira versão lançada em 11 de fevereiro de 2009. A criadora foi a empresa 10gen, que atualmente chama-se MongoDB Inc.
+
+O MongoDB é um dos bancos de dados NoSQL mais utilizados atualmente por ser extremamente eficiente para se trabalhar com grandes quantidades de dados. Dentre as empresas que o utilizam, destacam-se: Adobe, Amadeus, Amazon, Bosch e AstraZenica.
+
+### O que é NoSQL
+
+NoSQL significa *Not Only SQL* (não somente SQL). No MongoDB não utilizamos comandos SQL.
+
+Nos bancos de dados relacionais temos tabelas, já no MongoDB temos algo chamado de "coleções". Dentro delas temos o que chamamos de "documentos". Esses documentos se parecem bastante com objetos do JavaScript ou arquivos JSON com chaves e valores.
+
+Exemplo de documento:
+
+```json
+{
+   "title":"Name of the Wind",
+   "rating":9,
+   "pages":400
+}
+```
+
+Podemos ter documentos dentro de documentos:
+
+```json
+{
+   "title":"Name of the Wind",
+   "rating":9,
+   "pages":400,
+   "author":{
+      "first_name":"John",
+      "last_name":"Doe"
+   }
+}
+```
+
+Um documento dentro de outro seria uma alternativa ao uso de duas tabelas diferentes em SQL. Também é possível ter duas coleções diferentes se você preferir.
+
+Dependendo da sua experiência com programação, fazer consultas no MongoDB também pode ser mais fácil do que em SQL.
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+Depois de tudo instalado devidamente, entre no CMD, digite `mongosh`.
+
+Alguns comandos:
+
+* `use meubanco`: entra em um banco de dados existente, e se ele não existir, cria um novo banco de dados;
+* `db`: retorna em qual banco de dados você está conectado;
+* `help`: mostra uma lista de comandos que você pode executar;
+* `show dbs`: retorna os nomes dos bancos de dados existentes;
+* `show collections`: retorna as coleções do banco atual;
+
+Note que se seu banco de dados estiver completamente vazio, o nome dele não vai ser mostrado quando você utilizar o comando `show dbs`.
+
+### Trabalhando com coleções
+
+Uma coleção é iniciada quando colocamos um dado dentro dela. Vamos criar uma coleção chamada "pessoas".
+
+```
+db.pessoas.insert(
+{
+   "nome": "Felicity Jones",
+   "email": "felicity@gmail.com"
+}
+)
+```
+
+Como você pode ver, a estrutura de uma coleção é uma estrutura chave-valor.
+
+
+https://onecompiler.com/mysql/3zhwmzu7m
+o código tá nos downloads
+
+Curso de modelagem de dados
+https://www.youtube.com/watch?v=wdNA_hQAscY&list=PLdoTFRH60cIASgUnYlQUTqAQsUg1dlKGQ&ab_channel=ProgramarIsCool
+
+Curso de normalização
+https://www.youtube.com/watch?v=URKIELxrGSc&list=PLdoTFRH60cIB7Eqj9EmydOr_WUNzYNs6U&ab_channel=ProgramarIsCool
+
+Curso de fundamentos do SGBDR MySQL
+https://www.youtube.com/playlist?list=PLdoTFRH60cIDpkdoMp-Yv8hqNwInrJg_s
+
+Use w3 schools to learn deeper
+
