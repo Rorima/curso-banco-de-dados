@@ -4351,7 +4351,7 @@ db.books.insertMany([
       title: "The Light Fantastic",
       author: "Terry Pratchett",
       pages: 250,
-      rating: 6,
+      rating: 7,
       genres: ["fantasy", "magic"],
       reviews: [
          {name: "Luigi", body: "It was pretty good!"},
@@ -4395,3 +4395,83 @@ db.books.insertMany([
 
 #### Consultas complexas e operadores
 
+Operadores em MongoDB são identificados pelo cifrão `$`. Para usá-los, use o método `find()`, digite a chave, e como valor coloque um novo documento. A chave do novo documento vai ser o operador, e o valor vai ser o valor para preencher o seu requisito.
+
+Maior que - `$gt`:
+
+```json
+db.books.find({rating: {$gt: 7}})
+```
+
+Menor que - `$lt`:
+
+```json
+db.books.find({rating: {$lt: 7}})
+```
+
+Maior que ou igual a - `$gte`:
+
+```json
+db.books.find({rating: {$gte: 7}})
+```
+
+Menor que ou igual a - `$lte`:
+
+```json
+db.books.find({rating: {$lte: 7}})
+```
+
+Mais um exemplo:
+
+```json
+db.books.find({rating: {$gte: 6}, author: "Patrick Rothfuss"})
+```
+
+Operador ou:
+
+O operador ou requer uma lista de documentos, que serão os filtros aplicados.
+
+```json
+db.books.find({$or: [{rating: 8}, {rating: 9}]})
+db.books.find({$or: [{rating: 8}, {author: "Terry Pratchett"}]})
+```
+
+Vários operadores:
+
+```json
+db.books.find({$or: [{pages: {$lt: 300}}, {pages: {$gt: 400}}]})
+```
+
+#### Operadores `$in` e  `$nin`
+
+O operador `$in` mostra resultados que estão dentro do array que você disponibiliza. No exemplo abaixo, será retornado todos os livros que têm uma avaliação de 7, 8 e 9.
+
+```json
+db.books.find({rating: {$in: [7, 8, 9]}})
+```
+
+O mesmo pode ser feito utilizando o operador `$or`, mas a maneira acima é mais fácil:
+
+```json
+db.books.find({$or: [{rating: 7}, {rating: 8}, {rating: 9}]})
+```
+
+O operador `$nin` mostra todos os resultados que não estão dentro do array que você disponibilizou. No exemplo abaixo, será retornado todos os livros que têm uma avaliação diferente de 8, 9 e 10.
+
+```json
+db.books.find({rating: {$nin: [8, 9, 10]}})
+```
+
+#### Consultando arrays
+
+A consulta de arrays é um pouco diferente das consultas normais. Vamos buscar todos os livros que tenham como gênero "fantasia":
+
+```json
+db.books.find({genres: "fantasy"})
+```
+
+Porque estamos consultando dentro de um array, o MongoDB vai ver se o valor existe no array e vai retornar tal elemento, juntamente com todos os elementos que tenham "fantasy" em seus arrays.
+
+2min44seg
+
+https://www.youtube.com/watch?v=zFzR2mCHhTk&list=PL4cUxeGkcC9h77dJ-QJlwGlZlTd4ecZOA&index=12&ab_channel=NetNinja
