@@ -4162,7 +4162,7 @@ Para entrar na shell a partir de um terminal, digite `mongosh`. O próprio Compa
 
 Alguns comandos:
 
-* `use nome`: entra em um banco de dados existente, e se ele não existir, cria um novo banco de dados (se uma coleção for adicionada);
+* `use nome_banco`: entra em um banco de dados existente, e se ele não existir, cria um novo banco de dados (se uma coleção for adicionada);
 * `db`: retorna em qual banco de dados você está conectado;
 * `help`: mostra uma lista de comandos que você pode executar;
 * `show dbs`: retorna os nomes dos bancos de dados existentes;
@@ -4171,9 +4171,9 @@ Alguns comandos:
 * `var`: cria uma variável. Uso: `var nome = "yoshi"`;
 * `exit`: exits the shell;
 
-### Adicionando novos documentos
+#### Adicionando novos documentos
 
-Para adicionar uma documentos a uma coleção precisamos primeiramente nos referir a coleção. Como queremos nos referir a coleção "books", escreveremos `db.books`. Usaremos um método chamado `insertOne`, que é usado para inserir um documento de cada vez na nossa coleção. Dentro do método passamos um argumento, que é o objeto que representa o livro que queremos adicionar: 
+Para adicionar documentos a uma coleção, precisamos primeiramente nos referir a coleção. Como queremos nos referir a coleção "books", escreveremos `db.books`. Usaremos um método chamado `insertOne`, que é usado para inserir um documento de cada vez na nossa coleção. Dentro do método passamos um argumento, que é o objeto que representa o livro que queremos adicionar: 
 
 ```json
 db.books.insertOne(
@@ -4221,21 +4221,177 @@ db.books.insertMany([
 ])
 ```
 
-https://www.youtube.com/watch?v=FLl9m4XwbqQ&list=PL4cUxeGkcC9h77dJ-QJlwGlZlTd4ecZOA&index=7&ab_channel=NetNinja
-0m
+#### Buscando documentos
 
+O MongoDB nos dá um método para buscar por documentos em uma coleção. O nome do método é `find()`, e ele retorna os primeiros 20 itens da coleção.
 
-https://onecompiler.com/mysql/3zhwmzu7m
-o código tá nos downloads
+```json
+db.books.find() // Retorna os primeiros 20 livros
+```
 
-Curso de modelagem de dados
-https://www.youtube.com/watch?v=wdNA_hQAscY&list=PLdoTFRH60cIASgUnYlQUTqAQsUg1dlKGQ&ab_channel=ProgramarIsCool
+Se você quiser mostrar mais 20 novos itens, você pode digitar `it`, que significa "iterar", e dar ENTER.
 
-Curso de normalização
-https://www.youtube.com/watch?v=URKIELxrGSc&list=PLdoTFRH60cIB7Eqj9EmydOr_WUNzYNs6U&ab_channel=ProgramarIsCool
+##### Usando filtros
 
-Curso de fundamentos do SGBDR MySQL
-https://www.youtube.com/playlist?list=PLdoTFRH60cIDpkdoMp-Yv8hqNwInrJg_s
+Você também pode usar filtros como na interface gráfica. Basta colocar as características que você deseja dentro do método `find()`.
 
-Use w3 schools to learn deeper
+```json
+db.books.find({author: "Terry Pratchett"})
+// Mais específico
+db.books.find({author: "Terry Pratchett"}, rating: 7)
+```
+
+**Especificando campos visíveis**
+
+É possível dizer quais campos queremos que a consulta retorne. Fazemos isso através de um segundo argumento, e colocamos o valor 1 (true) para as chaves das quais queremos os valores:
+
+```json
+db.books.find({author: "Brandon Sanderson"}, {title: 1, author: 1})
+```
+
+Também é possível usar o segundo argumento sem especificar o primeiro. Assim você consegue uma lista de todos os livros, mas mostrando somente os campos que você deseja. Para isso, deixe o primeiro argumento como um documento vazio.
+
+```json
+db.books.find({}, {title: 1, author: 1})
+```
+
+**`findOne()`**
+
+Com este método você pode encontrar um item pelo seu id:
+
+```json
+db.books.findOne({_id: ObjectId("6503629e44dd3993fdb80608")})
+```
+
+Também podemos encontrar outras propriedades, como o título ou o autor. Se houver outro livro com o mesmo autor, ele vai retornar o primeiro que encontrar:
+
+```json
+db.books.findOne({author: 'Terry Pratchett'})
+```
+
+##### Organizando e limitando dados
+
+Para organizar e limitar dados devemos utilizar mais métodos, um atrás do outro, prática que é chama de "method chaining" ou "corrente de métodos".
+
+O método `count()` conta quantos elementos foram retornados na consulta:
+
+```json
+db.books.find().count()
+db.books.find({author: "Brandon Sanderson"}).count()
+```
+
+O método `limit()` limita quantos resultados são retornados:
+
+```json
+db.books.find().limit(3)
+```
+
+O método `sort()` organiza os resultados. Coloque como argumento a chave pela qual você quer que os resultados sejam organizados. O valor pode ser 1 ou -1, para ordem crescente e decrescente respectivamente.
+
+```json
+db.books.find().sort({title: 1})
+db.books.find().sort({rating: -1})
+db.books.find().sort({rating: -1}).limit(3)
+```
+
+#### Documentos aninhados
+
+Vimos que um documento é composto por chave e valor. Podemos também colocar como valor de uma chave um outro documento, ou ainda um *array* de documentos, e isso é chamado de documento aninhado.
+
+```json
+{
+   "title": "The Way of Kings",
+   "genres": ["fantasy", "sci-fi"],
+   "rating": 9,
+   "author": "Brandon Sanderson",
+   "_id": ObjectId("ai5eg7H9Pk12"),
+   "stock": {
+      "count": 21,
+      "price": 7.99
+   },
+   "reviews": [
+      {"name": "Great Read!", "body": "Lorem ipsum..."},
+      {"name": "So so, I guess", "body": "Lorem ipsum..."},
+      {"name": "My fav every book", "body": "Lorem ipsum..."}
+   ]
+}
+```
+
+Poderíamos criar também uma nova coleção para manter as reviews. Se esse fosse o caso, tériamos que fazer duas consultas para termos os livros e as reviews. No caso acima, onde as reviews já estão junto dos livros, podemos acessar tudo em uma só consulta. Poderíamos também fazer de maneira híbrida, deixando somente as últimas reviews nos livros e criar uma nova coleção com todas as reviews, assim quando o usuário clicar para ver todas as reviews, a consulta seria feita da coleção de reviews.
+
+##### Inserindo documentos aninhados
+
+Apagaremos todos os livros e colocaremos de novo com a estrutura nova. É mais fácil do que editar um a um. Falaremos sobre deleção nas próximas seções, mas para deletar todos os documentos de uma coleção digite o seguinte código:
+
+```json
+db.books.deleteMany({})
+```
+
+Inserindo um documento aninhado:
+
+```json
+db.books.insertOne({
+   title: "The Way of Kings",
+   author: "Brandon Sanderson",
+   rating: 9,
+   pages: 400,
+   genres: ["fantasy"],
+   reviews: [
+      {name: "Yoshi", body: "Great book!"},
+      {name: "Mario", body: "So so."}
+   ]
+})
+```
+
+Inserindo vários documentos aninhados:
+
+```json
+db.books.insertMany([
+   {
+      title: "The Light Fantastic",
+      author: "Terry Pratchett",
+      pages: 250,
+      rating: 6,
+      genres: ["fantasy", "magic"],
+      reviews: [
+         {name: "Luigi", body: "It was pretty good!"},
+         {name: "Bowser", body: "Loved it!"},
+      ]
+   },
+   {
+      title: "The Name of the Wind",
+      author: "Patrick Rothfuss",
+      pages: 500,
+      rating: 10,
+      genres: ["fantasy"],
+      reviews: [
+         {name: "Peach", body: "One of my favs!"},
+      ]
+   },
+   {
+      title: "The Color of Magic",
+      author: "Terry Pratchett",
+      pages: 350,
+      rating: 8,
+      genres: ["fantasy", "magic"],
+      reviews: [
+         {name: "Luigi", body: "It was OK!"},
+         {name: "Bowser", body: "Really good book!"},
+      ]
+   },
+   {
+      title: "1984",
+      author: "George Orwell",
+      pages: 300,
+      rating: 6,
+      genres: ["sci-fi", "dystopian"],
+      reviews: [
+         {name: "Peach", body: "Not my cup of tea."},
+         {name: "Mario", body: "Meh..."},
+      ]
+   }
+])
+```
+
+#### Consultas complexas e operadores
 
