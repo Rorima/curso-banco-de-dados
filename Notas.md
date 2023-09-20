@@ -4470,8 +4470,25 @@ A consulta de arrays é um pouco diferente das consultas normais. Vamos buscar t
 db.books.find({genres: "fantasy"})
 ```
 
-Porque estamos consultando dentro de um array, o MongoDB vai ver se o valor existe no array e vai retornar tal elemento, juntamente com todos os elementos que tenham "fantasy" em seus arrays.
+Porque estamos consultando dentro de um array, o MongoDB vai ver se o valor existe no array e vai retornar os itens que tenham "fantasy" em seus arrays de gênero.
 
-2min44seg
+É possível ser específico também, buscando um array com uma combinação específica de itens. Utilize a estrutura de array. Dessa maneira, apenas os livros que tem aquele array específico serão mostrados nos resultados.
 
-https://www.youtube.com/watch?v=zFzR2mCHhTk&list=PL4cUxeGkcC9h77dJ-QJlwGlZlTd4ecZOA&index=12&ab_channel=NetNinja
+```json
+db.books.find({genres: ["fantasy"]})
+```
+
+Com o operador `$all` é possível verificar se há uma combinação de itens em um array. Eu quero saber quais livros têm o gênero "dystopian" e "sci-fi", independente se tiver outros gêneros. Esta é a consulta para fazer isso:
+
+```json
+db.books.find({genres: {$all: ["dystopian", "sci-fi"]}})
+```
+
+Para consultar documentos aninhados, devemos utilizar o ponto. Utilizamos o nome da chave, o ponto e o nome da chave do documento interno. Precisamos colocar tudo isso dentro de aspas para não dar erro. Olhe o seguinte código: 
+
+```json
+// Buscando todos os livros que receberam uma review de Luigi
+db.books.find({"reviews.name": "Luigi"})
+```
+
+https://www.youtube.com/watch?v=hq7gGo-1CgM&list=PL4cUxeGkcC9h77dJ-QJlwGlZlTd4ecZOA&index=13&ab_channel=NetNinja
