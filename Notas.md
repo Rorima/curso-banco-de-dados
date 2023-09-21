@@ -4553,3 +4553,348 @@ O operador `$each` pode colocar vários valores em um array.
 ```json
 db.books.updateOne({_id: ObjectId("6509d4e92c14f38ba0f477c5")}, {$push: {genres: {$each: ["Drama", "Fiction"]}}})
 ```
+
+### Código do curso
+
+#### Inserindo dados
+
+```json
+db.inscricoes.insertMany([
+	{
+		"aluno": "Paula Fernandes",
+		"data": new Date(),
+		"curso": {
+			"nome": "Programação para Internet"
+		}
+	},
+	{
+		"aluno": "Fernanda da Silva",
+		"data": new Date(),
+		"curso": {
+			"nome": "Ciência da Computação"
+		},
+		"notas": [9.0, 7.0, 8],
+		"skills": [
+			{
+				"nome": "Python",
+				"nivel": "avançado"
+			},
+			{
+				"nome": "Banco de Dados",
+				"nivel": "avançado"
+			}
+		]
+	},
+	{
+		"aluno": "Fabiano Perez",
+		"data": new Date(),
+		"curso": {
+			"nome": "Programação para Internet"
+		},
+		"skills": [
+			{
+				"nome": "Python",
+				"nivel": "básico"
+			}
+		]
+	}
+])
+
+// Fazendo uma consulta para verificar os dados:
+db.inscricoes.find().pretty()
+```
+
+O método `pretty()` faz com que os dados sejam mostrados de maneira mais legível.
+
+#### Consultando dados
+
+```json
+// Mostrando a coleção
+db.inscricoes.find().pretty()
+
+// Buscando todas as pessoas que tenham como habilidade a linguagem Python
+db.inscricoes.find(
+	{
+		"skills.nome": "Python"
+	}
+)
+
+// Pessoas que tenham como habilidade Python e o nível seja avançado
+db.inscricoes.find(
+	{
+		"skills.nome": "Python",
+		"skills.nivel": "avançado"
+	}
+)
+
+// Procurando as pessoas que estejam fazendo o curso de Programação Web
+db.inscricoes.find(
+	{
+		"curso.nome": "Programação para Internet"
+	}
+)
+
+// Procurando pessoas que fazem Ciência da Computação e Programação Web
+db.inscricoes.find(
+	{
+		$or: [
+			{"curso.nome": "Ciência da Computação"},
+			{"curso.nome": "Programação para Internet"}
+		]
+	}
+)
+
+// Buscando um aluno específico
+db.inscricoes.find(
+	{
+		"nome": "Fabiano Perez"
+	}
+)
+
+// Usando o operador $or
+db.inscricoes.find(
+	{
+		$or: [
+			{"curso.nome": "Ciência da Computação"},
+			{"curso.nome": "Programação para Internet"}
+		],
+		"aluno": "Fabiano Perez"
+	}
+)
+
+// Alunos que tenham o nível de Python avançado ou intermediário
+db.inscricoes.find(
+	{
+		"skills.nome": "Python",
+		"skills.nivel": {
+			$in: ["avançado", "intermediário"]
+		}
+	}
+)
+```
+
+#### Atualizando dados
+
+Adicionando os dados primeiro:
+
+```json
+db.inscricoes.insertMany([
+	{
+		"aluno": "Paula Fernandes",
+		"data": new Date(),
+		"curso": {
+			"nome": "Programação para Internet"
+		}
+	},
+	{
+		"aluno": "Fernanda da Silva",
+		"data": new Date(),
+		"curso": {
+			"nome": "Ciência da Computação"
+		},
+		"notas": [9.0, 7.0, 8],
+		"skills": [
+			{
+				"nome": "Python",
+				"nivel": "avançado"
+			},
+			{
+				"nome": "Banco de Dados",
+				"nivel": "avançado"
+			}
+		]
+	},
+	{
+		"aluno": "Fabiano Perez",
+		"data": new Date(),
+		"curso": {
+			"nome": "Programação para Internet"
+		},
+		"skills": [
+			{
+				"nome": "Python",
+				"nivel": "básico"
+			}
+		]
+	},
+	{
+		"aluno": "Guilherme Dantas",
+		"data": new Date(),
+		"curso": {
+			"nome": "Programação para internet"
+		},
+		"notas": [7, 8.5, 10]
+	},
+	{
+		"aluno": "Angelna Souza",
+		"data": new Date(),
+		"curso": {
+			"nome": "Programação para internet"
+		},
+		"notas": [7.4, 9.5, 9.4]
+	},
+	{
+		"aluno": "William Douglas",
+		"data": new Date(),
+		"curso": {
+			"nome": "Programação para internet"
+		},
+		"notas": [6.4, 3.5, 6.4]
+	}
+	
+])
+```
+
+Atualizando dados:
+
+```json
+// Atualizando um nome
+db.inscricoes.updateOne(
+  {"aluno": "Angelna Souza"},
+  {$set: {"aluno": "Angelina Souza"}}
+)
+
+db.inscricoes.find({"nome": "Angelina Souza"})
+
+// Atualizando o nome de vários cursos
+db.inscricoes.updateMany(
+  {"aluno": {$in: ["Guilherme Dantas", "Angelina Souza", "William Douglas"]}},
+  {$set: {"curso.nome": "Programação para Internet"}}
+)
+
+db.inscricoes.find(
+  {
+    "aluno": {$in: ["Guilherme Dantas", "Angelina Souza", "William Douglas"]}
+  }
+).pretty()
+
+// Removendo um aluno
+db.inscricoes.deleteOne({"nome": "Angelina Souza"})
+
+db.inscricoes.find({"curso.nome": "Programação para Internet"}, {"aluno": 1})
+
+// Utilizando o $push
+db.inscricoes.updateOne(
+	{"aluno": "William Douglas"},
+	{$push: {"notas": 6.7}
+})
+
+db.inscricoes.find({"aluno": "William Douglas"})
+
+// Utilizando o $each
+db.inscricoes.updateOne(
+	{"aluno": "William Douglas"},
+	{$push: {notas: {$each: [9.2, 5]}}}
+)
+
+db.inscricoes.find({"aluno": "William Douglas"}).pretty()
+```
+
+#### Ordenação e Limitação
+
+Adicionando alunos:
+
+```json
+db.inscricoes.insertMany([
+	{
+		"aluno": "Paula Fernandes",
+		"data": new Date(),
+		"curso": {
+			"nome": "Programação para Internet"
+		}
+	},
+	{
+		"aluno": "Fernanda da Silva",
+		"data": new Date(),
+		"curso": {
+			"nome": "Ciência da Computação"
+		},
+		"notas": [9.0, 7.0, 8],
+		"skills": [
+			{
+				"nome": "Python",
+				"nivel": "avançado"
+			},
+			{
+				"nome": "Banco de Dados",
+				"nivel": "avançado"
+			}
+		]
+	},
+	{
+		"aluno": "Fabiano Perez",
+		"data": new Date(),
+		"curso": {
+			"nome": "Programação para Internet"
+		},
+		"skills": [
+			{
+				"nome": "Python",
+				"nivel": "básico"
+			}
+		]
+	},
+	{
+		"aluno": "Guilherme Dantas",
+		"data": new Date(),
+		"curso": {
+			"nome": "Programação para Internet"
+		},
+		"notas": [7, 8.5, 10]
+	},
+	{
+		"aluno": "Angelina Souza",
+		"data": new Date(),
+		"curso": {
+			"nome": "Programação para Internet"
+		},
+		"notas": [7.4, 9.5, 9.4]
+	},
+	{
+		"aluno": "William Douglas",
+		"data": new Date(),
+		"curso": {
+			"nome": "Programação para Internet"
+		},
+		"notas": [6.4, 3.5, 6.4]
+	},
+	{
+		"aluno": "Jair Rodrigues",
+		"data_nascimento": new Date(1981, 06, 19),
+		"curso": {
+			"nome": "História"
+		},
+		"notas": [6, 7, 8, 5.5]
+	},
+	{
+		"aluno": "Bruna Marquezi",
+		"data_nascimento": new Date(1995, 02, 06),
+		"curso": {
+			 "nome": "História"
+		},
+		"notas": [10, 9.7, 6.5, 8.7]
+	}
+])
+```
+
+Filtrando as consultas:
+
+```json
+// Encontrando dados com valores maiores do que o especificado
+db.inscricoes.find({"notas": {$gt: 8.0}}).pretty()
+
+// Igual o maior
+db.inscricoes.find({"notas": {$gte: 8.0}}).pretty()
+
+// Encontrando apenas um valor
+db.inscricoes.findOne({"notas": {$gt: 7.7}})
+
+// Ordenando em ordem crescente
+db.inscricoes.find().sort({"aluno": 1}).pretty()
+
+// Ordenando em ordem decrescente
+db.inscricoes.find().sort({"aluno": -1}).pretty()
+
+// Limitando os resultados
+db.inscricoes.find().sort({"aluno": 1}).limit(3).pretty()
+```
