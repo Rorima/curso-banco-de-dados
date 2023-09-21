@@ -4271,7 +4271,7 @@ db.books.findOne({author: 'Terry Pratchett'})
 
 ##### Organizando e limitando dados
 
-Para organizar e limitar dados devemos utilizar mais métodos, um atrás do outro, prática que é chama de "method chaining" ou "corrente de métodos".
+Para organizar e limitar dados devemos utilizar mais métodos, um atrás do outro, prática que é chamada de "method chaining" ou "corrente de métodos".
 
 O método `count()` conta quantos elementos foram retornados na consulta:
 
@@ -4296,7 +4296,7 @@ db.books.find().sort({rating: -1}).limit(3)
 
 #### Documentos aninhados
 
-Vimos que um documento é composto por chave e valor. Podemos também colocar como valor de uma chave um outro documento, ou ainda um *array* de documentos, e isso é chamado de documento aninhado.
+Vimos que um documento é composto por chave e valor. Podemos também colocar como valor de uma chave um outro documento, ou ainda um *array* de documentos, e isso é chamado de "documento aninhado".
 
 ```json
 {
@@ -4317,7 +4317,7 @@ Vimos que um documento é composto por chave e valor. Podemos também colocar co
 }
 ```
 
-Poderíamos criar também uma nova coleção para manter as reviews. Se esse fosse o caso, tériamos que fazer duas consultas para termos os livros e as reviews. No caso acima, onde as reviews já estão junto dos livros, podemos acessar tudo em uma só consulta. Poderíamos também fazer de maneira híbrida, deixando somente as últimas reviews nos livros e criar uma nova coleção com todas as reviews, assim quando o usuário clicar para ver todas as reviews, a consulta seria feita da coleção de reviews.
+Poderíamos criar também uma nova coleção para manter as *reviews*. Se esse fosse o caso, tériamos que fazer duas consultas para termos os livros e as *reviews*. No caso acima, onde as *reviews* já estão junto dos livros, podemos acessar tudo em uma só consulta. Poderíamos também fazer de maneira híbrida, deixando somente as últimas *reviews* nos livros e criar uma nova coleção com todas as *reviews*, assim quando o usuário clicar para ver todas as *reviews*, a consulta seria feita da coleção de *reviews*.
 
 ##### Inserindo documentos aninhados
 
@@ -4395,7 +4395,7 @@ db.books.insertMany([
 
 #### Consultas complexas e operadores
 
-Operadores em MongoDB são identificados pelo cifrão `$`. Para usá-los, use o método `find()`, digite a chave, e como valor coloque um novo documento. A chave do novo documento vai ser o operador, e o valor vai ser o valor para preencher o seu requisito.
+Operadores em MongoDB são identificados pelo cifrão `$`. Para usá-los, use o método `find()`, digite a chave, e como valor coloque um par de chaves (`{}`). Na estrutura chave- valor, a chave vai ser o operador, e o valor vai ser o valor para preencher o seu requisito.
 
 Maior que - `$gt`:
 
@@ -4427,9 +4427,9 @@ Mais um exemplo:
 db.books.find({rating: {$gte: 6}, author: "Patrick Rothfuss"})
 ```
 
-Operador ou:
+Operador `$or`:
 
-O operador ou requer uma lista de documentos, que serão os filtros aplicados.
+O operador `$or` requer uma lista de objetos, que serão os filtros aplicados.
 
 ```json
 db.books.find({$or: [{rating: 8}, {rating: 9}]})
@@ -4491,4 +4491,65 @@ Para consultar documentos aninhados, devemos utilizar o ponto. Utilizamos o nome
 db.books.find({"reviews.name": "Luigi"})
 ```
 
-https://www.youtube.com/watch?v=hq7gGo-1CgM&list=PL4cUxeGkcC9h77dJ-QJlwGlZlTd4ecZOA&index=13&ab_channel=NetNinja
+#### Deletando documentos
+
+A deleção de documentos funciona de maneira parecida com a inserção. Há o `deleteOne()` e o `deleteMany()`
+
+```json
+db.books.deleteOne({_id: ObjectId("6509d4e92c14f38ba0f477c5")})
+```
+
+Deletando muitos documentos:
+
+```json
+// deletando todos os livros de Terry Pratchett
+db.books.deleteMany({author: "Terry Pratchett"})
+```
+
+#### Atualizando documentos
+
+Assim como para inserir e deletar, temos dois métodos para atualizar dados: `updateOne()` e `updateMany()`, respectivamente. Podemos utilizar o id para atualizar um documento. Utilizamos o operador `$set` para aplicar os novos valores.
+
+```json
+// mudando um só valor
+db.books.updateOne({_id: ObjectId("6509d4e92c14f38ba0f477c4")}, {$set: {rating: 9}})
+
+// mudando mais de um valor de uma vez
+db.books.updateOne({_id: ObjectId("6509d4e92c14f38ba0f477c4")}, {$set: {rating: 8, pages: 360}})
+```
+
+Atualizando muitos livros:
+
+```json
+db.books.updateMany({author: "Terry Pratchett"}, {$set: {author: "Terry Pratchet"}})
+```
+
+**O operador `$inc`**
+
+Este operador é muito útil se você não sabe o valor guardado em um documento e você quer aumentá-lo. Ele incrementa pelo valor que você desejar.
+
+```json
+// Incrementando as páginas em 2
+db.books.updateOne({_id: ObjectId("6509d4e92c14f38ba0f477c5")}, {$inc: {pages: 2}})
+
+// Decrementando as páginas em 2
+db.books.updateOne({_id: ObjectId("6509d4e92c14f38ba0f477c5")}, {$inc: {pages: -2}})
+```
+
+**Métodos `$push` and `$pull`**
+
+Estes métodos são usados para inserir e remover itens de uma array, respectivamente.
+
+```json
+db.books.updateOne({_id: ObjectId("6509d4e92c14f38ba0f477c5")}, {$push: {genres: "fantasy"}})
+
+db.books.updateOne({_id: ObjectId("6509d4e92c14f38ba0f477c5")}, {$pull: {genres: "fantasy"}})
+```
+
+**Inserindo múltiplos itens em um array**
+
+O operador `$each` pode colocar vários valores em um array.
+
+```json
+db.books.updateOne({_id: ObjectId("6509d4e92c14f38ba0f477c5")}, {$push: {genres: {$each: ["Drama", "Fiction"]}}})
+```
