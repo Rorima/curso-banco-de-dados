@@ -4790,7 +4790,7 @@ db.inscricoes.updateOne(
 db.inscricoes.find({"aluno": "William Douglas"}).pretty()
 ```
 
-#### Ordenação e Limitação
+#### Ordenação e limitação
 
 Adicionando alunos:
 
@@ -4897,4 +4897,86 @@ db.inscricoes.find().sort({"aluno": -1}).pretty()
 
 // Limitando os resultados
 db.inscricoes.find().sort({"aluno": 1}).limit(3).pretty()
+```
+
+#### Buscas mais complexas
+
+```json
+// Inserindo um novo campo em um documento existente
+db.inscricoes.updateOne(
+	{"aluno" : "Bruna Markezi"},
+	{
+		$set: {
+			"localizacao": {
+				"endereco": "Avenida Zulmira Borba, 1978"
+			}
+		}
+	}
+)
+
+// Para utilizar campos com coordenadas geográficas no MongoDB
+// precisamos ter um campo chamado 'coordinates' e especificar
+// o 'type'
+db.inscricoes.update(
+	{"aluno" : "Bruna Markezi"},
+	{
+		$set: {
+			"localizacao": {
+				"endereco": "Avenida Zulmira Borba, 1978",
+				"coordinates": [-20.388008, -54.577545],
+				"type": "Point"
+			}
+		}
+	}
+)
+```
+
+Buscando por dados de localização:
+
+```json
+// Informe qual é o campo que deve ser usado como índice de busca
+db.inscricoes.createIndex(
+	{
+		"localizacao": "2dsphere"
+	}
+)
+
+// Deve-se realizar uma consulta utilizando agregação
+db.inscricoes.aggregate(
+	[
+		{
+			$geoNear: {
+				"near": {
+					"coordinates": [-20.388008, -54.577546],
+					"type": "Point"
+				},
+				"distanceField": "distancia.calculada",
+				"spherical": true,
+				"num": 4
+			}
+		}
+	]
+)
+
+// OBS: Na consulta acima, estamos trazendo 4 resultados, sendo que o primeiro é o próprio elemento da busca.
+
+// Caso queiramos ignorar o primeiro resultado, então devemos informar isso na consulta.
+db.inscricoes.aggregate(
+	[
+		{
+			$geoNear: {
+				"near": {
+					"coordinates": [-20.388008, -54.577546],
+					"type": "Point"
+				},
+				"distanceField": "distancia.calculada",
+				"spherical": true,
+				"num": 4
+			}
+		},
+		{
+			$skip: 1
+		}
+	]
+).pretty()
 ```
