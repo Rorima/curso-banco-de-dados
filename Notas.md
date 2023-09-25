@@ -4980,3 +4980,75 @@ db.inscricoes.aggregate(
 	]
 ).pretty()
 ```
+
+## Redis
+
+O Redis (Remote Dictionary Server) é um banco de dados NoSQL open-source que trabalha com o conceito de chave-valor. Ele foi escrito em C por Salvatore Sanfilippo e teve sua versão inicial em 10 de maio de 2009.
+
+Este banco de dados trabalha com armazenamento de dados em memória, ou seja, não é em disco, e desta forma, ele é considerado extremamente rápido.
+
+Suas principais utilizações incluem: cache, gerenciamento de sessões e message broker.
+
+Atualmente o Redis é o banco de dados do tipo chave-valor mais utilizado no mundo.
+
+### Benefícios do uso do Redis
+
+**Desempenho muito rápido**
+
+Todos os dados do Redis residem na memória principal do seu servidor, em contraste com a maioria dos sistemas de gerenciamento de banco de dados que armazenam dados em disco ou SSDs. Ao eliminar a necessidade de acessar discos, bancos de dados na memória, como o Redis, evitam atrasos de tempo de busca e podem acessar dados com algoritmos mais simples que usam menos instruções de CPU. Operações comuns exigem menos do que 10 milissegundos para serem executadas.
+
+**Estruturas de dados na memória**
+
+O Redis permite que os usuários armazenem chaves que fazem o mapeamento para vários tipos de dados. O tipo de dado fundamental é uma *string*, que pode ser em formato de texto ou binário, e ter no máximo 512MB. O Redis também é compatível com listas de *strings* na ordem em que foram adicionadas, conjuntos de *strings* não ordenadas, conjuntos classificados ordenados de acordo com uma pontuação, *hashes* que armazenam uma lista de campos e valores e HyperLogs para contar os itens exclusivos de um conjunto de dados. Praticamente qualquer tipo de dado pode ser armazenado na memória usando o Redis.
+
+**Versatilidade e facilidade de uso**
+
+O Redis é disponibilizado com várias ferramentas que tornam o desenvolvimento e as operações mais rápidas e fáceis: o PUB/SUB (publisher-subscriber) para publicar mensagens nos canais que são entregues para os assinantes, o que é ótimo para sistemas de mensagens e chat; as chaves com TTL, que podem podem ter um tempo de vida útil determinado, após a qual elas se autoexcluem, o que ajuda a evitar sobrecarregar o banco de dados com itens desnecessários; os contadores atômicos, que garantem que condições de corrida não criem resultados incompatíveis; além da Lua, uma linguagem de *script* potente, porém leve.
+
+**Replicação e persistência**
+
+O Redis emprega uma arquitetura no estilo mestre/subordinado e é compatível com a replicação assíncrona em que os dados podem ser replicados para vários servidores subordinados. Isso pode disponibilizar desempenho de leitura melhorado (á medida que as solicitações podem ser divididas entre os servidores) e recuperação quando o servidor primário passar por uma interrupção.
+
+Para disponibilizar durabilidade, o Redis oferece compatibilidade com **snapshots point-in-time** (copiando o conjunto de dados do Redis no disco) e criando um **Append Only File** (AOF) para armazenar cada alteração de dados no disco conforme elas vão sendo gravadas. Os dois métodos permitem a restauração rápida dos dados do Redis no caso de uma interrupção.
+
+**Compatibilidade com a sua linguagem de desenvolvimento preferencial**
+
+Mais de cem clientes de código aberto estão disponíveis para os desenvolvedores do Redis. As ilnguagens compatíveis incluem Java, Python, PHP, C, C++, C#, JavaScript, Note.js, Ruby, R, Go e outras.
+
+### Casos de uso do Redis
+
+**Armazenamento em cache**
+
+O Redis inserido na "frente" de outro banco de dados cria um cache na memória com excelente desempenho para diminuir a latência de acesso, aumentar o *throughput* e facilitar a descarga de um banco de dados relacional ou NoSQL.
+
+**Gerenciamento de sessões**
+
+O Redis é altamente indicado para tarefas de gerenciamento de sessões. Basta usar o Redis como um armazenamento de chave-valor com o tempo de vida (TTL) correto nas chaves de sessão para gerenciar suas informações de sessão. Ogerenciamento de sessões é comumente exigido para aplicações on-line, como jogos, sites de comércio eletrônico e plataformas de mídia social.
+
+**Classificações em tempo real**
+
+Ao usar a estrutura de dados **Sorted Set** do Redis, os elementos são mantidos em uma lista classificada de acordo com suas pontuações. Isso facilita a criação de classificações dinâmicas para mostrar quem está vencendo o jogo, publicando as mensagens mais curtidas, ou qualquer outra coisa que demonstre quem está na liderança.
+
+**Limite de taxa**
+
+O Redis pode calcular e, quando necessário, acelerar a taxa dos eventos. Ao usar um contador do Redis associado a uma chave de API do cliente, você poderá contar o número de solicitações de acesso dentro de um determinado período e tomar as ações necessárias, caso um limite seja excedido. Os limitadores de taxa são usados comumente para limitar o número de publicaçõe sem um fórum, limitar a utilização de recursos e conter o impacto de remetentes de *spam*.
+
+**Filas**
+
+A estrutura de dados **List** facilita implementar uma fila leve e persistente. As listas oferecem operações atômicas, além de recursos de bloqueio, tornando-as adequadas para várias aplicações que exigem um agente de mensagens confiável ou uma lista circular.
+
+**Chat e sistema de mensagens**
+
+O Redis é compatível com PUB/SUB padrão com correspondência de padrões. Isso permite que o Redis seja compatível com salas de *chat* de alto desempenho, *streams* de comentários em tempo real e intercomunicações do servidor. Você também pode usar o PUB/SUB para ativar ações om base em eventos publicados.
+
+### Quem usa o Redis?
+
+* Twitter;
+* GitHub;
+* Weibo;
+* Pinterest;
+* Snapchat;
+* Craigslist;
+* Digg;
+* StackOverflow;
+* Flickr.
