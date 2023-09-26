@@ -5052,3 +5052,241 @@ O Redis é compatível com PUB/SUB padrão com correspondência de padrões. Iss
 * Digg;
 * StackOverflow;
 * Flickr.
+
+### Prática 1
+
+**Inserindo dados**
+
+Podemos configurar chaves e valores utilizando a palavra `set`.
+
+`set "usuarios_online" 42`
+
+Se foi adicionado com sucesso, você receberá um "OK" de volta. Você pode usar aspas duplas para declarar as chaves. Não se usa dois pontos para separar a chave do valor, apenas um espaço em branco.
+
+**Recuperando dados**
+
+Podemos pegar os dados de volta utilizando o `get`.
+
+`get "usuarios_online"`
+
+**Inserindo *strings***
+
+Podemos inserir *strings* rodeando elas por aspas simples:
+
+`set long_string 'This is a very long string of characters.'`
+
+**Atualizando dados**
+
+Para atualizar dados, basta utilizar o `set` de novo na mesma chave:
+
+```
+set nome 'João Silva'
+set nome 'José Oliveira'
+```
+
+**Deletando dados**
+
+Para deletar uma chave use a palavra `del` e o nome da chave:
+
+`del long_string`
+
+### Prática 2
+
+**Declarando e mostrando alguns dados**
+
+```
+set usuarios_online 42
+set nome 'John Doe'
+set data_nascimento '15/06/1981'
+get usuarios_online
+get nome
+get data_nascimento
+```
+
+**Vendo todas as chaves criadas**
+
+Para ver todas as chaves existentes em memória digite:
+
+`keys *`
+
+O asterisco significa que queremos todas as chaves.
+
+**Declarando chaves utilizando padrões**
+
+Podemos declarar chaves utilizando dois pontos, e assim podemos criar padrões nas chaves:
+
+```
+set nota:14-04-2019:matematica 8.5
+set nota:20-06-2019:historia 9.5
+set nota:22-06-2019:fisica 6.3
+set nota:02-05-2019:programacao 10
+```
+
+Aqui fizemos chaves que contêm o nome principal, que é `nota`, a data e a disciplina. Os valores são as notas.
+
+**Pesquisando por chaves padronizadas**
+
+Podemos pesquisar por essas chaves de maneira mais específica também:
+
+`keys nota*`
+
+Aqui pesquisamos todas as notas, não importando a data e nem a disciplina.
+
+Podemos pesquisar tambem por nomes específicos dentro da chave:
+
+`keys notas:*:matematica`
+
+Aqui buscamos somente as notas de matemática, não importando a data.
+
+`keys nota:*-06-*:*`
+
+Aqui buscamos por todas as notas do mês seis, não imoprtando o dia, o ano ou a disciplina.
+
+**Pesquisando por um número específico de caracteres**
+
+Também podemos utilizar o ponto de interrogação para buscar por uma quantidade específica de caracteres:
+
+`keys nota:*:??????`
+
+Aqui estamos pesquisando as notas de qualquer data, em que o nome da disciplina seja composto por seis caracteres.
+
+**Pesquisando por mais de um elemento na chave de uma só vez**
+
+Se quisermos por exemplo, ter todas as notas do mês quatro e do mês seis, precisaríamos usar colchetes. Eles permitem que os valores que forem colocados dentro deles sejam buscados:
+
+`keys nota:*-0[46]-*:*`
+
+Aqui estamos buscando por notas de um dia qualquer, do mês quatro ou seis, de um ano qualquer, de uma disciplina qualquer. O zero é um número em comum com o mês quatro e o mês seis, por isso ele foi colocado fora do parêntesis
+
+**Inserindo várias chaves e valores**
+
+Utilizando o comando `mset`é possível inserir várias chaves e valores de uma vez:
+
+`mset nota:03-07-2019:portugues 6 nota:05-07-2019:ingles 8.9 nota:10-07-2019:geografia 7.3`
+
+**Código completo**
+
+Código 1:
+
+```
+echo '#######################################'
+echo 'Inserindo dados'
+set usuarios_online 42
+set nome 'John Doe'
+set data_nascimento '15/06/1981'
+echo ' '
+echo ' '
+echo '#######################################'
+echo 'Recuperando dados'
+get usuarios_online
+get nome
+get data_nascimento
+echo ' '
+echo ' '
+echo '#######################################'
+echo 'Recuperando todas as chaves'
+keys *
+echo ' '
+echo ' '
+echo '#######################################'
+echo 'Inserindo chaves com padrões'
+set nota:14-04-2019:matematica 8.5
+set nota:20-06-2019:historia 9.5
+set nota:22-06-2019:fisica 6.3
+set nota:10-03-2019:ingles 6.4
+set nota:10-03-2019:geografia 7.5
+set nota:02-05-2019:programacao 10
+echo ' '
+echo ' '
+echo '#######################################'
+echo 'Recuperando chaves com padrões'
+keys notas:*:matematica
+keys nota:*-06-*:*
+keys nota:*:matematica
+keys nota:*:??????
+echo ' '
+echo ' '
+echo '#######################################'
+echo 'Recuperando vários valores de uma vez'
+keys nota:*-0[46]-*:*
+```
+
+Código 2:
+
+```
+echo '#######################################'
+echo 'Inderindo dados:'
+set estrutura 'promocao:produto:dia-mes-ano:valor valor'
+set promocao:ps4:20-05-2019:valor 1199.56
+set promocao:xbox306:20-05-2019:valor 1399.56
+set promocao:nintendo:20-05-2019:valor 2199.56
+set promocao:ps4:22-05-2019:valor 1150.56
+
+echo ''
+echo ''
+
+echo '#######################################'
+echo 'Recuperando dados:'
+
+echo ''
+
+echo 'Recuperando todas as chaves:'
+keys promocao:*
+
+echo ''
+
+echo 'Recuperando as chaves do ps4:'
+keys promocao:ps4*
+
+echo ''
+
+echo 'Recuperando as chaves pela data:'
+keys promocao:*:20*
+
+echo ''
+echo ''
+
+echo '#######################################'
+echo 'Inserindo vários valores:'
+mset nota:03-07-2019:portugues 6 nota:05-07-2019:ingles 8.9 nota:10-07-2019:geografia 7.3
+```
+
+### Prática 3
+
+**Inserindo dados utilizando *hashes***
+
+O Redis também nos permite utilizar *hashes*, que nos dá a liberdade de alocar vários valores em uma só chave.
+
+Não é possível utilizar o asterisco para consultar chaves *hashes*.
+
+Precisamos utilizar o `hset`
+
+```
+hset prova:21-06-2019:felicity historia 9.5
+hset prova:21-06-2019:felicity geografia 7.4
+hset prova:21-06-2019:felicity fisica 8.7
+hset prova:21-06-2019:felicity ingles 9
+hset prova:21-06-2019:felicity matematica 8.3
+```
+
+**Consultando dados feitos por *hashes***
+
+```
+hget prova:21-06-2019:felicity historia
+hget prova:21-06-2019:felicity ingles
+```
+
+**Retornando todas as chaves disponíveis para uma chave *hash***
+
+`hkeys prova:21-06-2019:felicity`
+
+**Removendo um campo**
+
+`hdel prova:21-06-2019:felicity ingles`
+
+**Adicionando vários valores para uma chave *hash***
+
+hmset prova:21-06-2019:angelina historia 6.4 fisica 9.2 ingles 10 matematica 8.3
+
+**Mostrando todos as chaves e valores**
+`hgetall prova:21-06-2019:angelina`
