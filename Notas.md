@@ -5390,3 +5390,37 @@ Esse comando retorna o item que foi retirado.
 
 ### Prática 4
 
+**Adicionando itens**
+
+```
+echo 'Adicionando itens à uma fila:'
+rpush fila:confirma:celular '(00) 00000-0001'
+rpush fila:confirma:celular '(00) 00000-0002'
+rpush fila:confirma:celular '(00) 00000-0003'
+echo ''
+
+echo 'Verificando quantos itens há na fila:'
+lrange fila:confirma:celular 0 -1
+echo ''
+```
+
+**Poupando recursos ao remover itens**
+
+Podemos ter vários itens em uma fila, e de acordo com que esses itens são retornados pelo `lpop`, vamos ficando sem itens. Chega uma hora em que não há nenhum item na fila, e assim o valor retornado será `(nil)`. Se você continuar usando o `lpop`, o sistema irá verificar continuamente se há um item a ser retornado, mas não vai achar. O nome disso é *Busy Wait*, ou "espera ocupada" em português. Isso é ruim pois o sistema gasta recursos verificando continuamente se há um item novo na fila.
+
+O Redis fornece um comando chamado `blpop`, que significa "block left pop", ou "bloquear remoção de item à esquerda". Devemos informar a ele o tempo em segundos que queremos que ele espere até que um novo item seja adicionado à fila. Assim, se a fila estiver vazia, ele vai esperar aquela quantidade de segundos e então vai verificar se há um item na fila. Se um item for adicionado à fila antes disso, ele vai parar o temporizador e vai retornar o item.
+
+```
+echo 'Removendo um item da fila e esperando dois segundos se não houver mais itens:'
+blpop fila:confirma:celular 2
+blpop fila:confirma:celular 2
+blpop fila:confirma:celular 2
+blpop fila:confirma:celular 2
+echo ''
+```
+
+Se você não sabe quanto tempo esperar, pode colocar um zero como tempo a ser esperado. Assim, o sistema irá ficar em espera até que um item seja adicionado à fila.
+
+`blpop fila:confirma:celular 2`
+
+### Prática 5
