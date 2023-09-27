@@ -5290,3 +5290,103 @@ hmset prova:21-06-2019:angelina historia 6.4 fisica 9.2 ingles 10 matematica 8.3
 
 **Mostrando todos as chaves e valores**
 `hgetall prova:21-06-2019:angelina`
+
+### Listas
+
+**Criandando uma lista e inserindo dados nela**
+
+Para criar uma lista, basta adicionar dados a ela. Você pode adicionar dados em uma lista utilizando o comando `lpush`, que significa "left push", ou "adicionar à esquerda" em português. Este comando adiciona um item à esquerda (no começo) da lista.
+
+```
+lpush ultimos_lancamentos 'O Hobbit'
+lpush ultimos_lancamentos 'Rocketman'
+lpush ultimos_lancamentos 'X-Men: Fenix Negra'
+lpush ultimos_lancamentos 'Homem-Aranha: Longe de Casa'
+lpush ultimos_lancamentos 'O Rei Leão'
+```
+
+**Mostrando os itens de uma lista**
+
+Utiliza-se o comando `lindex` mais o nome da lista e o índice do item para mostrar os itens individuais de uma lista. `lindex` significa "list index" ou "índice da lista" em português.
+
+```
+lindex ultimos_lancamentos 0
+lindex ultimos_lancamentos 1
+lindex ultimos_lancamentos 2
+lindex ultimos_lancamentos 3
+lindex ultimos_lancamentos 4
+```
+
+**Descobrindo quatnos itens há em uma lista**
+
+O comando `llen` retorna a quantidade de itens presentes em uma lista. `llen` significa "list length", ou "tamanho da lista" em português.
+
+`llen ultimos_lancamentos`
+
+**Adicionando um elemento ao final da lista**
+
+Utilize o comando `rpush` para adicionar itens à direita (no final) de uma lista. `rpush` significa "right push", ou "adicionar à direita" em português.
+
+`rpush ultimos_lancamentos 'O Senhor dos Anéis: A Sociedade do Anel'`
+
+**Mostrando vários itens de uma vez**
+
+O comando `lrange` mostra itens de um índice até outro. `lrange` significa "list range", ou "extensão da lista" em português. Logo após colocar o nome da lista, separe por espaços o índice inicial e o final.
+
+`lrange ultimos_lancamentos 0 2`
+
+Aqui estamos mostrando os itens presentes do índice 0 até o 2.
+
+**Excluindo itens de uma lista**
+
+Para excluir itens, usa-se o comando `ltrim`, que significa "list trim", ou "aparar lista" em português. A sintaxe dele é igual a do `lrange`. Ele deixa na lista somente os itens que estão entre os índices apresentados, e deleta todo o resto.
+
+`ltrim ultimos_lancamentos 3 5`
+
+Aqui, os itens 0, 1 e 2 foram deletados.
+
+### Filas
+
+Uma fila funciona mais ou menos como uma lista. A diferença é que um item só pode entrar no final e só pode ser retirado do início.
+
+**Criando uma fila**
+
+Com o seguinte código, estamos criando uma fila de números de telefone:
+
+```
+rpush fila:confirma:celular '(00) 00000-0000'
+rpush fila:confirma:celular '(00) 00000-0001'
+rpush fila:confirma:celular '(00) 00000-0002'
+rpush fila:confirma:celular '(00) 00000-0003'
+```
+
+**Mostrando dados**
+
+Mostraremos alguns dados da fila:
+
+```
+echo 'Mostrando quantos itens tem na fila:'
+llen fila:confirma:celular
+echo ''
+
+echo 'Mostrando todos os itens da fila:'
+lrange fila:confirma:celular 0 -1
+echo ''
+
+echo 'Mostrando o primeiro item da fila:'
+lindex fila:confirma:celular 0
+echo ''
+```
+
+Aqui o -1 representa o último item da fila.
+
+**Removendo itens**
+
+Utilizamos o comando `lpop` para remover o primeiro item de uma fila. `lpop` significa "left pop", ou "remover à esquerda" em português. Aqui não devemos utilizar o `ltrim`, por exemplo, pois se a fila está sendo atualizada a todo momento, pode ser que quando você escolher o último índice, a fila já tenha atualizado e adicionado mais um item, assim você perde itens novos, que acabaram de ser colocados na parte de trás da fila. O `lpop` é mais adequado para remover itens do início da fila sem comprometer os itens anteriores.
+
+`lpop fila:confirma:celular`
+
+Esse comando retorna o item que foi retirado.
+
+### Prática 4
+
