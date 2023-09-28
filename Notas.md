@@ -5289,6 +5289,7 @@ hget prova:21-06-2019:felicity ingles
 hmset prova:21-06-2019:angelina historia 6.4 fisica 9.2 ingles 10 matematica 8.3
 
 **Mostrando todos as chaves e valores**
+
 `hgetall prova:21-06-2019:angelina`
 
 ### Listas
@@ -5424,3 +5425,96 @@ Se você não sabe quanto tempo esperar, pode colocar um zero como tempo a ser e
 `blpop fila:confirma:celular 2`
 
 ### Prática 5
+
+**Inserindo dados**
+
+```
+hset jogador felicity 676
+hset jogador angelina 544
+hset jogador xuxa 666
+```
+
+**Verificando o tipo de dado**
+
+`type jogador`
+
+**Incrementando a pontuação para o tipo *hash***
+
+Para incrementar o valor de uma chave *hash*, utiliza-se o `hincrby`, que significa "hash increment by" ou "*hash* incrementar por". Colocamos o nome da chave e logo após o número pelo qual queremos incrementar o valor.
+
+`hincrby jogador felicity 4`
+
+**Incrementando a pontuação para o tipo *string***
+
+O `incr` incrementa por um por padrão. O `incrby` incrementa pelo número selecionado.
+
+```
+set idade 32 
+incr idade
+incrby idade 2
+```
+
+**Incrementando valor hash real**
+
+```
+hset produto nome 'carne de frango' peso 12.6
+hget produto nome
+hincrbyfloat produto peso 2.4
+```
+
+### Prática 6
+
+Quero implementar um sistema de pontuação no meu jogo para que eu saiba quem tem a maior pontuação. Além disso, quero ordenar os jogadores. Para isso precisaremos utilizar uma outra estrutura de dados, chamada "sorted set", ou "conjunto ordenado" em português. No Redis, o *sorted set* é representado pela letra "z".
+
+**Inserindo itens**
+
+O *sorted set* funciona de maneira diferente das outras estruturas de dados. Primeiro coloca-se o nome da chave, o valor pelo qual se quer ordenar, e os outros nomes na frente.
+
+```
+zadd jogador 689 felicity
+zadd jogador 544 angelina
+zadd jogador 666 xuxa
+zadd jogador 975 vanessa
+```
+
+**Identificando quantos itens há em um zset**
+
+`zcard jogador`
+
+**Recuperando itens**
+
+`zrange jogador 0 2`
+
+**Ordenando**
+
+Por padrão o Redis ordena do menor para o maior. Use o `zrevrange` para mostrar o conjunto de forma invertida.
+
+`zrevrange jogador 0 2`
+
+**Mostrando os nomes e os valores**
+
+`zrevrange jogador 0 2 withscores`
+
+**Mostrando somente a pontuação**
+
+`zscore jogador felicity`
+
+**Mostrando a posição**
+
+Do menor para o maior:
+
+`zrank jogador angelina`
+
+Do maior para o menor:
+
+`zrevrank jogador angelina`
+
+**Incrementando um *sorted set***
+
+`zincrby jogador 300 felicity`
+
+**Decrementando um *sorted set***
+
+`zincrby jogador -100 angelina`
+
+## CouchDB
