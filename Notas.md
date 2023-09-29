@@ -4987,7 +4987,7 @@ O Redis (Remote Dictionary Server) é um banco de dados NoSQL open-source que tr
 
 Este banco de dados trabalha com armazenamento de dados em memória, ou seja, não é em disco, e desta forma, ele é considerado extremamente rápido.
 
-Suas principais utilizações incluem: cache, gerenciamento de sessões e message broker.
+Suas principais utilizações incluem: cache, gerenciamento de sessões e *message broker*.
 
 Atualmente o Redis é o banco de dados do tipo chave-valor mais utilizado no mundo.
 
@@ -5003,7 +5003,7 @@ O Redis permite que os usuários armazenem chaves que fazem o mapeamento para v�
 
 **Versatilidade e facilidade de uso**
 
-O Redis é disponibilizado com várias ferramentas que tornam o desenvolvimento e as operações mais rápidas e fáceis: o PUB/SUB (publisher-subscriber) para publicar mensagens nos canais que são entregues para os assinantes, o que é ótimo para sistemas de mensagens e chat; as chaves com TTL, que podem podem ter um tempo de vida útil determinado, após a qual elas se autoexcluem, o que ajuda a evitar sobrecarregar o banco de dados com itens desnecessários; os contadores atômicos, que garantem que condições de corrida não criem resultados incompatíveis; além da Lua, uma linguagem de *script* potente, porém leve.
+O Redis é disponibilizado com várias ferramentas que tornam o desenvolvimento e as operações mais rápidas e fáceis: o PUB/SUB (publisher-subscriber) para publicar mensagens nos canais que são entregues para os assinantes, o que é ótimo para sistemas de mensagens e chat; as chaves com TTL, que podem ter um tempo de vida útil determinado, após a qual elas se autoexcluem, o que ajuda a evitar sobrecarregar o banco de dados com itens desnecessários; os contadores atômicos, que garantem que condições de corrida não criem resultados incompatíveis; além da Lua, uma linguagem de *script* potente, porém leve.
 
 **Replicação e persistência**
 
@@ -5013,17 +5013,19 @@ Para disponibilizar durabilidade, o Redis oferece compatibilidade com **snapshot
 
 **Compatibilidade com a sua linguagem de desenvolvimento preferencial**
 
-Mais de cem clientes de código aberto estão disponíveis para os desenvolvedores do Redis. As ilnguagens compatíveis incluem Java, Python, PHP, C, C++, C#, JavaScript, Note.js, Ruby, R, Go e outras.
+Mais de cem clientes de código aberto estão disponíveis para os desenvolvedores do Redis. As linguagens compatíveis incluem Java, Python, PHP, C, C++, C#, JavaScript, Note.js, Ruby, R, Go e outras.
 
 ### Casos de uso do Redis
 
 **Armazenamento em cache**
 
-O Redis inserido na "frente" de outro banco de dados cria um cache na memória com excelente desempenho para diminuir a latência de acesso, aumentar o *throughput* e facilitar a descarga de um banco de dados relacional ou NoSQL.
+O Redis inserido na "frente" de outro banco de dados cria um cache na memória com excelente desempenho para diminuir a latência de acesso, aumentar o *throughput*\* e facilitar a descarga de um banco de dados relacional ou NoSQL.
+
+\* *Throughput* singifica produção de *output*.
 
 **Gerenciamento de sessões**
 
-O Redis é altamente indicado para tarefas de gerenciamento de sessões. Basta usar o Redis como um armazenamento de chave-valor com o tempo de vida (TTL) correto nas chaves de sessão para gerenciar suas informações de sessão. Ogerenciamento de sessões é comumente exigido para aplicações on-line, como jogos, sites de comércio eletrônico e plataformas de mídia social.
+O Redis é altamente indicado para tarefas de gerenciamento de sessões. Basta usar o Redis como um armazenamento de chave-valor com o tempo de vida (TTL) correto nas chaves de sessão para gerenciar suas informações de sessão. O gerenciamento de sessões é comumente exigido para aplicações on-line, como jogos, sites de comércio eletrônico e plataformas de mídia social.
 
 **Classificações em tempo real**
 
@@ -5086,7 +5088,7 @@ set nome 'José Oliveira'
 
 **Deletando dados**
 
-Para deletar uma chave use a palavra `del` e o nome da chave:
+Para deletar uma chave, use a palavra `del` e o nome da chave:
 
 `del long_string`
 
@@ -5156,7 +5158,7 @@ Se quisermos por exemplo, ter todas as notas do mês quatro e do mês seis, prec
 
 `keys nota:*-0[46]-*:*`
 
-Aqui estamos buscando por notas de um dia qualquer, do mês quatro ou seis, de um ano qualquer, de uma disciplina qualquer. O zero é um número em comum com o mês quatro e o mês seis, por isso ele foi colocado fora do parêntesis
+Aqui estamos buscando por notas de um dia qualquer, do mês quatro ou seis, de um ano qualquer, de uma disciplina qualquer. O zero é um número em comum com o mês quatro e o mês seis, por isso ele foi colocado fora dos parêntesis.
 
 **Inserindo várias chaves e valores**
 
@@ -5286,7 +5288,7 @@ hget prova:21-06-2019:felicity ingles
 
 **Adicionando vários valores para uma chave *hash***
 
-hmset prova:21-06-2019:angelina historia 6.4 fisica 9.2 ingles 10 matematica 8.3
+`hmset prova:21-06-2019:angelina historia 6.4 fisica 9.2 ingles 10 matematica 8.3`
 
 **Mostrando todos as chaves e valores**
 
@@ -5438,7 +5440,7 @@ hset jogador xuxa 666
 
 `type jogador`
 
-**Incrementando a pontuação para o tipo *hash***
+**Incrementando a pontuação do tipo *hash***
 
 Para incrementar o valor de uma chave *hash*, utiliza-se o `hincrby`, que significa "hash increment by" ou "*hash* incrementar por". Colocamos o nome da chave e logo após o número pelo qual queremos incrementar o valor.
 
@@ -5518,3 +5520,133 @@ Do maior para o menor:
 `zincrby jogador -100 angelina`
 
 ## CouchDB
+
+O CouchDB é um banco de dados não relacional (NoSQL) open-source, orientado a documentos, escrito na linguagem Erlang pelo programador Damien katz, que teve sua primeira versão lançada em 2005.
+
+Apesar de "couch" singificar "sofá" em português, e o logo do CouchDB ser justamente um sofá, COUCH significa Cluster of Unreliable Commodity Hardware (conjunto de hardware de mercadoria não confiável).
+
+Daimen Katz definiou o CouchDB como um sistema de armazenamento de banco de dados para objetos de larga escala, e seu objetivo era tornar o CouchDB um banco de dados para a Internet, voltado à aplicações web.
+
+### Principais Características
+
+* Armazenamento em documento: Ele armazena os dados como documentos, com um ou mais pares de chave-valor, expressas em JSON;
+* Semântica ACID: Provê semântica ACID. Isso é possível graças ao Controle de Concorrência Multiversão, que permite que o CouchDB manipule um grande volume de leituras e escritas simultâneas e sem conflitos;
+* *Views* e índices com map/reduce: Os dados armazenados são estruturados usando-se views. No CouchDB, cada *view* é construída por uma função em JavaScript que atua como a operação map do map/reduce;
+* Arquitetura distribuída com replicação: O CouchDB foi desenvolvido com replicação bidirecional (ou sincronização) e operação off-line. Isso singifica que múltiplas réplicas podem ter suas cópias do mesmo dado, modificá-los e sincronizá-los mais tarde;
+* API REST: Todos os itens têm uma URI exclusiva, que são acessadas através do HTTP. O REST utiliza os métodos POST, GET, PUT, DELETE para as operações CRUD;
+* Consistência eventual: O CouchDB garante a consistência eventual para prover disponibilidade e tolerância a falhas.
+
+### Prática 1
+
+\* A Prática 1 foi feita exclusivamente pela ferramenta gráfica, que é bastante intuitiva. Sendo assim, não adicionei conteúdo aqui. \*
+
+### Prática 2
+
+Aplicações web e mobile consomem recursos através da Internet. O CouchDB fornece uma API REST, que por sua vez, fornece esses recursos. REST é o padrão do Protocolo HTTP. O protocolo HTTP possui métodos. Os principais são: 
+
+* `GET`: É utilizado todas as vezes que você acessa uma página; 
+* `POST`: É utilizado para criar um novo recurso na web, como preencher um formulário e enviar os dados;
+* `PUT`:É utilizado quando atualizar um recurso existente, como editar o nome de usuário em um site;
+* `DELETE`:É utilizado para deletar um recurso, como apagar uma conta em um site.
+
+Essas operações são chamadas de CRUD (Create - POST, Retrieve - GET, Update - PUT, Delete).
+
+#### Comandos
+
+O Postman foi utilizado para escrever os comandos deste tutorial. 
+
+Pode ser que alguns comandos não funcionem por falta de autorização. Para obter autorização, clique na aba "Authorization", escolha "Basic Auth" e então digite o usuário e a senha do CouchDB.
+
+Estes comandos devem ser digitados na barra de pesquisa do Postman.
+
+**Mostrar todos os bancos**
+
+Utilize o `GET`.
+
+`http://localhost:5984/_all_dbs`
+
+**Criar um banco de dados**
+
+Utilize o `PUT`.
+
+`http://localhost:5984/produtos`
+
+**Criando um documento**
+
+Utilize o `POST`. Clique na aba "Body" e escolha a opção "raw". Depois disso, você pode escrever seu arquivo JSON para enviar para o banco de dados.
+
+`http://localhost:5984/produtos`
+
+Adicione de um por um dos arquivos JSON:
+
+```
+{
+    "nome": "Playstation 4",
+    "preco": 1799.45
+}
+```
+```
+{
+    "nome": "Xbox 360",
+    "preco": 2133.23
+}
+```
+```
+{
+    "nome": "Nintendo Wii",
+    "preco": 1879.12
+}
+```
+```
+{
+    "nome": "Google Stadia",
+    "preco": 10.00
+}
+```
+
+**Recuperando todos os documentos de um banco**
+
+Use o `GET`.
+
+`http://localhost:5984/produtos/_all_docs`
+
+Ele vai trazer somente os metadados.
+
+Para conseguir ver os dados, digite o seguinte comando:
+
+`http://localhost:5984/produtos/_all_docs?include_docs=true`
+
+**Buscando itens pelo id**
+
+Use o `GET`.
+
+`http://localhost:5984/produtos/8b0152f5b017cdad9550d095530094bd`
+
+**Atualizando documentos**
+
+Utilize o `PUT`. Use o ID do item e na aba "Body", selecionada como "raw", coloque o documento atualizado.
+
+`http://localhost:5984/produtos/8b0152f5b017cdad9550d095530094bd`
+
+```
+{
+    "_id": "8b0152f5b017cdad9550d095530094bd",
+    "_rev": "1-8432d880be6a55b13fa41e75155fe061",
+    "nome": "Playstation 5 Series S",
+    "preco": 2799.45
+}
+```
+
+**Deletando documentos**
+
+Utilize o `DELETE`. Você vai precisar do id e da rev pra deletar um documento. Coloque o id do produto, seguido por um ponto de interrogação e o argumento `rev=`, seguido pelo código da rev.
+
+`http://localhost:5984/produtos/8b0152f5b017cdad9550d095530094bd?rev=2-6282f2bd522e3d6a5c307c55ac5e9224`
+
+**Deletando um banco de dados**
+
+Utilize o `DELETE`.
+
+`http://localhost:5984/produtos`
+
+### Prática 3
