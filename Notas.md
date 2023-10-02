@@ -5729,3 +5729,62 @@ Vários dos operadores do CouchDB são iguais aos do MongoDB.
 
 ## Firebase
 
+O Firebase é uma plataforma do Google que contém várias ferramentas e uma excelente infraestrutura para ajudar desenvolvedores web e *mobile* a criar aplicações de alta qualidade e performance.
+
+Criada pela empresa Firebase Inc, por James Tamplin e Andre Lee, e lançada em 2012, foi adquirida pela Google em 2014.
+
+O Firebase não é somente um banco de dados. É um conjunto de serviços e produtos que a torna uma plataforma muito utilizada atualmente.
+
+### Recursos do Firebase
+
+O Firebase contém, no momento, quatro seguimentos de serviços:
+
+**Develop**
+
+O Firebase Develop tem a missão de poupar tempo e fornecer um aplicativo de alta qualidade. Os seguintes recursos são oferecidos:
+
+* Realtime Database;
+   * O recurso **Realtime Database** é um poderoso banco de dados NoSQL hospedado em nuvem, em que os dados são armazenados como documentos JSON e sincronizados em tempo real com todos os clientes conectados.
+* Authentication;
+   * O recurso **Authentication** é essencial para aplicações que necessitam realizar autenticação, e desta forma, saber a identidade do usuário, além de manter o controle do acesso às aplicações. Com este recurso é possível ainda utilizar contas do Google, Facebook, Twitter e Github.
+* Cloud Messaging;
+   * O **Cloud Messaging** permite a entrega e recebimento de mensagens e notificações entre as plataformas iOS, Android e Web.
+* Storage;
+   * O **Storage** é últil para armazenar arquivos como imagens, vídeos e aúdio, além de outros conteúdos gerados por usuários.
+* Hosting;
+   * O Hosting é um serviço que oferta hospedagem para seu site (HTML, CSS e JavaScript), além de outros ativos fornecidos pelo desenvolvedor, como gráficos, fontes e ícones. Este servço possui certificado SSL configurado automaticamente e é ideal para aplicativos web.
+* Test Lab;
+   * O **Test Lab** fornece toda a infraestrutura em nível que você precisa para testar seus aplicativos Android, e mesmo que você não tenha escrito o código de teste para o *app*, o **Test Lab** pode operar no seu aplicativo automaticamente em busca de falhas.
+* Crash Reporting.
+   * O **Crash Reporting** cria relatórios de erro detalhados para os aplicativos Android e iOS. Os erros são agrupados em conjunto e são organizados de acordo com a gravidade do impacto para os usuários.
+
+**Grow**
+
+Além de todos os recursos para auxiliar no desenvolvimento das aplicações, o Firebase também dispobiniliza recursos voltados ao envolvimento e conquista dos usuários para a aplicação.
+
+* Notifications;
+   * Através deste recurso é possível gerenciar campanhas de notificações para seu *app*, e quando integrado ao **Firabase Analytics**, é possível entregar mensagens a um segmento específico de usuários.
+* Remote Config;
+   * O **Remote Config** armazena pares de chave-valor específicos pelo desenvolvedor, que permite alterar o comportamento e a aparência do aplicativo sem exigir que os usuários baixem uma atualização do *app*.
+* App Indexing;
+   * Com este recurso é possível aumentar a visibilidade do seu *app* em pesquisas do Google e do Now on Tap em dispositivos Android. Como recurso é dispobinilizado a possibilidade de iniciar o aplicativo diretamente dos resultados de busca se o *app* estiver instalado no dispositivo. Caso não esteja, é exibido uma opção para instalação do aplicativo.
+* Dynamic Links;
+* Invites;
+   * Esta é uma solução desenvolvida para indicações e compartilhamento de aplicativos. Ela permite que os usuários do *app* compartilhem o aplicativo ou o conteúdo por e-mail ou SMS.
+* AdWords.
+   * Este recurso é vinculado ao **Analytics** e permite mostrar anúncios direcionados a segmentos de usuários. Assim é possível otimizar o desempenho de uma campanha de *marketing* de forma eficaz.
+
+**Earn**
+
+Para lucrar com seus aplicativos através da exibição de anúncios, o Firebase disponibiliza o AdMod.
+
+* AdMod.
+   * Com este recurso é possível monetizar seus aplicativos *mobile* com publicidade segmentada dentro do aplicativo, e assim gerar receita sem prejudicar a experiência do usuário.
+
+**Analytics**
+
+O Firebase Analytics é uma solução gratuita e ilimitada, sendo considerada o coração do Firebase, e é utilizada para gerar métricas da aplicação, mensurar o comportamento dos usuários e etc.
+
+### Conclusão
+
+Conforme pudemos ver, o Firebase é muito mais do que um banco de dados. Ele fornece o que um desenvolvedor precisa para fazer aplicações web e *mobile*, desde o desenvolvimento e testes, até a publicação e divulgação do aplicativo.
