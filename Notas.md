@@ -5650,3 +5650,82 @@ Utilize o `DELETE`.
 `http://localhost:5984/produtos`
 
 ### Prática 3
+
+Crie um banco de dados chamado "produtos" e adicione os seguintes documentos:
+
+```json
+{
+   "_id": "8b0152f5b017cdad9550d0955300d2f3",
+   "nome": "Playstation 4",
+   "preco": 1755.34,
+   "estoque": 45
+}
+```
+```json
+{
+   "_id": "8b0152f5b017cdad9550d0955300e240",
+   "nome": "Xbox 360",
+   "preco": 1899.00,
+   "estoque": 50
+}
+```
+```json
+{
+   "_id": "8b0152f5b017cdad9550d0955300ec5a",
+   "nome": "Nintendo Wii",
+   "preco": 1689.34,
+   "estoque": 12
+}
+```
+```json
+{
+   "_id": "8b0152f5b017cdad9550d09553011292",
+   "nome": "Google Stadia",
+   "preco": 10.00,
+   "estoque": 100
+}
+```
+
+#### Consultando dados
+
+No Project Fauxton, escolha o banco de dados "produtos" e a opção "Run a Query with Mango", que é a ferramenta que iremos utilizar para realizar as consultas.
+
+Para consultar dados, utilizamos o `selector`. Ele permite definir os campos pelos quais podemos fazer uma busca.
+
+```json
+{
+   "selector": {
+      "_id": {
+         "$gt": null
+      }
+   }
+}
+```
+
+O código acima mostra todos os documentos no banco de dados. Estamos selecionando todos os dados em que o id é maior do que `null`.
+
+Outro código:
+
+```
+{
+   "selector": {
+      "preco": {
+         "$gt": 1700
+      }
+   }
+}
+```
+
+No código acima estamos selecionando todos os itens com o preço maior do que 1700.
+
+**Operadores**
+
+Vários dos operadores do CouchDB são iguais aos do MongoDB.
+
+* `$gt`: Maior que;
+* `$lt`: Menor que;
+* `$gte`: Maior que ou igual a;
+* `$lte`: Menor que ou igual a.
+
+## Firebase
+
