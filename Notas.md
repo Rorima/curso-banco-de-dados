@@ -5788,3 +5788,15 @@ O Firebase Analytics é uma solução gratuita e ilimitada, sendo considerada o 
 ### Conclusão
 
 Conforme pudemos ver, o Firebase é muito mais do que um banco de dados. Ele fornece o que um desenvolvedor precisa para fazer aplicações web e *mobile*, desde o desenvolvimento e testes, até a publicação e divulgação do aplicativo.
+
+### Prática 1
+
+A primeira coisa a se faser para conseguir utilizar o Firebase é criar uma conta no site.
+
+### Prática 2
+
+\* A aula foi feita na ferramenta do Firebase, que é bastante intuitiva.
+
+### Prática 3
+
+\* A aula foi feita na ferramenta do Firebase e do Postman, e é bastante intuitiva.
