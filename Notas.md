@@ -5891,3 +5891,202 @@ def menu():
 ```
 
 ### MySQL
+
+Crie uma pasta chamada "pmysql" e copie os arquivos "programa.py" e "utils.py" para dentro dessa pasta.
+
+É necessário instalar o driver para que o Python possa se conectar ao MySQL. No terminal digite a seguinte instrução:
+
+`pip install mysqlclient`
+
+**Criando um banco de dados**
+
+Abra o MySQL Workbench e crie o banco de dados e uma tabela.
+
+```sql
+CREATE DATABASE pmysql;
+USE pmysql;
+CREATE TABLE produtos(
+   id INT PRIMARY KEY AUTO_INCREMENT,
+   nome VARCHAR(50) NOT NULL,
+   preco DECIMAL(8,2) NOT NULL,
+   estoque INT NOT NULL
+);
+```
+
+Agora estamos prontos para trabalhar com o MySQL e Python.
+
+**Importando o driver e editando a função**
+
+Importe o driver do MySQL no arquivo "utils.py"
+
+```python
+import MySQLdb
+```
+
+Edite a função `conectar()` e coloque os dados do seu banco de dados MySQL
+
+```python
+def conectar():
+    """
+    Função para conectar ao servidor
+    """
+    try:
+        conn = MySQLdb.connect(
+            db='pmysql',
+            host='localhost',
+            user='roni',
+            passwd='roni'
+        )
+
+        return conn
+    except MySQLdb.Error as e:
+        print(f'Erro na conexão ao MySQL Server: {e}')
+```
+
+**Testando a conexão**
+
+Entre dentro da pasta do "utils.py" utilizando o terminal e então entre no console Python. Digite o seguinte código para testar a conexão:
+
+```python
+from utils import conectar
+conn = conectar()
+conn
+```
+
+O console Python te mostrará o local na memória em que a conexão estará armazenada.
+
+`<_mysql.connection open to 'localhost' at 0000022710BFC070>`
+
+Para fechar a conexão digite `conn.close()`
+
+`<_mysql.connection closed at 0000022710BFC070>`
+
+**Editando a função `desconectar()`**
+
+Precisamos desconectar do banco de dados quando terminarmos. Edite a função `desconectar()` da seguinte maneira:
+
+```python
+def desconectar(conn):
+    """
+    Função para desconectar do servidor.
+    """
+    if conn:
+        conn.close()
+```
+
+Você pode testar essa função da mesma maneira que fez quando testou a conexão.
+
+**Editando `listar()`**
+
+```python
+def listar():
+    """
+    Função para listar os produtos
+    """
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM produtos')
+    produtos = cursor.fetchall()
+
+    if produtos:
+        print('Listando produtos:\n')
+        for produto in produtos:
+            print(f'ID: {produto[0]}')
+            print(f'Nome: {produto[1]}')
+            print(f'Preço: {produto[2]}')
+            print(f'Estoque: {produto[3]}')
+            print()
+    else:
+        print("Não há produtos cadastrados.")
+
+    desconectar(conn)
+```
+
+**Editando `Inserir()`**
+
+```python
+def inserir():
+    """
+    Função para inserir um produto
+    """
+    conn = conectar()
+    cursor = conn.cursor()
+
+    nome = input('Informe o nome do produto: ')
+    preco = float(input('Informe o preço do produto: '))
+    estoque = int(input('Informe a quantidade em estoque: '))
+
+    cursor.execute(
+        f"""INSERT INTO produtos(nome, preco, estoque)
+        VALUES ('{nome}', {preco}, {estoque})"""
+    )
+
+    conn.commit()
+
+    if cursor.rowcount == 1:
+        print(f'O produto "{nome}" foi inserido com suscesso!')
+    else:
+        print('Não foi possível inserir o produto.')
+
+    desconectar(conn)
+
+```
+
+**Editando `atualizar()`**
+
+```python
+def atualizar():
+    """
+    Função para atualizar um produto
+    """
+    conn = conectar()
+    cursor = conn.cursor()
+
+    codigo = int(input('Informe o id do produto: '))
+    nome = input('Informe o novo nome do produto: ')
+    preco = float(input('Informe o novo preço do produto: '))
+    estoque = int(input('Informe a nova quantidade em estoque: '))
+
+    cursor.execute(
+        f'''UPDATE produtos SET
+            nome='{nome}',
+            preco={preco},
+            estoque={estoque}
+        WHERE id={codigo}'''
+    )
+
+    conn.commit()
+
+    if cursor.rowcount == 1:
+        print(f'O produto "{nome}" foi atualizado com sucesso!')
+    else:
+        print("Erro ao atualizar o produto.")
+
+    desconectar(conn)
+```
+
+**Editando `deletar()`**
+
+```python
+def deletar():
+    """
+    Função para deletar um produto
+    """
+    conn = conectar()
+    cursor = conn.cursor()
+
+    codigo = int(input('Informe o id do produto que você deseja deletar: '))
+
+    cursor.execute(f'DELETE FROM produtos WHERE id={codigo}')
+
+    conn.commit()
+
+    if cursor.rowcount == 1:
+        print('O produto foi excluído com sucesso!')
+    else:
+        print(f'Erro ao excluir o produto com id {codigo}.')
+
+    desconectar(conn)
+
+```
+
