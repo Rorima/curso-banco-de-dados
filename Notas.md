@@ -5804,3 +5804,90 @@ A primeira coisa a se faser para conseguir utilizar o Firebase é criar uma cont
 ## CRUD com Python
 
 Aprenderemos a utilizar os bancos de dados com a linguagem de programação Python.
+
+### Preparando o ambiente
+
+Primeiramente crie uma pasta e um ambiente virtual Python dentro da pasta. Dentro da pasta do seu projeto (não da pasta do venv) crie uma pasta chamada "pbase". É nela que manteremos os arquivos base de Python que serão usados em todos os bancos de dados. Dentro da pasta "pbase", crie um arquivo chamado "programa.py", e escreva o seguinte código dentro dele:
+
+```python
+from utils import menu
+
+
+if __name__ == '__main__':
+    menu()
+
+```
+
+Crie outro arquivo, desta vez chamado "utils.py", e escreva o seguinte código dentro dele:
+
+```python
+def conectar():
+    """
+    Função para conectar ao servidor
+    """
+    print('Conectando ao servidor...')
+
+
+def desconectar():
+    """
+    Função para desconectar do servidor.
+    """
+    print('Desconectando do servidor...')
+
+
+def listar():
+    """
+    Função para listar os produtos
+    """
+    print('Listando produtos...')
+
+
+def inserir():
+    """
+    Função para inserir um produto
+    """
+    print('Inserindo produto...')
+
+
+def atualizar():
+    """
+    Função para atualizar um produto
+    """
+    print('Atualizando produto...')
+
+
+def deletar():
+    """
+    Função para deletar um produto
+    """
+    print('Deletando produto...')
+
+
+def menu():
+    """
+    Função para gerar o menu inicial
+    """
+    print('=========Gerenciamento de Produtos==============')
+    print('Selecione uma opção: ')
+    print('1 - Listar produtos.')
+    print('2 - Inserir produtos.')
+    print('3 - Atualizar produto.')
+    print('4 - Deletar produto.')
+    opcao = int(input())
+    if opcao in [1, 2, 3, 4]:
+        if opcao == 1:
+            listar()
+        elif opcao == 2:
+            inserir()
+        elif opcao == 3:
+            atualizar()
+        elif opcao == 4:
+            deletar()
+        else:
+            print('Opção inválida')
+    else:
+        print('Opção inválida')
+
+```
+
+### MySQL
