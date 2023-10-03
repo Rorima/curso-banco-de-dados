@@ -5800,3 +5800,7 @@ A primeira coisa a se faser para conseguir utilizar o Firebase é criar uma cont
 ### Prática 3
 
 \* A aula foi feita na ferramenta do Firebase e do Postman, e é bastante intuitiva.
+
+## CRUD com Python
+
+Aprenderemos a utilizar os bancos de dados com a linguagem de programação Python.
