@@ -6090,8 +6090,147 @@ def deletar():
 
 ```
 
-CRUD COM JAVA
-Pesquise sobre como criar projetos java, crie os pacotes vazios como está na aula e verifique se na pasta tem o JRE System Library.
+## CRUD com Java
 
-Este vídeo ensina a criar projetos Java. Veja se ele cria o JRE system library.
-https://www.youtube.com/watch?v=79YpKXnjKeo&ab_channel=BoostMyTool
+Crie um projeto Java e então crie uma pasta dentro da pasta `src` com o nome de "jbase". Dentro dessa pasta vai conter dois arquivos: "Programa.java" e "Utils.java".
+
+Programa.java:
+
+```java
+package jbase;
+
+public class Programa {
+    public static void main(String[] args) {
+        Utils.menu();
+    }
+}
+```
+
+Utils.java:
+
+```java
+package jbase;
+
+import java.util.Scanner;
+
+public class Utils {
+
+    static Scanner teclado = new Scanner(System.in);
+
+    public static void conectar() {
+        System.out.println("Conectando...");
+    }
+
+    public static void desconectar() {
+        System.out.println("Desconectando...");
+    }
+    
+    public static void listar() {
+        System.out.println("Listando produtos...");
+    }
+
+    public static void inserir() {
+        System.out.println("Inserindo produtos...");
+    }
+
+    public static void atualizar() {
+        System.out.println("Atualizando produtos...");
+    }
+
+    public static void deletar() {
+        System.out.println("Deletando produtos...");
+    }
+
+    public static void menu() {
+        System.out.println("======== Gerenciamento de Produtos ========");
+        System.out.println("Selecione uma opção: ");
+        System.out.println("1 - Listar produtos;");
+        System.out.println("2 - Inserir produtos;");
+        System.out.println("3 - Atualizar produtos;");
+        System.out.println("4 - Deletar produtos.");
+
+        int opcao = Integer.parseInt(teclado.nextLine());
+        if(opcao == 1) {
+            listar();
+        } else if (opcao == 2) {
+            inserir();
+        } else if (opcao == 3) {
+            atualizar();
+        } else if (opcao == 4) {
+            deletar();
+        } else {
+            System.out.println("Opção inválida!");
+        }
+    }
+}
+```
+
+### MySQL
+
+Crie um pacote dentro da pasta "src" com o nome de "jmysql". Dentro dele coloque os arquivos "Programa.java" e "Utils.java".
+
+**Adicionando bibliotecas externas**
+
+Precisamos criar um diretório na base do nosso projeto para adicionar bibliotecas externas para que consigamos nos comunicar com os bancos de dados. Se você criou seu projeto utilizando o VSCode, ele provavelmente já tem uma pasta chamada "lib", que é onde essas livrarias externas irão ficar.
+
+Baixe o MySQL Connector Java pelo site do MySQL e instale a livraria na pasta "lib".
+
+[Este vídeo ensina a instalar livrarias Java.](https://www.youtube.com/watch?v=3Qm54znQX2E&ab_channel=BoostMyTool)
+
+[Neste site você pode baixar o Conector Java.](https://dev.mysql.com/downloads/connector/j/)
+
+OBS.: Pode ser que os links deixem de funcionar no futuro.
+
+**Criando o banco de dados**
+
+Entre no MySQL Workbench e crie um banco de dados.
+
+Código SQL:
+
+```sql
+CREATE DATABASE jmysql;
+USE jmysql;
+CREATE TABLE produtos(
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(50) NOT NULL,
+    preco DECIMAL (8,2) NOT NULL,
+    estoque INT NOT NULL
+);
+```
+
+**Editando `conectar()`**
+
+Importe as seguintes livrarias:
+
+```java
+import java.sql.Connection;
+import java.sql.DriverManager;
+```
+
+Editando `conectar()`
+
+```java
+public static Connection conectar() {
+   String CLASSE_DRIVER = "com.mysql.jdbc.Driver";
+   String USUARIO = "roni";
+   String SENHA = "roni";
+   String URL_SERVIDOR = "jdbc:mysql://localhost:3306/jmysql?useSSL=false";
+
+   try {
+      Class.forName(CLASSE_DRIVER);
+      return DriverManager.getConnection(URL_SERVIDOR, USUARIO, SENHA);
+   } catch(Exception e) {
+      if (e instanceof ClassNotFoundException) {
+            System.out.println("Verifique o driver de conexão.");
+      } else {
+            System.out.println("Verifique se o servidor está ativo.");
+      }
+
+      System.exit(-42);
+      return null;
+   }
+}
+```
+
+**Editando `desconectar()`**
+
