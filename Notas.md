@@ -6090,3 +6090,8 @@ def deletar():
 
 ```
 
+CRUD COM JAVA
+Pesquise sobre como criar projetos java, crie os pacotes vazios como está na aula e verifique se na pasta tem o JRE System Library.
+
+Este vídeo ensina a criar projetos Java. Veja se ele cria o JRE system library.
+https://www.youtube.com/watch?v=79YpKXnjKeo&ab_channel=BoostMyTool
