@@ -1,7 +1,11 @@
 package jmysql;
 
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Utils {
@@ -9,13 +13,15 @@ public class Utils {
     static Scanner teclado = new Scanner(System.in);
 
     public static Connection conectar() {
-        String CLASSE_DRIVER = "com.mysql.jdbc.Driver";
+        //String CLASSE_DRIVER = DriverManager.getDriver("jdbc:mysql://localhost:3306/jmysql?useSSL=false");
+        
+        //"com.mysql.jdbc.Driver";
         String USUARIO = "roni";
         String SENHA = "roni";
         String URL_SERVIDOR = "jdbc:mysql://localhost:3306/jmysql?useSSL=false";
 
         try {
-            Class.forName(CLASSE_DRIVER);
+            
             return DriverManager.getConnection(URL_SERVIDOR, USUARIO, SENHA);
         } catch(Exception e) {
             if (e instanceof ClassNotFoundException) {
@@ -29,12 +35,52 @@ public class Utils {
         }
     }
 
-    public static void desconectar() {
-        System.out.println("Desconectando...");
+    public static void desconectar(Connection conn) {
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println("Não foi possível fechar a conexão.");
+                e.printStackTrace();
+            }
+        }
     }
     
     public static void listar() {
-        System.out.println("Listando produtos...");
+        String BUSCAR_TODOS = "SELECT * FROM produtos";
+
+        try {
+            Connection conn = conectar();
+            PreparedStatement produtos = conn.prepareStatement(BUSCAR_TODOS);
+            ResultSet res = produtos.executeQuery();
+
+            // pegando a quantidade de elementos
+            res.last();
+            int qtd = res.getRow();
+            res.beforeFirst();
+
+            if (qtd > 0) {
+                System.out.println("Listando produtos: \n");
+                
+                while (res.next()) {
+                    System.out.println("ID: " + res.getInt(1));
+                    System.out.println("Produto: " + res.getString(2));
+                    System.out.println("Preço: " + res.getFloat(3));
+                    System.out.println("Estoque: " + res.getInt(4));
+                    System.out.println();
+                }
+            } else {
+                System.out.println("Não existem produtos cadastrados.");
+            }
+
+            produtos.close();
+            desconectar(conn);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Erro buscando produtos.");
+            System.exit(-42);
+        }
     }
 
     public static void inserir() {

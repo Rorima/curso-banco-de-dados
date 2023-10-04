@@ -6234,3 +6234,19 @@ public static Connection conectar() {
 
 **Editando `desconectar()`**
 
+```java
+public static void desconectar(Connection conn) {
+   if (conn != null) {
+      try {
+            conn.close();
+      } catch (SQLException e) {
+            System.out.println("Não foi possível fechar a conexão.");
+            e.printStackTrace();
+      }
+   }
+}
+```
+
+**Editando `listar()`**
+
+\* Há um erro no código que não sei como resolver. Sendo assim, não dá pra completar o CRUD com Java.
