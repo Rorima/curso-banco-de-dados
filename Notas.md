@@ -6090,6 +6090,89 @@ def deletar():
 
 ```
 
+### PostgreSQL
+
+Crie uma pasta chamada "ppostgresql" e copie os arquivos do pbase para lá.
+
+Precisamos instalar o driver do PostgreSQL para nos comunicar com ele. Utilise o seguinte comando no terminal: `pip install psycopg2-binary`.
+
+Abra o PostgreSQL e crie um banco de dados com o mesmo nome da pasta que você criou. No nosso caso, o nome é "ppostgresql".
+
+Este é o código SQL:
+
+```sql
+CREATE TABLE produtos(
+	id SERIAL PRIMARY KEY,
+	nome VARCHAR(50) NOT NULL,
+	preco DECIMAL(8,2) NOT NULL,
+	estoque INT NOT NULL
+)
+```
+
+**Editando `conectar()`**
+
+Importe o psycopg2 e edite a função `conectar()`
+
+```python
+import psycopg2
+
+
+def conectar():
+    """
+    Função para conectar ao servidor
+    """
+    try:
+        conn = psycopg2.connect(
+            database='ppostgresql',
+            host='localhost',
+            user='roni',
+            password='roni'
+        )
+        return conn
+    except psycopg2.Error as e:
+        print(f'Erro na conexão ao PostgreSQL Server: {e}')
+
+```
+
+**Editando `desconectar()`**
+
+```python
+def desconectar(conn):
+    """
+    Função para desconectar do servidor.
+    """
+    if conn:
+        conn.close()
+
+```
+
+**Editando o método `listar()`**:
+
+```python
+def listar():
+    """
+    Função para listar os produtos
+    """
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM produtos')
+    produtos = cursor.fetchall()
+
+    if len(produtos) > 0:
+        print('Listando produtos:\n')
+        for produto in produtos:
+            print(f'ID: {produto[0]}')
+            print(f'Produto: {produto[1]}')
+            print(f'Preço: {produto[2]}')
+            print(f'Estoque: {produto[3]}')
+            print()
+    else:
+        print("Não há produtos cadastrados.")
+
+    desconectar(conn)
+
+```
+
 ## CRUD com Java
 
 Crie um projeto Java e então crie uma pasta dentro da pasta `src` com o nome de "jbase". Dentro dessa pasta vai conter dois arquivos: "Programa.java" e "Utils.java".
