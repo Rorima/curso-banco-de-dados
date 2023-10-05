@@ -6417,3 +6417,7 @@ public static void desconectar(Connection conn) {
 **Editando `listar()`**
 
 \* Há um erro no código que não sei como resolver. Sendo assim, não dá pra completar o CRUD com Java.
+
+### PostgreSQL
+
+Crie uma pasta chamada "jpostgresql" e baixe o driver JDBC PostgreSQL. Coloque-o na pasta "Referenced Libraries".
