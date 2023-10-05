@@ -52,21 +52,73 @@ def inserir():
     """
     Função para inserir um produto
     """
-    print('Inserindo produto...')
+    conn = conectar()
+    cursor = conn.cursor()
+
+    nome = input('Digite o nome do produto: ')
+    preco = float(input('Digite o preço do produto: '))
+    estoque = int(input('Digite a quantidade em estoque: '))
+
+    cursor.execute(f'''INSERT INTO produtos (nome, preco, estoque)
+    VALUES('{nome}', {preco}, {estoque})''')
+
+    conn.commit()
+
+    if cursor.rowcount == 1:
+        print(f'O produto "{nome}" foi inserido com sucesso!')
+    else:
+        print('Não foi possível inserir o produto.')
+
+    desconectar(conn)
 
 
 def atualizar():
     """
     Função para atualizar um produto
     """
-    print('Atualizando produto...')
+    conn = conectar()
+    cursor = conn.cursor()
+
+    id = int(input('Digite o id do produto: '))
+    nome = input('Digite o nome do produto: ')
+    preco = float(input('Digite o preço do produto: '))
+    estoque = int(input('Digite a quantidade em estoque: '))
+
+    cursor.execute(
+        f'''UPDATE produtos SET
+    nome='{nome}', preco={preco}, estoque='{estoque}'
+    WHERE id={id}'''
+    )
+
+    conn.commit()
+
+    if cursor.rowcount == 1:
+        print(f'O produto "{nome}" foi atualizado com sucesso!')
+    else:
+        print('Erro ao atualizar o produto.')
+
+    desconectar(conn)
 
 
 def deletar():
     """
     Função para deletar um produto
     """
-    print('Deletando produto...')
+    conn = conectar()
+    cursor = conn.cursor()
+
+    id = int(input('Digiteo id do item que você deseja deletar: '))
+
+    cursor.execute(f'DELETE FROM produtos WHERE id = {id}')
+
+    conn.commit()
+
+    if cursor.rowcount == 1:
+        print('O produto foi deletado com sucesso!')
+    else:
+        print('Erro ao deletar produto.')
+
+    desconectar(conn)
 
 
 def menu():

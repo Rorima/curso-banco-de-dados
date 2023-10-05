@@ -6173,6 +6173,90 @@ def listar():
 
 ```
 
+**Editando `inserir()`**
+
+```python
+def inserir():
+    """
+    Função para inserir um produto
+    """
+    conn = conectar()
+    cursor = conn.cursor()
+
+    nome = input('Digite o nome do produto: ')
+    preco = float(input('Digite o preço do produto: '))
+    estoque = int(input('Digite a quantidade em estoque: '))
+
+    cursor.execute(f'''INSERT INTO produtos (nome, preco, estoque)
+    VALUES('{nome}', {preco}, {estoque})''')
+    conn.commit()
+
+    if cursor.rowcount == 1:
+        print(f'O produto "{nome}" foi inserido com sucesso!')
+    else:
+        print('Não foi possível inserir o produto.')
+
+    desconectar(conn)
+
+```
+
+**Editando `atualizar()`**
+
+```python
+def atualizar():
+    """
+    Função para atualizar um produto
+    """
+    conn = conectar()
+    cursor = conn.cursor()
+
+    id = int(input('Digite o id do produto: '))
+    nome = input('Digite o nome do produto: ')
+    preco = float(input('Digite o preço do produto: '))
+    estoque = int(input('Digite a quantidade em estoque: '))
+
+    cursor.execute(
+        f'''UPDATE produtos SET
+    nome='{nome}', preco={preco}, estoque='{estoque}'
+    WHERE id={id}'''
+    )
+
+    conn.commit()
+
+    if cursor.rowcount == 1:
+        print(f'O produto "{nome}" foi atualizado com sucesso!')
+    else:
+        print('Erro ao atualizar o produto.')
+
+    desconectar(conn)
+
+```
+
+**Editando `deletar()`**
+
+```python
+def deletar():
+    """
+    Função para deletar um produto
+    """
+    conn = conectar()
+    cursor = conn.cursor()
+
+    id = int(input('Digiteo id do item que você deseja deletar: '))
+
+    cursor.execute(f'DELETE FROM produtos WHERE id = {id}')
+
+    conn.commit()
+
+    if cursor.rowcount == 1:
+        print('O produto foi deletado com sucesso!')
+    else:
+        print('Erro ao deletar produto.')
+
+    desconectar(conn)
+
+```
+
 ## CRUD com Java
 
 Crie um projeto Java e então crie uma pasta dentro da pasta `src` com o nome de "jbase". Dentro dessa pasta vai conter dois arquivos: "Programa.java" e "Utils.java".
