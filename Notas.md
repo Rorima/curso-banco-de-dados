@@ -6367,35 +6367,31 @@ CREATE TABLE produtos(
 
 **Editando `conectar()`**
 
-Importe as seguintes livrarias:
-
-```java
-import java.sql.Connection;
-import java.sql.DriverManager;
-```
-
-Editando `conectar()`
+Importe todas as livrarias necessárias. O próprio Java já irá indicar quais livrarias deverão ser importadas.
 
 ```java
 public static Connection conectar() {
-   String CLASSE_DRIVER = "com.mysql.jdbc.Driver";
-   String USUARIO = "roni";
-   String SENHA = "roni";
-   String URL_SERVIDOR = "jdbc:mysql://localhost:3306/jmysql?useSSL=false";
+    // Se quiser, pode comentar a linha seguinte
+    String CLASSE_DRIVER = "com.mysql.cj.jdbc.Driver";
+    
+    String USUARIO = "roni";
+    String SENHA = "roni";
+    String URL_SERVIDOR = "jdbc:mysql://localhost:3306/jmysql?useSSL=false";
 
-   try {
-      Class.forName(CLASSE_DRIVER);
-      return DriverManager.getConnection(URL_SERVIDOR, USUARIO, SENHA);
-   } catch(Exception e) {
-      if (e instanceof ClassNotFoundException) {
+    try {
+        // Se a linha no bloco exterior for comentada, a seguinte também deve ser
+        Class.forName(CLASSE_DRIVER);
+        return DriverManager.getConnection(URL_SERVIDOR, USUARIO, SENHA);
+    } catch (Exception e) {
+        if (e instanceof ClassNotFoundException) {
             System.out.println("Verifique o driver de conexão.");
-      } else {
+        } else {
             System.out.println("Verifique se o servidor está ativo.");
-      }
+        }
 
-      System.exit(-42);
-      return null;
-   }
+        System.exit(-42);
+        return null;
+    }
 }
 ```
 
@@ -6403,21 +6399,247 @@ public static Connection conectar() {
 
 ```java
 public static void desconectar(Connection conn) {
-   if (conn != null) {
-      try {
+    if (conn != null) {
+        try {
             conn.close();
-      } catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println("Não foi possível fechar a conexão.");
             e.printStackTrace();
-      }
-   }
+        }
+    }
 }
 ```
 
 **Editando `listar()`**
 
-\* Há um erro no código que não sei como resolver. Sendo assim, não dá pra completar o CRUD com Java.
+```java
+public static void listar() {
+    String BUSCAR_TODOS = "SELECT * FROM produtos";
+
+    try {
+        Connection conn = conectar();
+        PreparedStatement produtos = conn.prepareStatement(
+            BUSCAR_TODOS, ResultSet.TYPE_SCROLL_INSENSITIVE, 
+            ResultSet.CONCUR_READ_ONLY
+      );
+        ResultSet res = produtos.executeQuery();
+
+        // pegando a quantidade de elementos
+        res.last();
+        int qtd = res.getRow();
+        res.beforeFirst();
+
+        if (qtd > 0) {
+            System.out.println("Listando produtos: \n");
+            
+            while (res.next()) {
+                System.out.println("ID: " + res.getInt(1));
+                System.out.println("Produto: " + res.getString(2));
+                System.out.println("Preço: " + res.getFloat(3));
+                System.out.println("Estoque: " + res.getInt(4));
+                System.out.println("");
+            }
+        } else {
+            System.out.println("Não existem produtos cadastrados.");
+        }
+
+        produtos.close();
+        desconectar(conn);
+      
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.err.println("Erro buscando produtos.");
+        System.exit(-42);
+    }
+}
+```
+
+**Editando `inserir()`**
+
+```java
+public static void inserir() {
+    System.out.println("Informe o nome do produto: ");
+    String nome = teclado.nextLine();
+
+    System.out.println("Informe o preço do produto: ");
+    float preco = teclado.nextFloat();
+
+    System.out.println("Informe a quantidade em estoque: ");
+    int estoque = teclado.nextInt();
+
+    String INSERIR = "INSERT INTO produtos (nome, preco, estoque) VALUES (?, ?, ?)";
+
+    try {
+        Connection conn = conectar();
+        
+        PreparedStatement salvar = conn.prepareStatement(INSERIR);
+
+        salvar.setString(1, nome);
+        salvar.setFloat(2, preco);
+        salvar.setInt(3, estoque);
+
+        salvar.executeUpdate();
+        salvar.close();
+        
+        desconectar(conn);
+
+        System.out.println("O produto '" + nome + "' foi inserido com sucesso!");
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.err.println("Erro ao inserir o produto");
+        System.exit(-42);
+    }
+}
+```
+
+**Editando `atualizar()`**
+
+```java
+public static void atualizar() {
+    System.out.println("Informe o ID do produto: ");
+    int id = Integer.parseInt(teclado.nextLine());
+
+    String BUSCAR_POR_ID = "SELECT * FROM produtos WHERE id=?";
+
+    try {
+        Connection conn = conectar();
+
+        PreparedStatement produto = conn.prepareStatement(
+            BUSCAR_POR_ID, 
+            ResultSet.TYPE_SCROLL_INSENSITIVE, 
+            ResultSet.CONCUR_UPDATABLE
+        );
+
+        produto.setInt(1, id);
+
+        ResultSet res = produto.executeQuery();
+        res.last();
+        int qtd = res.getRow();
+        res.beforeFirst();
+
+        if (qtd > 0) {
+            System.out.println("Informe o nome do produto: ");
+            String nome = teclado.nextLine();
+
+            System.out.println("Informe o preço do produto: ");
+            float preco = teclado.nextFloat();
+
+            System.out.println("Informe a quantidade em estoque: ");
+            int estoque = teclado.nextInt();
+
+            String ATUALIZAR = "UPDATE produtos SET nome=?, preco=?, estoque=? WHERE id=?";
+
+            PreparedStatement upd = conn.prepareStatement(ATUALIZAR);
+
+            upd.setString(1, nome);
+            upd.setFloat(2, preco);
+            upd.setInt(3, estoque);
+            upd.setInt(4, id);
+            upd.executeUpdate();
+            upd.close();
+
+            desconectar(conn);
+            
+            System.out.println("O produto " + nome + " foi atualizado com sucesso!");
+        } else {
+            System.out.println("Não existe um produto com o id informado.");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.err.println("Erro ao atualizar o produto.");
+        System.exit(-42);
+    }
+}
+```
+
+**Editando `deletar()`**
+
+```java
+
+```
 
 ### PostgreSQL
 
 Crie uma pasta chamada "jpostgresql" e baixe o driver JDBC PostgreSQL. Coloque-o na pasta "Referenced Libraries".
+
+Crie um banco de dados chamado "jpostgresql" e dentro dele crie uma tabela chamada "produtos".
+
+Código SQL:
+
+```sql
+CREATE TABLE produtos (
+	id SERIAL PRIMARY KEY,
+	nome VARCHAR(50) NOT NULL,
+	preco DECIMAL(8,2) NOT NULL,
+	estoque INT NOT NULL
+)
+```
+
+**Editando `conectar()`**
+
+Importe tudo o que for necessário. O próprio Java já auxilia indicando o que deve ser importado.
+
+```java
+public static Connection conectar() {
+    Properties props = new Properties();
+    props.setProperty("user", "roni");
+    props.setProperty("password", "roni");
+    props.setProperty("ssl", "false");
+    String URL_SERVIDOR = "jdbc:postgresql://localhost:5432/jpostgresql";
+
+    try {
+        return DriverManager.getConnection(URL_SERVIDOR, props);
+    } catch (Exception e) {
+        e.printStackTrace();
+
+        if (e instanceof ClassNotFoundException) {
+            System.err.println("Verifique o driver de conexão.");
+        } else {
+            System.err.println("Verifique se o servidor está ativo.");
+        }
+
+        System.exit(-42);
+        return null;
+    }
+}
+```
+
+**Editando `desconectar()`**
+
+```java
+public static void desconectar(Connection conn) {
+    if (conn != null) {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+**Editando `listar()`**
+
+```java
+
+```
+
+**Editando `inserir()`**
+
+```java
+
+```
+
+**Editando `atualizar()`**
+
+```java
+
+```
+
+**Editando `deletar()`**
+
+```java
+
+```
+
+17min48sec
