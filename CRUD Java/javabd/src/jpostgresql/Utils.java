@@ -52,7 +52,8 @@ public class Utils {
         try {
             Connection conn = conectar();
             PreparedStatement produtos = conn.prepareStatement(
-                BUSCAR_TODOS, ResultSet.TYPE_SCROLL_INSENSITIVE, 
+                BUSCAR_TODOS,
+                ResultSet.TYPE_SCROLL_INSENSITIVE,
                 ResultSet.CONCUR_READ_ONLY
             );
             
@@ -63,11 +64,13 @@ public class Utils {
 
             if (qtd > 0) {
                 System.out.println("Listando produtos:\n");
-                System.out.println("ID: " + res.getInt(1));
-                System.out.println("Produto: " + res.getString(2));
-                System.out.println("Preço: " + res.getFloat(3));
-                System.out.println("Estoque: " + res.getInt(4));
-                System.out.println("");
+                while (res.next()) {
+                    System.out.println("ID: " + res.getInt(1));
+                    System.out.println("Produto: " + res.getString(2));
+                    System.out.println("Preço: " + res.getFloat(3));
+                    System.out.println("Estoque: " + res.getInt(4));
+                    System.out.println("");
+                }
             } else {
                 System.out.println("Não existem produtos cadastrados.");
             }
@@ -80,15 +83,134 @@ public class Utils {
     }
 
     public static void inserir() {
-        System.out.println("Inserindo produtos...");
+        System.out.println("Informe o nome do produto: ");
+        String nome = teclado.nextLine();
+
+        System.out.println("Informe o preço do produto: ");
+        float preco = teclado.nextFloat();
+
+        System.out.println("Informe a quantidade em estoque: ");
+        int estoque = teclado.nextInt();
+
+        String INSERIR = "INSERT INTO produtos (nome, preco, estoque) VALUES (?, ?, ?)";
+
+        try {
+            Connection conn = conectar();
+
+            PreparedStatement salvar = conn.prepareStatement(INSERIR);
+
+            salvar.setString(1, nome);
+            salvar.setFloat(2, preco);
+            salvar.setInt(3, estoque);
+            salvar.executeUpdate();
+            salvar.close();
+            
+            desconectar(conn);
+
+            System.out.println("O produto " + nome + " foi inserido com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Erro ao salvar o produto.");
+            System.exit(-42);
+        }
     }
 
     public static void atualizar() {
-        System.out.println("Atualizando produtos...");
+        System.out.println("Digite o ID do produto: ");
+        int id = Integer.parseInt(teclado.nextLine());
+
+        String BUSCAR_POR_ID = "SELECT * FROM produtos WHERE id=?";
+
+        try {
+            Connection conn = conectar();
+            PreparedStatement produto = conn.prepareStatement(
+                BUSCAR_POR_ID,
+                ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY
+            );
+
+            produto.setInt(1, id);
+
+            ResultSet res = produto.executeQuery();
+            res.last();
+            int qtd = res.getRow();
+            res.beforeFirst();
+
+            if (qtd > 0) {
+                System.out.println("Digite o nome do produto: ");
+                String nome = teclado.nextLine();
+
+                System.out.println("Digite o preço do produto: ");
+                float preco = teclado.nextFloat();
+
+                System.out.println("Digite a quantidade em estoque: ");
+                int estoque = teclado.nextInt();
+
+                String ATUALIZAR = "UPDATE produtos SET nome=?, preco=?, estoque=? WHERE id=?";
+
+                PreparedStatement upd = conn.prepareStatement(ATUALIZAR);
+                upd.setString(1, nome);
+                upd.setFloat(2, preco);
+                upd.setInt(3, estoque);
+                upd.setInt(4, id);
+                upd.executeUpdate();
+                upd.close();
+
+                desconectar(conn);
+
+                System.out.println("O produto " + nome + " foi atualizado com sucesso!");
+            } else {
+                System.out.println("O produto com o ID informado não existe.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Não foi possível atualizar o produto.");
+            System.exit(-42);
+        }
     }
 
     public static void deletar() {
-        System.out.println("Deletando produtos...");
+        String DELETAR = "DELETE FROM produtos WHERE id=?";
+        String BUSCAR_POR_ID = "SELECT * FROM produtos WHERE id=?";
+
+        System.out.println("Digite o ID do produto que você deseja deletar: ");
+        int id = Integer.parseInt(teclado.nextLine());
+
+        try {
+            Connection conn = conectar();
+            
+            PreparedStatement produto = conn.prepareStatement(
+                BUSCAR_POR_ID,
+                ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY
+            );
+
+            produto.setInt(1, id);
+
+            ResultSet res = produto.executeQuery();
+            
+            res.last();
+            int qtd = res.getRow();
+            res.beforeFirst();
+
+            if (qtd > 0) {
+                PreparedStatement del = conn.prepareStatement(DELETAR);
+                del.setInt(1, id);
+                del.executeUpdate();
+                del.close();
+
+                desconectar(conn);
+                
+                System.out.println("O produto foi deletado com sucesso!");
+            } else {
+                System.out.println("Não existe produto com o ID informado.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Erro ao deletar produto.");
+            System.exit(-42);
+        }
     }
 
     public static void menu() {
