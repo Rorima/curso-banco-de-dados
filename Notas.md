@@ -6984,3 +6984,8 @@ public static void deletar() {
 }
 ```
 
+### SQLite
+
+Crie um pacote chamado "jsqlite" e faça o download do *drive* do SQLite. Instale o *driver* na pasta "Referenced Libraries".
+
+FALTA BAIXAR A LIVRARIA E INSTALAR
