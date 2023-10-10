@@ -6405,6 +6405,182 @@ def deletar():
     desconectar(conn)
 ```
 
+### MongoDB
+
+Crie uma pasta chamada "pmongo" e copie os arquivos "programa.py" e "utils.py" para dentro dela.
+
+Instale o driver pelo comando `pip install pymongo`.
+
+Entre no MongoDB Compass e crie um banco de dados chamado "pmongo" e uma coleção chamada "produtos".
+
+Importe as seguintes bibliotecas:
+
+```python
+from pymongo import MongoClient, errors
+from bson.objectid import objectId
+```
+
+**Editando `conectar()`**
+
+```python
+def conectar():
+    """
+    Função para conectar ao servidor
+    """
+    conn = MongoClient('localhost', 27017)
+
+    return conn
+
+```
+
+**Editando `desconectar()`**
+
+```python
+def desconectar(conn):
+    """
+    Função para desconectar do servidor.
+    """
+    if conn:
+        conn.close()
+
+```
+
+**Editando `listar()`**
+
+```python
+def listar():
+    """
+    Função para listar os produtos
+    """
+    conn = conectar()
+    db = conn.pmongo
+
+    try:
+        if db.produtos.count_documents({}) > 0:
+            produtos = db.produtos.find()
+            print('Listando produtos:\n')
+            for produto in produtos:
+                print(f"ID: {produto['_id']}")
+                print(f"Produto: {produto['nome']}")
+                print(f"Preço: {produto['preco']}")
+                print(f"Estoque: {produto['estoque']}")
+                print()
+        else:
+            print('Não existem produtos cadastrados.')
+    except errors.PyMongoError as e:
+        print(f'Erro ao acessar o banco de dados: {e}')
+
+    desconectar(conn)
+
+```
+
+**Editando `inserir()`**
+
+```python
+def inserir():
+    """
+    Função para inserir um produto
+    """
+    conn = conectar()
+    db = conn.pmongo
+
+    nome = input('Digite o nome do produto: ')
+    preco = float(input('Digite o preço do produto: '))
+    estoque = int(input('Digite a quantidade em estoque: '))
+
+    try:
+        db.produtos.insert_one(
+            {
+                "nome": nome,
+                "preco": preco,
+                "estoque": estoque
+            }
+        )
+
+        print(f'O produto "{nome}" foi inserido com sucesso!')
+    except errors.PyMongoError as e:
+        print(f'Não foi possível inserir o produto. Erro: {e}')
+
+    desconectar(conn)
+
+```
+
+**Editando `atualizar()`**
+
+```python
+def atualizar():
+    """
+    Função para atualizar um produto
+    """
+    conn = conectar()
+    db = conn.pmongo
+
+    _id = input('Digite o id do produto: ')
+    nome = input('Digite o nome do produto: ')
+    preco = float(input('Digite o preço do produto: '))
+    estoque = int(input('Digite a quantidade em estoque: '))
+
+    try:
+        if db.produtos.count_documents({}) > 0:
+            res = db.produtos.update_one(
+                {"_id": ObjectId(_id)},
+                {
+                    "$set": {
+                        "nome": nome,
+                        "preco": preco,
+                        "estoque": estoque
+                    }
+                }
+            )
+
+            if res.modified_count == 1:
+                print(f'O produto "{nome}" foi atualizado com sucesso!')
+            else:
+                print('Não foi possível atualizar o produto.')
+        else:
+            print('Não existem documentos para serem atualizados.')
+    except errors.PyMongoError as e:
+        print(f"Erro ao atulizar o banco de dados: {e}.")
+    except berrors.InvalidId as f:
+        print(f"Object ID inválido: {f}.")
+
+    desconectar(conn)
+
+```
+
+**Editando `deletar()`**
+
+```python
+def deletar():
+    """
+    Função para deletar um produto
+    """
+    conn = conectar()
+    db = conn.pmongo
+
+    _id = input('Digite o ID do produto: ')
+
+    try:
+        if db.produtos.count_documents({}) > 0:
+            res = db.produtos.delete_one(
+                {"_id": ObjectId(_id)}
+            )
+
+            if res.deleted_count > 0:
+                print('Produto deletado com sucesso!')
+            else:
+                print("Não foi possível deletr o produto.")
+        else:
+            print("Não existem produtos para serem deletados.")
+    except errors.PyMongoError as e:
+        print(f"Erro ao acessar o banco de dados: {e}.")
+    except berrors.InvalidId as f:
+        print(f"Object ID inválido: {f}.")
+
+    desconectar(conn)
+
+```
+
 ## CRUD com Java
 
 Crie um projeto Java e então crie uma pasta dentro da pasta `src` com o nome de "jbase". Dentro dessa pasta vai conter dois arquivos: "Programa.java" e "Utils.java".
