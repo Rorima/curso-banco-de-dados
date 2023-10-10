@@ -6988,4 +6988,192 @@ public static void deletar() {
 
 Crie um pacote chamado "jsqlite" e faça o download do *drive* do SQLite. Instale o *driver* na pasta "Referenced Libraries".
 
-FALTA BAIXAR A LIVRARIA E INSTALAR
+Importe tudo o que for necessário.
+
+**Editando `conectar()`**
+
+```java
+public static Connection conectar() {
+    String URL_SERVIDOR = "jdbc:sqlite:CRUD Java/javabd/src/jsqlite/jsqlite3.db";
+
+    try {
+        Connection conn = DriverManager.getConnection(URL_SERVIDOR);
+
+        String TABLE = "CREATE TABLE IF NOT EXISTS produtos("
+            + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + "nome TEXT NOT NULL,"
+            + "preco REAL NOT NULL,"
+            + "estoque INTEGER NOT NULL);";
+        
+        Statement stmt = conn.createStatement();
+        stmt.executeUpdate(TABLE);
+
+        return conn;
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.err.println("Não foi possível conectar ao SQLite: " + e);
+        return null;
+    }
+}
+```
+
+**Editando `desconectar()`**
+
+```java
+public static void desconectar(Connection conn) {
+    try {
+        conn.close();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+```
+
+**Editando `listar()`**
+
+```java
+public static void listar() {
+    String BUSCAR_TODOS = "SELECT * FROM produtos";
+
+    try {
+        Connection conn = conectar();
+        PreparedStatement produtos = conn.prepareStatement(BUSCAR_TODOS);
+        ResultSet res = produtos.executeQuery();
+
+        while (res.next()) {
+            System.out.println("Produtos:\n");
+            System.out.println("ID: " + res.getInt(1));
+            System.out.println("Produto: " + res.getString(2));
+            System.out.println("Preço: " + res.getFloat(3));
+            System.out.println("Quantidade em estoque: " + res.getInt(4));
+            System.out.println("");
+        }
+
+        produtos.close();
+        desconectar(conn);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.err.println("Erro ao buscar todos os produtos.");
+        System.exit(-42);
+    }
+}
+```
+
+**Editando `inserir()`**
+
+```java
+public static void inserir() {
+    System.out.println("Digite o nome do produto: ");
+    String nome = teclado.nextLine();
+
+    System.out.println("Digite o preço do produto: ");
+    float preco = teclado.nextFloat();
+
+    System.out.println("Digite a quantidade em estoque: ");
+    int estoque = teclado.nextInt();
+
+    String INSERIR = "INSERT INTO produtos (nome, preco, estoque) VALUES (?, ?, ?)";
+
+    try {
+        Connection conn = conectar();
+        PreparedStatement salvar = conn.prepareStatement(INSERIR);
+        salvar.setString(1, nome);
+        salvar.setFloat(2, preco);
+        salvar.setInt(3, estoque);
+
+        int res = salvar.executeUpdate();
+
+        if (res > 0) {
+            System.out.println("O produto " + nome + " foi inserido com sucesso!");
+        } else {
+            System.out.println("Não foi possível inserir o produto.");
+        }
+
+        salvar.close();
+        desconectar(conn);
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.err.println("Erro ao inserir produto.");
+        System.exit(-42);
+    }
+}
+```
+
+**Editando `atualizar()`**
+
+```java
+public static void atualizar() {
+    System.out.println("Digite o ID do produto: ");
+    int id = Integer.parseInt(teclado.nextLine());
+
+    try {
+        Connection conn = conectar();
+
+        System.out.println("Digite o nome do produto: ");
+        String nome = teclado.nextLine();
+
+        System.out.println("Digite o preço do produto: ");
+        float preco = teclado.nextFloat();
+
+        System.out.println("Digite a quantidade em estoque: ");
+        int estoque = teclado.nextInt();
+
+        String ATUALIZAR = "UPDATE produtos SET nome=?, preco=?, estoque=? WHERE id=?";
+
+        PreparedStatement upd = conn.prepareStatement(ATUALIZAR);
+        upd.setString(1, nome);
+        upd.setFloat(2, preco);
+        upd.setInt(3, estoque);
+        upd.setInt(4, id);
+
+        int res = upd.executeUpdate();
+
+        if (res > 0) {
+            System.out.println("O produto '" + nome + "'' foi atualizado com sucesso!");
+        } else {
+            System.out.println("Não foi possível atualizar o produto.");
+        }
+
+        upd.close();
+        desconectar(conn);
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.err.println("Erro ao atualizar produto.");
+        System.exit(-42);
+    }
+}
+```
+
+**Editando `deletar()`**
+
+```java
+public static void deletar() {
+    String DELETAR = "DELETE FROM produtos WHERE id=?";
+
+    System.out.println("Digite o ID do produto que você deseja deletar: ");
+    int id = Integer.parseInt(teclado.nextLine());
+
+    try {
+        Connection conn = conectar();
+
+        PreparedStatement del = conn.prepareStatement(DELETAR);
+        del.setInt(1, id);
+        int res = del.executeUpdate();
+
+        if (res > 0) {
+            System.out.println("O produto foi deletado com sucesso!");
+        } else {
+            System.out.println("Não foi possível deletar o produto.");
+        }
+
+        del.close();
+        desconectar(conn);
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.err.println("Erro ao deletar produto.");
+        System.exit(-42);
+    }
+}
+```
