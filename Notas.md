@@ -6749,6 +6749,53 @@ def deletar():
 
 ```
 
+### CouchDB
+
+No CouchDB, você pode tanto utilizar um driver quanto a API REST fornecida por esse banco de dados.
+
+Crie uma pasta chamada "pcouch" e copie os arquivos "programa.py" e "utils.py" para ela.
+
+Para instalar o driver digite `pip install couchdb`.
+
+Importe tanto o `couchdb` quanto o `socket`.
+
+**Editando `conectar()`**
+
+```python
+
+```
+
+**Editando `desconectar()`**
+
+```python
+
+```
+
+**Editando `listar()`**
+
+```python
+
+```
+
+**Editando `inserir()`**
+
+```python
+
+```
+
+**Editando `atualizar()`**
+
+```python
+
+```
+
+**Editando `deletar()`**
+
+```python
+
+```
+
+
 ## CRUD com Java
 
 Crie um projeto Java e então crie uma pasta dentro da pasta `src` com o nome de "jbase". Dentro dessa pasta vai conter dois arquivos: "Programa.java" e "Utils.java".
