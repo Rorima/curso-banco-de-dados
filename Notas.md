@@ -6762,36 +6762,146 @@ Importe tanto o `couchdb` quanto o `socket`.
 **Editando `conectar()`**
 
 ```python
+def conectar():
+    """
+    Função para conectar ao servidor
+    """
+    user = 'admin'
+    password = 'admin'
+
+    conn = couchdb.Server(f'http://{user}:{password}@localhost:5984')
+    banco = 'pcouch'
+
+    if banco in conn:
+        db = conn[banco]
+        return db
+    else:
+        try:
+            db = conn.create(banco)
+            return db
+        except socket.gaierror as e:
+            print(f'Erro ao conectar ao servidor: {e}.')
+        except couchdb.http.Unauthorized as f:
+            print(f'Você não tem permissão de acesso: {f}.')
+        except ConnectionRefusedError as g:
+            print(f'Não foi possível conectar ao servidor: {g}.')
 
 ```
 
 **Editando `desconectar()`**
 
 ```python
+def desconectar():
+    """
+    Função para desconectar do servidor.
+    """
+    # o CouchDB desconecta automaticamente.
+    pass
 
 ```
 
 **Editando `listar()`**
 
 ```python
+def listar():
+    """
+    Função para listar os produtos
+    """
+    db = conectar()
+
+    if db:
+        if db.info()["doc_count"] > 0:
+            print('Listando produtos:\n')
+            for doc in db:
+                print(f"ID: {db[doc]['_id']}")
+                print(f"Rev: {db[doc]['_rev']}")
+                print(f"Nome: {db[doc]['nome']}")
+                print(f"Preço: {db[doc]['preco']}")
+                print(f"Estoque: {db[doc]['estoque']}")
+                print()
+        else:
+            print('Não existem produtos cadastrados.')
+    else:
+        print("Não foi possível conectar com o servidor.")
 
 ```
 
 **Editando `inserir()`**
 
 ```python
+def inserir():
+    """
+    Função para inserir um produto
+    """
+    db = conectar()
+
+    if db:
+        nome = input("Digite o nome do produto: ")
+        preco = float(input("Digite o preço do produto: "))
+        estoque = int(input("Digite a quantidade em estoque: "))
+
+        produto = {'nome': nome, 'preco': preco, 'estoque': estoque}
+        res = db.save(produto)
+
+        if res:
+            print(f'O produto "{nome}" foi inserido com sucesso!')
+        else:
+            print("Não foi possível inserir o produto.")
+    else:
+        print("Não foi possível conectar ao servidor.")
 
 ```
 
 **Editando `atualizar()`**
 
 ```python
+def atualizar():
+    """
+    Função para atualizar um produto
+    """
+    db = conectar()
+
+    if db:
+        chave = input('Digite o id do produto: ')
+        try:
+            doc = db[chave]
+
+            nome = input("Digite o nome do produto: ")
+            preco = float(input("Digite o preço do produto: "))
+            estoque = int(input("Digite a quantidade em estoque: "))
+
+            doc['nome'] = nome
+            doc['preco'] = preco
+            doc['estoque'] = estoque
+            db[doc.id] = doc
+
+            print(f'O produto "{nome}" foi atualizado com sucesso!')
+        except couchdb.http.ResourceNotFound as e:
+            print(f'Produto não encontrado: {e}.')
+    else:
+        print('Não foi possível conectar ao servidor.')
 
 ```
 
 **Editando `deletar()`**
 
 ```python
+def deletar():
+    """
+    Função para deletar um produto
+    """
+    db = conectar()
+
+    if db:
+        _id = input('Digite o id do produto: ')
+
+        try:
+            db.delete(db[_id])
+            print('O produto foi atualizado com sucesso!')
+        except couchdb.http.ResourceNotFound as e:
+            print(f'Produto não encontrado: {e}.')
+    else:
+        print('Não foi possível conectar ao servidor.')
 
 ```
 
@@ -7927,6 +8037,226 @@ public static void deletar() {
     }
 
     desconectar(conn);
+}
+```
+
+### CouchDB
+
+Cria uma pasta chamada "jcouchdb" e copie os arquivos "Programa.java" e "Utils.java" para lá.
+
+Não vai ser necessário instalar o driver dessa vez.
+
+Entre no CouchDB Fauxton e crie um banco de dados chamado "jcouch".
+
+Para conseguir acessar o banco de dados, é necessário ter uma autorização. Para ter uma chave de autorização, utilize o Postman para acessar o banco de dados. Clique na aba "Authorization" e escolha "Basic Auth". Digite o usuário e a senha e faça uma requisição get. Depois de fazer a requisição, entre na aba "headers" e copie o header chamado "Authorization". Essa chave vai te permitir entrar no banco de dados utilizando o Java.
+
+**Editando `conectar()`**
+
+```java
+public static HttpClient conectar() {
+    HttpClient conn = HttpClient.newBuilder().build();
+    return conn;
+}
+```
+
+**Editando `desconectar()`**
+
+```java
+public static void desconectar() {
+    // O CouchDB desconecta automaticamente.
+    System.out.println("Desconectando...");
+}
+```
+
+**Editando `listar()`**
+
+```java
+public static void listar() {
+    HttpClient conn = conectar();
+    String link = "http://localhost:5984/jcouch/_all_docs?include_docs=true";
+    HttpRequest requisicao = HttpRequest.newBuilder()
+        .uri(URI.create(link))
+        .header("Authorization", "Basic xxx")
+        .build();
+
+    try {
+        HttpResponse<String> resposta = conn.send(requisicao, BodyHandlers.ofString());
+
+        JSONObject obj = new JSONObject(resposta.body());
+
+        if ((int)obj.get("total_rows") > 0) {
+            JSONArray produtos = (JSONArray)obj.get("rows");
+
+            System.out.println("Listando produtos:\n");
+
+            for (Object produto : produtos) {
+                JSONObject doc = (JSONObject) produto;
+                JSONObject prod = (JSONObject) doc.get("doc");
+
+                System.out.println("ID: " + prod.get("_id"));
+                System.out.println("Rev: " + prod.get("_rev"));
+                System.out.println("Produto: " + prod.get("nome"));
+                System.out.println("Preço: " + prod.get("preco"));
+                System.out.println("Estoque: " + prod.get("estoque"));
+                System.out.println();
+            }
+        } else {
+            System.out.println("Não existem produtos cadastrados.");
+        }
+    } catch (IOException e) {
+        System.out.println("Houve um erro durante a conexão.");
+        e.printStackTrace();
+    } catch (InterruptedException e) {
+        System.out.println("Houve um erro durante a conexão.");
+        e.printStackTrace();
+    }
+}
+```
+
+**Editando `inserir()`**
+
+```java
+public static void inserir() {
+    HttpClient conn = conectar();
+    String link = "http://localhost:5984/jcouch";
+
+    System.out.println("Digite o nome do produto: ");
+    String nome = teclado.nextLine();
+
+    System.out.println("Digite o preço do produto: ");
+    float preco = teclado.nextFloat();
+
+    System.out.println("Digite a quantidade em estoque: ");
+    int estoque = teclado.nextInt();
+
+    JSONObject nproduto = new JSONObject();
+    nproduto.put("nome", nome);
+    nproduto.put("preco", preco);
+    nproduto.put("estoque", estoque);
+
+    HttpRequest requisicao = HttpRequest.newBuilder()
+            .uri(URI.create(link))
+            .POST(BodyPublishers.ofString(nproduto.toString()))
+            .headers("Content-Type", "application/json", "Authorization", "Basic xxx")
+            .build();
+    
+    try {
+        HttpResponse<String> resposta = conn.send(requisicao, BodyHandlers.ofString());
+        JSONObject obj = new JSONObject(resposta.body());
+
+        if (resposta.statusCode() == 201) {
+            System.out.println("O produto " + nome + " foi cadastrado com sucesso!");
+        } else {
+            System.out.println("Erro ao cadastrar produto.");
+            System.out.println("Objeto:" + obj);
+            System.out.println("Status: " + resposta.statusCode());
+        }
+    } catch (InterruptedException e) {
+        System.out.println("Houve um erro na durante a conexão.");
+        e.printStackTrace();
+    }
+        catch (IOException e) {
+        System.out.println("Houve um erro na durante a conexão.");
+        e.printStackTrace();
+    }
+}
+```
+
+**Editando `atualizar()`**
+
+```java
+public static void atualizar() {
+    HttpClient conn = conectar();
+
+    System.out.println("Digite o ID do produto: ");
+    String id = teclado.nextLine();
+
+    System.out.println("Digite a Rev do produto: ");
+    String rev = teclado.nextLine();
+
+    System.out.println("Digite o nome do produto: ");
+    String nome = teclado.nextLine();
+
+    System.out.println("Digite o preço do produto: ");
+    float preco = teclado.nextFloat();
+
+    System.out.println("Digite a quantidade em estoque: ");
+    int estoque = teclado.nextInt();
+
+    String link = "http://localhost:5984/jcouch/" + id + "/" + "?rev=" + rev;
+
+    JSONObject nproduto = new JSONObject();
+    nproduto.put("nome", nome);
+    nproduto.put("preco", preco);
+    nproduto.put("estoque", estoque);
+
+    HttpRequest requisicao = HttpRequest.newBuilder()
+            .uri(URI.create(link))
+            .PUT(BodyPublishers.ofString(nproduto.toString()))
+            .headers(
+                "Content-Type", "aplication/json",  
+                "Authorization", "Basic xxx"
+            )
+            .build();
+    
+    try {
+        HttpResponse<String> resposta = conn.send(requisicao, BodyHandlers.ofString());
+        JSONObject obj = new JSONObject(resposta.body());
+
+        if (resposta.statusCode() == 201) {
+            System.out.println("O produto " + nome + " foi atualizado com sucesso!");
+        } else {
+            System.out.println("Erro ao atualizar produto.");
+            System.out.println("Objeto:" + obj);
+            System.out.println("Status: " + resposta.statusCode());
+        }
+    } catch (IOException e) {
+        System.out.println("Houve um erro na execução.");
+        e.printStackTrace();
+    } catch (InterruptedException e) {
+        System.out.println("Houve um erro na execução.");
+        e.printStackTrace();
+    }
+}
+```
+
+**Editando `deletar()`**
+
+```java
+public static void deletar() {
+    HttpClient conn = conectar();
+
+    System.out.println("Digite o ID do produto: ");
+    String id = teclado.nextLine();
+
+    System.out.println("Digite a Rev do produto: ");
+    String rev = teclado.nextLine();
+
+    String link = "http://localhost:5984/jcouch/" + id + "/" + "?rev=" + rev;
+
+    HttpRequest requisicao = HttpRequest.newBuilder()
+            .uri(URI.create(link))
+            .DELETE()
+            .header("Authorization", "Basic xxx=")
+            .build();
+    
+    try {
+        HttpResponse<String> resposta = conn.send(requisicao, BodyHandlers.ofString());
+
+        if (resposta.statusCode() == 200) {
+            System.out.println("O produto foi deletado com sucesso!");
+        } else {
+            System.out.println("Erro ao deletar produto.");
+            System.out.println("Body:" + resposta.body());
+            System.out.println("Status: " + resposta.statusCode());
+        }
+    } catch (IOException e) {
+        System.out.println("Houve um erro na execução.");
+        e.printStackTrace();
+    } catch (InterruptedException e) {
+        System.out.println("Houve um erro na execução.");
+        e.printStackTrace();
+    }
 }
 ```
 
