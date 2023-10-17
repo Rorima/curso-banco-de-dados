@@ -6905,6 +6905,146 @@ def deletar():
 
 ```
 
+### Firebase
+
+Crie uma pasta chamado "pfirebase" e copie os arquivos de "pbase" para ela.
+
+Para instalar o driver digite `pip install pyrebase4`.
+
+Depois entre no console do Firebase e crie um projeto. Vá na parte de banco de dados e crie um banco de dados *Realtime*. Crie-o em modo de teste para que seja possível inserir e modificar dados sem problemas. Copie o link que é disponibilizado logo que o banco de dados é criado.
+
+Importe o pyrebase pelo seguinte comando: `import pyrebase`.
+
+Você vai precisar da chave API. Para isso, procure-a nas configurações do seu projeto ou no Google Cloud.
+
+**Editando `conectar()`**
+
+```python
+def conectar():
+    """
+    Função para conectar ao servidor
+    """
+    config = {
+        "apiKey": "xxx",
+        "authDomain": "xxx",
+        "databaseURL": "xxx",
+        "storageBucket": "xxx"
+    }
+
+    conn = pyrebase.initialize_app(config)
+    db = conn.database()
+    return db
+
+```
+
+**Editando `desconectar()`**
+
+```python
+def desconectar():
+    """
+    Função para desconectar do servidor.
+    """
+    # O Firebase fecha a conexão automaticamente.
+    pass
+
+```
+
+**Editando `listar()`**
+
+```python
+def listar():
+    """
+    Função para listar os produtos
+    """
+    db = conectar()
+
+    produtos = db.child("produtos").get()
+
+    if produtos.val():
+        print('Listando produtos:\n')
+        for produto in produtos:
+            print(f'ID: {produto.key()}')
+            print(f'Produto: {produto.val()["nome"]}')
+            print(f'Estoque: {produto.val()["estoque"]}')
+            print(f'Preço: {produto.val()["preco"]}')
+            print()
+    else:
+        print("Não existem produtos cadastrados.")
+
+```
+
+**Editando `inserir()`**
+
+```python
+def inserir():
+    """
+    Função para inserir um produto
+    """
+    db = conectar()
+
+    nome = input("Digite o nome do produto: ")
+    preco = float(input("Digite o preço do produto: "))
+    estoque = int(input("Digite a quantidade em estoque: "))
+
+    produto = {"nome": nome, "preco": preco, "estoque": estoque}
+
+    res = db.child("produtos").push(produto)
+
+    if 'name' in res:
+        print(f"O produto '{nome}' foi cadastrado com sucesso!")
+    else:
+        print("Não foi possível cadastrar o produto.")
+
+```
+
+**Editando `atualizar()`**
+
+```python
+def atualizar():
+    """
+    Função para atualizar um produto
+    """
+    db = conectar()
+
+    _id = input("Digite o ID do produto: ")
+    produto = db.child("produtos").child(_id).get()
+
+    if produto.val():
+        nome = input("Digite o nome do produto: ")
+        preco = float(input("Digite o preço do produto: "))
+        estoque = int(input("Digite a quantidade em estoque: "))
+
+        novo_produto = {"nome": nome, "preco": preco, "estoque": estoque}
+
+        db.child("produtos").child(_id).update(novo_produto)
+
+        print(f"O produto '{nome}' foi atualizado com sucesso!")
+    else:
+        print("Não existe um produto com o ID informado.")
+
+```
+
+**Editando `deletar()`**
+
+```python
+def deletar():
+    """
+    Função para deletar um produto
+    """
+    db = conectar()
+
+    _id = input("Digite o id do produto: ")
+
+    produto = db.child("produtos").child(_id).get()
+
+    if produto.val():
+        db.child("produtos").child(_id).remove()
+
+        print("O produto foi deletado com sucesso!")
+    else:
+        print("Não existe um produto com o ID informado.")
+
+```
 
 ## CRUD com Java
 
