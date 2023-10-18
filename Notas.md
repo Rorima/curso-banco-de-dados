@@ -8400,3 +8400,203 @@ public static void deletar() {
 }
 ```
 
+### Firebase
+
+Crie uma pasta chamada "jfirebase" e copie os arquivos de "jbase" para ela.
+
+Assim como o CouchDB, o Firebase fornece uma API REST.
+
+**Editando `conectar()`**
+
+```java
+public static HttpClient conectar() {
+    HttpClient conn = HttpClient.newBuilder().build();
+    return conn;
+}
+```
+
+**Editando `desconectar()`**
+
+```java
+public static void desconectar() {
+    // A desconexão é feita de maneira automática.
+    System.out.println("Desconectando...");
+}
+```
+
+**Editando `listar()`**
+
+```java
+public static void listar() {
+    HttpClient conn = conectar();
+    String link = "https://meubanco-9e9f4-default-rtdb.firebaseio.com/produtos.json";
+
+    HttpRequest requisicao = HttpRequest.newBuilder().uri(URI.create(link)).build();
+
+    try {
+        HttpResponse<String> resposta = conn.send(requisicao, BodyHandlers.ofString());
+
+        if (resposta.body().equals("null")) {
+            System.out.println("Não existem produtos cadastrados.");
+        } else {
+            JSONObject obj = new JSONObject(resposta.body());
+
+            System.out.println("Listando produtos:\n");
+            
+            for (int i = 0; i < obj.length(); i++) {
+                JSONObject prod = (JSONObject) obj.get(obj.names().getString(i));
+                System.out.println("ID: " + obj.names().getString(i));
+                System.out.println("Produto: " + prod.get("nome"));
+                System.out.println("Preço: " + prod.get("preco"));
+                System.out.println("Estoque: " + prod.get("estoque"));
+                System.out.println();
+            }
+        }
+    } catch (IOException e) {
+        System.out.println("Houve um erro na conexão.");
+        e.printStackTrace();
+    } catch (InterruptedException e) {
+        System.out.println("Houve um erro na conexão.");
+        e.printStackTrace();
+    }
+}
+```
+
+**Editando `inserir()`**
+
+```java
+public static void inserir() {
+    HttpClient conn = conectar();
+    String link = "https://meubanco-9e9f4-default-rtdb.firebaseio.com/produtos.json";
+
+    System.out.println("Digite o nome do produto: ");
+    String nome = teclado.nextLine();
+
+    System.out.println("Digite o preço do produto: ");
+    float preco = teclado.nextFloat();
+
+    System.out.println("Digite a quantidade em estoque: ");
+    int estoque = teclado.nextInt();
+
+    JSONObject nproduto = new JSONObject();
+    nproduto.put("nome", nome);
+    nproduto.put("preco", preco);
+    nproduto.put("estoque", estoque);
+    
+    HttpRequest requisicao = HttpRequest
+        .newBuilder()
+        .uri(URI.create(link))
+        .POST(BodyPublishers.ofString(nproduto.toString()))
+        .header("Content-Type", "application/json")
+        .build();
+    
+    try {
+        HttpResponse<String> resposta = conn.send(requisicao, BodyHandlers.ofString());
+
+        JSONObject obj = new JSONObject(resposta.body());
+
+        if (resposta.statusCode() == 200) {
+            System.out.println("O produto foi cadastrado com sucesso!");
+        } else {
+            System.out.println("Objeto: " + obj);
+            System.out.println("Status: " + resposta.statusCode());
+        }
+    } catch (IOException e) {
+        System.out.println("Houve um erro na conexão.");
+        e.printStackTrace();
+    } catch (InterruptedException e) {
+        System.out.println("Houve um erro na conexão.");
+        e.printStackTrace();
+    }
+}
+```
+
+**Editando `atualizar()`**
+
+```java
+public static void atualizar() {
+    HttpClient conn = conectar();
+
+    System.out.println("Digite o ID do produto: ");
+    String id = teclado.nextLine();
+
+    System.out.println("Digite o nome do produto: ");
+    String nome = teclado.nextLine();
+
+    System.out.println("Digite o preço do produto: ");
+    float preco = teclado.nextFloat();
+
+    System.out.println("Digite a quantidade em estoque: ");
+    int estoque = teclado.nextInt();
+
+    String link = "https://meubanco-9e9f4-default-rtdb.firebaseio.com/produtos/" + id + ".json";
+
+    JSONObject nproduto = new JSONObject();
+    nproduto.put("nome", nome);
+    nproduto.put("preco", preco);
+    nproduto.put("estoque", estoque);
+
+    HttpRequest requisicao = HttpRequest
+        .newBuilder()
+        .uri(URI.create(link))
+        .PUT(BodyPublishers.ofString(nproduto.toString()))
+        .header("Content-Type", "application/json")
+        .build();
+
+    try {
+        HttpResponse<String> resposta = conn.send(requisicao, BodyHandlers.ofString());
+
+        JSONObject obj = new JSONObject(resposta.body());
+
+        if (resposta.statusCode() == 200) {
+            System.out.println("O produto foi atualizado com sucesso!");
+            System.out.println("Resposta: " + resposta.body());
+        } else {
+            System.out.println("Objeto: " + obj);
+            System.out.println("Status: " + resposta.statusCode());
+        }
+    } catch (IOException e) {
+        System.out.println("Houve um erro na conexão.");
+        e.printStackTrace();
+    } catch (InterruptedException e) {
+        System.out.println("Houve um erro na conexão.");
+        e.printStackTrace();
+    }
+}
+```
+
+**Editando `deletar()`**
+
+```java
+public static void deletar() {
+    HttpClient conn = conectar();
+
+    System.out.println("Digite o ID do produto: ");
+    String id = teclado.nextLine();
+
+    String link = "https://meubanco-9e9f4-default-rtdb.firebaseio.com/produtos/" + id + ".json";
+
+    HttpRequest requisicao = HttpRequest
+        .newBuilder()
+        .uri(URI.create(link))
+        .DELETE()
+        .header("Content-Type", "application/json")
+        .build();
+    
+    try {
+        HttpResponse<String> resposta = conn.send(requisicao, BodyHandlers.ofString());
+
+        if (resposta.statusCode() == 200 && !resposta.body().equals("null")) {
+            System.out.println("O produto foi deletado com sucesso!");
+        } else {
+            System.out.println("Não existe um produto com o ID informado.");
+        }
+    } catch (IOException e) {
+        System.out.println("Houve um erro na conexão.");
+        e.printStackTrace();
+    } catch (InterruptedException e) {
+        System.out.println("Houve um erro na conexão.");
+        e.printStackTrace();
+    }
+}
+```
