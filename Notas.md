@@ -8600,3 +8600,5 @@ public static void deletar() {
     }
 }
 ```
+
+Curso terminado, graças a Deus!
